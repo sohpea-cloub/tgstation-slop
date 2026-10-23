@@ -64,6 +64,15 @@ GLOBAL_LIST_INIT(wire_node_generating_types, typecacheof(list(
 	update_appearance(UPDATE_ICON)
 	is_fully_initialized = TRUE
 
+/obj/structure/cable/on_duplicated(atom/original)
+	. = ..()
+	// like cable coils do: a new powernet, merged with whatever it touches
+	var/datum/powernet/new_powernet = new()
+	new_powernet.add_cable(src)
+	for(var/dir_check in GLOB.cardinals)
+		mergeConnectedNetworks(dir_check)
+	mergeConnectedNetworksOnTurf()
+
 /obj/structure/cable/examine(mob/user)
 	. = ..()
 	if(isobserver(user))

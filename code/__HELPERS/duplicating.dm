@@ -50,8 +50,15 @@ GLOBAL_LIST_INIT(duplicate_forbidden_vars, list(
 	nameof(/mob::lastKnownIP),
 	nameof(/mob::stat),
 	nameof(/turf::atmos_adjacent_turfs),
+	// cables work out their links in Initialize(), copying them would claim links to cables that aren't there
+	nameof(/obj/structure/cable::linked_dirs),
+	nameof(/obj/structure/cable::is_fully_initialized),
 ))
 GLOBAL_PROTECT(duplicate_forbidden_vars)
+
+/// Called on the copy made by duplicate_object() once its vars have been transferred, for things that need more than that to work.
+/atom/proc/on_duplicated(atom/original)
+	return
 
 /**
  * # duplicate_object
@@ -83,4 +90,5 @@ GLOBAL_PROTECT(duplicate_forbidden_vars)
 
 		made_copy.vars[atom_vars] = var_value
 
+	made_copy.on_duplicated(original)
 	return made_copy
