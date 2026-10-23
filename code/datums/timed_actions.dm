@@ -179,7 +179,8 @@
 	if (user.loc == old_loc)
 		return
 
-	if (isnull(user.drift_handler))
+	// Only inertia (the drift loop moving us) gets a pass, not us stepping or being pushed while a drift handler exists (jetpacks, wings...)
+	if (isnull(user.drift_handler) || !user.inertia_moving)
 		cancel()
 		return
 
