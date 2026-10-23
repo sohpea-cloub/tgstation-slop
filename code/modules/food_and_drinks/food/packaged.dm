@@ -259,6 +259,13 @@
 	// Don't burn your warn ready donks.
 	warm_type = /obj/item/food/badrecipe
 
+// Warm ready donks can only turn into a burned mess, so don't advertise that as a good result (or re-add the omnizine).
+/obj/item/food/ready_donk/warm/make_bakeable()
+	AddComponent(/datum/component/bakeable, warm_type, rand(25 SECONDS, 40 SECONDS), FALSE)
+
+/obj/item/food/ready_donk/warm/make_microwaveable()
+	AddElement(/datum/element/microwavable, warm_type, bad_recipe = TRUE)
+
 /obj/item/food/ready_donk/mac_n_cheese
 	name = "\improper Ready-Donk: Donk-a-Roni"
 	desc = "Neon-orange mac n' cheese in seconds!"
