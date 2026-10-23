@@ -309,6 +309,10 @@ GLOBAL_LIST_INIT(strippable_parrot_items, create_strippable_list(list(
 		if(stealable.w_class > WEIGHT_CLASS_SMALL)
 			continue
 
+		// Stabilized extracts sustain their familiar: taking one away would delete the thief (and whatever it holds)
+		if(istype(stealable, /obj/item/slimecross/stabilized))
+			continue
+
 		if(!victim.temporarilyRemoveItemFromInventory(stealable))
 			continue
 

@@ -1058,6 +1058,8 @@
 
 /datum/status_effect/stabilized/gold/on_remove()
 	if(familiar)
+		// don't take items the familiar is holding (e.g. a stolen extract) with it
+		familiar.drop_all_held_items()
 		qdel(familiar)
 
 /datum/status_effect/stabilized/adamantine/on_apply()
