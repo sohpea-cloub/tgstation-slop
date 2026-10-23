@@ -1051,10 +1051,11 @@
 /mob/living/carbon/human/proc/is_atmos_sealed(additional_flags = null, check_hands = FALSE)
 	var/chest_covered = FALSE
 	var/head_covered = FALSE
-	var/hands_covered = FALSE
+	// Missing hands can't be covered by anything, so they shouldn't count against us
+	var/hands_covered = !num_hands
 	for (var/obj/item/clothing/equipped in get_equipped_items(INCLUDE_ABSTRACT))
 		// We don't really have space-proof gloves, so even if we're checking them we ignore the flags
-		if ((equipped.body_parts_covered & HANDS) && num_hands >= default_num_hands)
+		if (equipped.body_parts_covered & HANDS)
 			hands_covered = TRUE
 		if ((equipped.clothing_flags & (STOPSPRESSUREDAMAGE | additional_flags)) && (equipped.body_parts_covered & CHEST))
 			chest_covered = TRUE
