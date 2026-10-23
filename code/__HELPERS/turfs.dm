@@ -477,7 +477,8 @@ Turf and target are separate in case you want to teleport some distance from a t
 	if(!final_area_list.len) // Failsafe
 		return get_safe_random_station_turf()
 
-	return get_safe_random_station_turf(final_area_list)
+	// The picked department can be unlucky (few areas with a safe turf), so don't give up after one department.
+	return get_safe_random_station_turf(final_area_list) || get_safe_random_station_turf()
 
 /**
  * Checks whether the target turf is in a valid state to accept a directional construction

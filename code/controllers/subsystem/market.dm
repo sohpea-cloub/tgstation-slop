@@ -93,10 +93,13 @@ SUBSYSTEM_DEF(market)
 			// Get random area, throw it somewhere there.
 			if(SHIPPING_METHOD_TELEPORT)
 				var/turf/targetturf = get_safe_random_station_turf_equal_weight() //todo: split weights
-				// This shouldn't happen.
-				if (!targetturf)
+				// This shouldn't happen, but if no safe turf could be found, deliver it at the uplink rather than silently losing the order.
+				if(!targetturf)
+					targetturf = get_turf(purchase.uplink)
+				if(!targetturf)
+					stack_trace("SSmarket: could not find a turf to teleport [purchase.entry] to.")
+					qdel(purchase)
 					continue
-				queued_purchases -= purchase
 
 				to_chat(buyer, span_notice("[purchase.uplink] flashes a message noting that the order is being teleported to [get_area(targetturf)] in 60 seconds."))
 
