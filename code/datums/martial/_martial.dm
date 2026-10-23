@@ -30,6 +30,8 @@
 	var/timerid
 	/// If TRUE, this style allows you to punch people despite being a pacifist (IE: Boxing, which does no damage)
 	var/pacifist_style = FALSE
+	/// If TRUE, this style can be used on mobs with [TRAIT_MARTIAL_ARTS_IMMUNE] when attacking them (IE: Hunter Boxing, which is made for fighting bosses).
+	var/ignores_martial_arts_immunity = FALSE
 	/// If TRUE, the user is locked to using this martial art, and can't swap to other ones they know.
 	/// If the mob has two locked martial arts, it's first come first serve.
 	var/locked_to_use = FALSE
@@ -87,7 +89,7 @@
 	if(!proximity || !isliving(attack_target))
 		return NONE
 
-	if(HAS_TRAIT(attack_target, TRAIT_MARTIAL_ARTS_IMMUNE))
+	if(HAS_TRAIT(attack_target, TRAIT_MARTIAL_ARTS_IMMUNE) && !ignores_martial_arts_immunity)
 		return NONE
 
 	if(!can_use(source))

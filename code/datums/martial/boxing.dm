@@ -435,6 +435,7 @@
 	default_damage_type = BRUTE
 	boxing_traits = list(TRAIT_BOXING_READY)
 	ignore_grab_restriction = TRUE
+	ignores_martial_arts_immunity = TRUE
 	/// The mobs we are looking for to pass the honor check
 	var/honorable_mob_biotypes = MOB_BEAST | MOB_SPECIAL | MOB_PLANT | MOB_BUG | MOB_MINING | MOB_CRUSTACEAN | MOB_REPTILE
 	/// Our crit shout words. First word is then paired with a second word to form an attack name.
@@ -462,7 +463,7 @@
 	if(HAS_TRAIT(possible_boxer, TRAIT_BOXING_READY))
 		return TRUE
 
-	if(possible_boxer.mob_biotypes & MOB_HUMANOID && !istype(possible_boxer, /mob/living/simple_animal/hostile/megafauna)) //We're after animals, not people. Unless they want to box. (Or a megafauna)
+	if(possible_boxer.mob_biotypes & MOB_HUMANOID && !ismegafauna(possible_boxer)) //We're after animals, not people. Unless they want to box. (Or a megafauna)
 		return FALSE
 
 	if(possible_boxer.mob_biotypes & honorable_mob_biotypes) //We're after animals, not people
@@ -473,7 +474,7 @@
 // Our hunter boxer applies a rebuke and double damage against the target of their crit. If the target is humanoid, we just perform our regular crit effect instead.
 
 /datum/martial_art/boxing/hunter/crit_effect(mob/living/attacker, mob/living/defender, armor_block = 0, damage_type = STAMINA, damage = 0)
-	if(defender.mob_biotypes & MOB_HUMANOID && !istype(defender, /mob/living/simple_animal/hostile/megafauna))
+	if(defender.mob_biotypes & MOB_HUMANOID && !ismegafauna(defender))
 		return ..() //Applies the regular crit effect if it is a normal human, and not a megafauna
 
 	var/first_word_pick = pick(first_word_strike)
@@ -501,13 +502,13 @@
 // Our hunter boxer does a sizable amount of extra damage on a successful combo or block
 
 /datum/martial_art/boxing/hunter/perform_extra_effect(mob/living/attacker, mob/living/defender)
-	if(defender.mob_biotypes & MOB_HUMANOID && !istype(defender, /mob/living/simple_animal/hostile/megafauna))
+	if(defender.mob_biotypes & MOB_HUMANOID && !ismegafauna(defender))
 		return // Does not apply to humans (who aren't megafauna)
 
 	defender.apply_damage(rand(15,20), default_damage_type, BODY_ZONE_CHEST)
 
 /datum/martial_art/boxing/hunter/skill_experience_adjustment(mob/living/boxer, mob/living/defender, experience_value)
-	if(defender.mob_biotypes & MOB_HUMANOID && !istype(defender, /mob/living/simple_animal/hostile/megafauna))
+	if(defender.mob_biotypes & MOB_HUMANOID && !ismegafauna(defender))
 		return ..() //IF they're a normal human, we give the normal amount of experience instead
 
 	var/gravity_modifier = boxer.has_gravity() > STANDARD_GRAVITY ? 2 : 1
