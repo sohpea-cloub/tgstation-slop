@@ -675,10 +675,10 @@
 			maybe_monkey.vomit(VOMIT_CATEGORY_BLOOD)
 			to_chat(maybe_monkey, span_danger("You vomit out blood, making you feel grossly monkeyish."))
 
-		var/monkey_cap = CONFIG_GET(number/monkeycap)
-		for(var/_ in 1 to created_volume)
-			if (LAZYLEN(SSmobs.cubemonkeys) < monkey_cap)
-				new /mob/living/carbon/human/species/monkey(location, null, TRUE)
+	var/monkey_cap = CONFIG_GET(number/monkeycap)
+	for(var/_ in 1 to created_volume)
+		if (LAZYLEN(SSmobs.cubemonkeys) < monkey_cap)
+			new /mob/living/carbon/human/species/monkey(location, null, TRUE)
 
 /datum/chemical_reaction/angry_monkey
 	required_reagents = list(/datum/reagent/monkey_powder = 50, /datum/reagent/inverse/bath_salts = 10)
@@ -696,10 +696,10 @@
 			maybe_monkey.vomit(VOMIT_CATEGORY_BLOOD)
 			to_chat(maybe_monkey, span_danger("You vomit out blood, making you feel grossly monkeyish."))
 
-		var/monkey_cap = CONFIG_GET(number/monkeycap)
-		for(var/_ in 1 to created_volume)
-			if (LAZYLEN(SSmobs.cubemonkeys) < monkey_cap)
-				new /mob/living/carbon/human/species/monkey/angry(location, null, TRUE)
+	var/monkey_cap = CONFIG_GET(number/monkeycap)
+	for(var/_ in 1 to created_volume)
+		if (LAZYLEN(SSmobs.cubemonkeys) < monkey_cap)
+			new /mob/living/carbon/human/species/monkey/angry(location, null, TRUE)
 
 
 //water electrolysis
