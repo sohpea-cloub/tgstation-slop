@@ -39,3 +39,7 @@
 
 /datum/experiment/scanning/random/plants/wild/final_contributing_index_checks(datum/component/experiment_handler/experiment_handler, atom/target, typepath)
 	return ..() && HAS_TRAIT(target, TRAIT_PLANT_WILDMUTATE)
+
+///Wild mutations can also be inedible grown items (e.g. a steel cap's logs), which aren't under /obj/item/food/grown.
+/datum/experiment/scanning/random/plants/wild/target_matches_requirement(atom/target, req_atom)
+	return ..() || (req_atom == /obj/item/food/grown && istype(target, /obj/item/grown))

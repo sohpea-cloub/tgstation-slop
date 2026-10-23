@@ -108,7 +108,7 @@
 /datum/experiment/scanning/proc/experiment_requirements(datum/component/experiment_handler/experiment_handler, atom/target)
 	var/destructive = (traits & EXPERIMENT_TRAIT_DESTRUCTIVE)
 	for (var/req_atom in required_atoms)
-		if (!istype(target, req_atom))
+		if (!target_matches_requirement(target, req_atom))
 			continue
 		// Try to select a required atom that this scanned atom would contribute towards
 		var/selected
@@ -120,6 +120,17 @@
 		// Run any additonal checks if necessary
 		if (selected && final_contributing_index_checks(experiment_handler, target, selected))
 			return selected
+
+/**
+ * Checks whether a target is of the type a requirement asks for
+ *
+ * Experiments whose requirement spans several unrelated type trees can override this.
+ * Arguments:
+ * * target - The atom being scanned
+ * * req_atom - The typepath key in required_atoms being checked
+ */
+/datum/experiment/scanning/proc/target_matches_requirement(atom/target, req_atom)
+	return istype(target, req_atom)
 
 /**
  * Performs any additional checks against the atom being considered for selection as a contributing index
