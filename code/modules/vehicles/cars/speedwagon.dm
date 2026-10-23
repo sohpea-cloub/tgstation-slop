@@ -14,6 +14,11 @@
 	///Determines whether we throw all things away when ramming them or just mobs, varedit only
 	var/crash_all = FALSE
 
+/obj/vehicle/sealed/car/speedwagon/shuttleRotate(rotation, params)
+	// Our pixel offsets center the 3x3 sprite on our single tile, they aren't a position to rotate with the shuttle
+	params &= ~ROTATE_OFFSET
+	return ..()
+
 /obj/vehicle/sealed/car/speedwagon/update_overlays()
 	. = ..()
 	var/mutable_appearance/cover_overlay = mutable_appearance(icon, "speedwagon_cover", ABOVE_MOB_LAYER, src, appearance_flags = KEEP_APART)
