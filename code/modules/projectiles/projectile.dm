@@ -783,7 +783,8 @@
 	if (!log_override && firer && original && !do_not_log)
 		log_combat(firer, original, "fired at", src, "from [get_area_name(src, TRUE)]")
 			//note: mecha projectile logging is handled in /obj/item/mecha_parts/mecha_equipment/weapon/action(). try to keep these messages roughly the sameish just for consistency's sake.
-	if (direct_target && (get_dist(direct_target, get_turf(src)) <= 1)) // point blank shots
+	// point blank shots, unless a border object (like a directional window) is between us and the target
+	if (direct_target && (get_dist(direct_target, get_turf(src)) <= 1) && get_turf(src).Adjacent(direct_target, direct_target, src))
 		impact(direct_target)
 		if (QDELETED(src))
 			return
