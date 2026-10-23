@@ -749,6 +749,9 @@ GLOBAL_LIST_EMPTY(unconscious_appearances)
 /datum/status_effect/spasms/tick(seconds_between_ticks)
 	if(owner.incapacitated || IS_UNCONSCIOUS(owner) || HAS_TRAIT(owner, TRAIT_HANDS_BLOCKED) || HAS_TRAIT(owner, TRAIT_IMMOBILIZED))
 		return
+	// Enclosed in something (a silverscale statue, a locker...): no room to flail around
+	if(!isturf(owner.loc))
+		return
 	if(!prob(15))
 		return
 	switch(rand(1,5))
