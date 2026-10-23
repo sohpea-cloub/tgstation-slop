@@ -366,9 +366,9 @@
 	var/turf/landing_turf = get_step(vehicle.loc, vehicle.dir)
 	rider.adjust_stamina_loss(vehicle.instability* 0.75)
 	if (rider.get_stamina_loss() >= 100)
-		vehicle.obj_flags &= ~CAN_BE_HIT
 		playsound(src, 'sound/effects/bang.ogg', 20, TRUE)
 		vehicle.unbuckle_mob(rider)
+		vehicle.land()
 		rider.throw_at(landing_turf, 2, 2)
 		rider.Paralyze(40)
 		vehicle.visible_message(span_danger("[rider] misses the landing and falls on [rider.p_their()] face!"))
@@ -380,7 +380,7 @@
 		vehicle.icon_state = "[initial(vehicle.icon_state)]-grind"
 		addtimer(CALLBACK(vehicle, TYPE_PROC_REF(/obj/vehicle/ridden/scooter/skateboard/, grind)), 0.2 SECONDS)
 	else
-		vehicle.obj_flags &= ~BLOCK_Z_OUT_DOWN
+		vehicle.land()
 	rider.spin(spintime = 4, speed = 1)
 	animate(rider, pixel_z = 6, time = 0.4 SECONDS, flags = ANIMATION_RELATIVE|ANIMATION_PARALLEL)
 	animate(pixel_z = -6, time = 0.1 SECONDS, flags = ANIMATION_RELATIVE)

@@ -129,6 +129,13 @@
 		step(src, backdir)
 		rider.spin(4, 1)
 
+///Ends the air time of an ollie or grind: the board no longer holds itself up over open space, so it falls if there's nothing under it.
+/obj/vehicle/ridden/scooter/skateboard/proc/land()
+	obj_flags &= ~BLOCK_Z_OUT_DOWN
+	if(isopenspaceturf(loc))
+		var/turf/open/openspace/openspace_turf = loc
+		openspace_turf.zFall(src)
+
 ///Moves the vehicle forward and if it lands on a table, repeats
 /obj/vehicle/ridden/scooter/skateboard/proc/grind()
 	step(src, dir)
@@ -136,6 +143,7 @@
 		obj_flags = CAN_BE_HIT
 		grinding = FALSE
 		icon_state = "[initial(icon_state)]"
+		land()
 		return
 
 	var/mob/living/skater = buckled_mobs[1]
@@ -150,6 +158,7 @@
 		skater.Paralyze(4 SECONDS)
 		grinding = FALSE
 		icon_state = "[initial(icon_state)]"
+		land()
 		return
 	playsound(src, 'sound/vehicles/skateboard_roll.ogg', 50, TRUE)
 	var/turf/location = get_turf(src)
