@@ -84,8 +84,7 @@
 		if(connected_alarm.alarm_manager.send_alarm(ALARM_ATMOS))
 			connected_alarm.danger_level = AIR_ALARM_ALERT_HAZARD
 	else
-		if(connected_alarm.alarm_manager.clear_alarm(ALARM_ATMOS))
-			connected_alarm.danger_level = AIR_ALARM_ALERT_NONE
+		connected_alarm.reset_area_alarm()
 
 /obj/item/circuit_component/air_alarm_general/proc/set_mode(datum/port/input/port)
 	CIRCUIT_TRIGGER

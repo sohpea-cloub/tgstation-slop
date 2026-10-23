@@ -48,8 +48,7 @@
 				else
 					A.select_mode(usr, /datum/air_alarm_mode/filtering)
 		if(WIRE_ALARM) // Clear alarms.
-			if(A.alarm_manager.clear_alarm(ALARM_ATMOS))
-				A.danger_level = AIR_ALARM_ALERT_NONE
+			A.reset_area_alarm()
 			A.update_appearance()
 
 /datum/wires/airalarm/on_cut(wire, mend, source)

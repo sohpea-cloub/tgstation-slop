@@ -168,6 +168,15 @@ GLOBAL_LIST_EMPTY_TYPED(air_alarms, /obj/machinery/airalarm)
 	if(!!old_area_danger != !!area_danger)
 		update_appearance()
 
+/// The area's atmos alarm stays up while any air alarm in it is still sending it, so resetting it from one air alarm has to clear it from all of them.
+/obj/machinery/airalarm/proc/reset_area_alarm()
+	for(var/obj/machinery/airalarm/other_alarm as anything in GLOB.air_alarms)
+		if(other_alarm != src && other_alarm.my_area != my_area)
+			continue
+		if(other_alarm.alarm_manager.clear_alarm(ALARM_ATMOS))
+			other_alarm.danger_level = AIR_ALARM_ALERT_NONE
+			other_alarm.update_appearance()
+
 /obj/machinery/airalarm/proc/check_enviroment()
 	var/turf/our_turf = connected_sensor ? get_turf(connected_sensor) : get_turf(src)
 	var/datum/gas_mixture/environment = our_turf.return_air()
@@ -517,8 +526,7 @@ GLOBAL_LIST_EMPTY_TYPED(air_alarms, /obj/machinery/airalarm)
 				danger_level = AIR_ALARM_ALERT_HAZARD
 
 		if ("reset")
-			if (alarm_manager.clear_alarm(ALARM_ATMOS))
-				danger_level = AIR_ALARM_ALERT_NONE
+			reset_area_alarm()
 
 		if ("disconnect_sensor")
 			if(allow_link_change)
