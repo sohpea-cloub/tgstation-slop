@@ -8,6 +8,8 @@
 	medical_record_text = "Patient has an untreatable impairment in motor function in the lower extremities."
 	hardcore_value = 15
 	mail_goodies = list(/obj/vehicle/ridden/wheelchair/motorized) //yes a fullsized unfolded motorized wheelchair does fit
+	/// Items the holder was holding when the quirk was added, so we can put them back after the paralysis makes them drop them
+	var/list/obj/item/held_before_paralysis
 
 /datum/quirk_constant_data/paraplegic
 	associated_typepath = /datum/quirk/paraplegic
@@ -17,9 +19,11 @@
 	quirk_holder.put_in_wheelchair()
 	// During the spawning process, they may have dropped what they were holding, due to the paralysis
 	// So put the things back in their hands.
-	for(var/obj/item/dropped_item in get_turf(quirk_holder))
-		if(dropped_item.fingerprintslast == quirk_holder.ckey)
+	var/turf/holder_turf = get_turf(quirk_holder)
+	for(var/obj/item/dropped_item as anything in held_before_paralysis)
+		if(!QDELETED(dropped_item) && dropped_item.loc == holder_turf)
 			quirk_holder.put_in_hands(dropped_item)
+	held_before_paralysis = null
 
 	// Finally, removes their legs if they have opted as such, deleting the shoes
 	var/amputee = GLOB.paraplegic_choice[client_source?.prefs?.read_preference(/datum/preference/choiced/paraplegic)]
@@ -33,6 +37,7 @@
 
 /datum/quirk/paraplegic/add(client/client_source)
 	var/mob/living/carbon/human/human_holder = quirk_holder
+	held_before_paralysis = human_holder.get_held_items()
 	human_holder.gain_trauma(/datum/brain_trauma/severe/paralysis/paraplegic, TRAUMA_RESILIENCE_ABSOLUTE)
 
 /datum/quirk/paraplegic/remove()
