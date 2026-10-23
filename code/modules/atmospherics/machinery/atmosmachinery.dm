@@ -22,6 +22,7 @@
 	obj_flags = CAN_BE_HIT
 	armor_type = /datum/armor/machinery_atmospherics
 	interaction_flags_atom = parent_type::interaction_flags_atom | INTERACT_ATOM_IGNORE_MOBILITY
+	interaction_flags_click = NEED_DEXTERITY
 
 	///Check if the object can be unwrenched
 	var/can_unwrench = FALSE
