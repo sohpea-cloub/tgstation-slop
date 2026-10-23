@@ -77,17 +77,17 @@
 /obj/machinery/atmospherics/pipe/return_air()
 	if(air_temporary)
 		return air_temporary
-	return parent.air
+	return parent?.air
 
 /obj/machinery/atmospherics/pipe/return_analyzable_air()
 	if(air_temporary)
 		return air_temporary
-	return parent.air
+	return parent?.air
 
 /obj/machinery/atmospherics/pipe/remove_air(amount)
 	if(air_temporary)
 		return air_temporary.remove(amount)
-	return parent.air.remove(amount)
+	return parent?.air?.remove(amount)
 
 /obj/machinery/atmospherics/pipe/item_interaction(mob/living/user, obj/item/tool, list/modifiers)
 	if(!istype(tool, /obj/item/pipe_meter))

@@ -426,7 +426,7 @@
 	if(!can_unwrench(user))
 		return ITEM_INTERACT_BLOCKING
 
-	var/datum/gas_mixture/int_air = return_air()
+	var/datum/gas_mixture/int_air = return_air() || new /datum/gas_mixture //a pipe waiting for its pipenet to be rebuilt has no air
 	var/datum/gas_mixture/env_air = loc.return_air()
 	add_fingerprint(user)
 

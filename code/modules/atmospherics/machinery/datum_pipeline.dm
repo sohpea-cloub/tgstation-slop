@@ -191,6 +191,12 @@
 	return
 
 /obj/machinery/atmospherics/pipe/add_member(obj/machinery/atmospherics/considered_device)
+	if(QDELETED(parent))
+		//our pipenet was destroyed and we are still waiting in the rebuild queue (a neighbour was unwrenched a moment ago),
+		//the rebuild will pick up the new device along the way
+		SSair.add_to_rebuild_queue(src)
+		SSair.add_to_rebuild_queue(considered_device)
+		return
 	parent.add_member(considered_device, src)
 
 /obj/machinery/atmospherics/components/add_member(obj/machinery/atmospherics/considered_device)
