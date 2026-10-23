@@ -24,6 +24,7 @@
 	if(brain_owner.stat == DEAD || !GET_CLIENT(brain_owner) || istype(get_area(brain_owner), /area/deathmatch) || HAS_TRAIT(brain_owner, TRAIT_NO_SPLIT_PERSONALITY)) //No use assigning people to a corpse or braindead
 		return FALSE
 	. = ..()
+	RegisterSignal(owner, COMSIG_LIVING_ON_WABBAJACKED, PROC_REF(on_owner_wabbajacked))
 	make_backseats()
 
 #ifdef UNIT_TESTS
@@ -75,12 +76,19 @@
 	..()
 
 /datum/brain_trauma/severe/split_personality/on_lose()
+	UnregisterSignal(owner, COMSIG_LIVING_ON_WABBAJACKED)
 	if(current_controller != OWNER) //it would be funny to cure a guy only to be left with the other personality, but it seems too cruel
 		switch_personalities(TRUE)
 	QDEL_NULL(stranger_backseat)
 	QDEL_NULL(owner_backseat)
 	..()
 
+
+/// A polymorph moves the body's mind to the new mob, then deletes this body (and with it this trauma): make sure the owner is the one in control
+/datum/brain_trauma/severe/split_personality/proc/on_owner_wabbajacked(datum/source, mob/living/new_mob)
+	SIGNAL_HANDLER
+	if(current_controller != OWNER)
+		switch_personalities(TRUE)
 
 /datum/brain_trauma/severe/split_personality/proc/switch_personalities(reset_to_owner = FALSE)
 	if(QDELETED(owner) || QDELETED(stranger_backseat) || QDELETED(owner_backseat))
@@ -102,6 +110,17 @@
 	to_chat(owner, span_userdanger("You feel your control being taken away... your other personality is in charge now!"))
 	to_chat(current_backseat, span_userdanger("You manage to take control of your body!"))
 
+	// Swap the minds first, and keep their bookkeeping (current, key, active) matching the mob they end up in.
+	// Mind.transfer_to() (polymorphs, brain removal, MMIs...) only takes the client along if the mind is active
+	// and its current is the mob the client is in, so we can't just overwrite the mind vars of the mobs.
+	var/datum/mind/body_mind = owner.mind
+	var/datum/mind/backseat_mind = current_backseat.mind
+	new_backseat.mind = body_mind
+	body_mind?.set_current(new_backseat)
+	owner.mind = backseat_mind
+	backseat_mind?.set_current(owner)
+	current_backseat.mind = null // its client is about to leave, and that mustn't mark the mind it just handed over as inactive
+
 	//Body to backseat
 
 	var/h2b_id = owner.computer_id
@@ -112,9 +131,6 @@
 	new_backseat.ckey = owner.ckey
 
 	new_backseat.name = owner.name
-
-	if(owner.mind)
-		new_backseat.mind = owner.mind
 
 	if(!new_backseat.computer_id)
 		new_backseat.computer_id = h2b_id
@@ -133,7 +149,6 @@
 	current_backseat.lastKnownIP = null
 
 	owner.ckey = current_backseat.ckey
-	owner.mind = current_backseat.mind
 
 	if(!owner.computer_id)
 		owner.computer_id = s2h_id
@@ -161,6 +176,7 @@
 /mob/living/split_personality/Life(seconds_per_tick = SSMOBS_DT)
 	if(QDELETED(body))
 		qdel(src) //in case trauma deletion doesn't already do it
+		return
 
 	if((body.stat == DEAD && trauma.owner_backseat == src))
 		trauma.switch_personalities()
