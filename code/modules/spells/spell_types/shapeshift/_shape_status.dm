@@ -98,9 +98,6 @@
 	owner.moveToNullspace()
 	caster_mob.forceMove(former_loc) // This is to avoid crushing our former cockroach body
 
-	if(kill_caster_after)
-		caster_mob.death()
-
 	after_unchange()
 
 	// We're about to remove the status effect and clear owner so we need to cache this
@@ -108,6 +105,11 @@
 
 	// Do this late as it will destroy the status effect we are in and null a bunch of values we are trying to use
 	owner.mind?.transfer_to(caster_mob)
+
+	// Kill the caster only once their mind is back in them, so that anything which reacts to the death of a mind's body
+	// (such as a lich's phylactery) sees the mind die with the caster instead of with neither body
+	if(kill_caster_after)
+		caster_mob.death()
 
 	// Destroy the owner after all's said and done, this will also destroy our status effect (src)
 	// retore_caster() should never reach this point while either the owner or the effect is being qdeleted
