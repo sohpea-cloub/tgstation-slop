@@ -410,6 +410,8 @@
 /mob/living/silicon/pai/proc/toggle_holo()
 	balloon_alert(src, "holomatrix [can_holo ? "disabled" : "enabled"]")
 	can_holo = !can_holo
+	if(!can_holo && holoform)
+		fold_in()
 	return TRUE
 
 /**
