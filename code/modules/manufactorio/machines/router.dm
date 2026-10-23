@@ -50,8 +50,6 @@
 		if(isstack(receiving))
 			to_send = handle_stack(receiving)
 		if(send_resource(to_send, target))
-			dir = receive_dir
-			update_appearance(UPDATE_OVERLAYS) // im sorry
 			return MANUFACTURING_SUCCESS
 		if(to_send != receiving && !QDELETED(to_send)) // couldn't send the split off piece, put it back so it isnt lost in nullspace
 			var/obj/item/stack/piece = to_send
