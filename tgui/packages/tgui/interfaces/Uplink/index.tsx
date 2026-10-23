@@ -110,8 +110,11 @@ export class Uplink extends Component<any, UplinkState> {
 
     const uplinkData = await fetchServerData;
 
+    // uplinkData is cached and shared by every uplink this window opens:
+    // filter into new arrays, never into it, or the next uplink of another
+    // type only gets the items both allow.
     const availableCategories: string[] = [];
-    uplinkData.items = uplinkData.items.filter((value) => {
+    const items = uplinkData.items.filter((value) => {
       if (
         value.restricted_roles.length > 0 &&
         !value.restricted_roles.includes(uplinkRole) &&
@@ -132,19 +135,19 @@ export class Uplink extends Component<any, UplinkState> {
       return false;
     });
 
-    uplinkData.items.forEach((item) => {
+    items.forEach((item) => {
       if (!availableCategories.includes(item.category)) {
         availableCategories.push(item.category);
       }
     });
 
-    uplinkData.categories = uplinkData.categories.filter((value) =>
+    const categories = uplinkData.categories.filter((value) =>
       availableCategories.includes(value),
     );
 
     this.setState({
-      allItems: uplinkData.items,
-      allCategories: uplinkData.categories,
+      allItems: items,
+      allCategories: categories,
     });
   }
 
