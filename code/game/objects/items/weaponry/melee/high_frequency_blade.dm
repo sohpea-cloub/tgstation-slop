@@ -65,7 +65,11 @@
 	if(isliving(target) && HAS_TRAIT(src, TRAIT_PACIFISM))
 		return . // Default attack (ultimately nothing)
 
-	return slash(target, user, modifiers)
+	var/slashed = slash(target, user, modifiers)
+	if(slashed)
+		// Our slash replaces the normal attack chain, so tell things that react to a finished attack (sanguine strike, on-hit effects...)
+		SEND_SIGNAL(src, COMSIG_ITEM_AFTERATTACK, target, user, modifiers, attack_modifiers)
+	return slashed
 
 /// triggered on wield of two handed item
 /obj/item/highfrequencyblade/proc/on_wield(obj/item/source, mob/user)

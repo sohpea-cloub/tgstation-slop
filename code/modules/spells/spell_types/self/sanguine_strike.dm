@@ -89,5 +89,6 @@
 	UnregisterSignal(enchanted, list(COMSIG_ITEM_AFTERATTACK, COMSIG_ITEM_DROPPED))
 	StartCooldown()
 	enchanted.remove_filter("sanguine_strike")
-	enchanted.force = original_force
+	// the lifesteal element is bespoke to the enchanted force, so remove it before we restore the original force
 	enchanted.RemoveElement(/datum/element/lifesteal, enchanted.force)
+	enchanted.force = original_force
