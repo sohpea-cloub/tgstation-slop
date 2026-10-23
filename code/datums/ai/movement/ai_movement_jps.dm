@@ -55,6 +55,9 @@
 	max_pathing_attempts = 8
 	maximum_length = 25
 	diagonal_flags = DIAGONAL_REMOVE_ALL
+	/// Give up as soon as the pathfinder finds no path, instead of searching again until max_pathing_attempts.
+	/// For fixed targets such as beacons, where another search would only find nothing again (and long searches that find nothing are costly).
+	var/fail_without_path = FALSE
 
 /datum/ai_movement/jps/bot/start_moving_towards(datum/ai_controller/controller, atom/current_movement_target, min_distance, delay_override)
 	var/datum/move_loop/loop = ..()
@@ -62,11 +65,19 @@
 	if(isnull(our_pawn))
 		return null
 	our_pawn.RegisterSignal(loop, COMSIG_MOVELOOP_JPS_FINISHED_PATHING, TYPE_PROC_REF(/mob/living/basic/bot, generate_bot_path))
+	if(fail_without_path && istype(loop))
+		RegisterSignal(loop, COMSIG_MOVELOOP_JPS_FINISHED_PATHING, PROC_REF(on_finished_pathing))
 	return loop
+
+/datum/ai_movement/jps/bot/proc/on_finished_pathing(datum/move_loop/has_target/jps/source, list/path)
+	SIGNAL_HANDLER
+	if(!length(path))
+		fail_movement(source.extra_info)
 
 /datum/ai_movement/jps/bot/travel_to_beacon
 	maximum_length = AI_BOT_PATH_LENGTH
 	max_pathing_attempts = 10
+	fail_without_path = TRUE
 
 
 /datum/ai_movement/jps/bot/mulebot

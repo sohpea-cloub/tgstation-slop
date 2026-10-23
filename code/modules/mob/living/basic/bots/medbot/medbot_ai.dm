@@ -11,6 +11,7 @@
 /datum/ai_controller/basic_controller/bot/medbot
 	behavior_tree_json = "code/modules/mob/living/basic/bots/medbot/medbot.bt.json"
 	ai_movement = /datum/ai_movement/jps/bot/medbot
+	patrol_movement_type = /datum/ai_movement/jps/bot/medbot/travel_to_beacon
 	reset_keys = list(
 		BB_CURRENT_TARGET,
 		BB_BEACON_TARGET,
@@ -32,6 +33,7 @@
 
 /datum/ai_movement/jps/bot/medbot/travel_to_beacon
 	maximum_length = AI_BOT_PATH_LENGTH
+	fail_without_path = TRUE
 
 
 

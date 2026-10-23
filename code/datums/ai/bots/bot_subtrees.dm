@@ -142,16 +142,20 @@
 /datum/bt_node/ai_behavior/find_first_beacon_target
 	var/target_key
 
-/datum/bt_node/ai_behavior/find_first_beacon_target/perform(seconds_per_tick, datum/ai_controller/controller)
+/datum/bt_node/ai_behavior/find_first_beacon_target/perform(seconds_per_tick, datum/ai_controller/basic_controller/bot/controller)
 	var/closest_distance = INFINITY
 	var/mob/living/basic/bot/bot_pawn = controller.pawn
 	var/atom/final_target
 	var/atom/previous_target = controller.blackboard[BB_PREVIOUS_BEACON_TARGET]
+	var/list/ignore_list = controller.blackboard[BB_TEMPORARY_IGNORE_LIST]
+	var/datum/ai_movement/jps/patrol_movement = SSai_movement.movement_types[controller.patrol_movement_type]
 	for(var/obj/machinery/navbeacon/beacon as anything in GLOB.navbeacons["[bot_pawn.z]"])
 		var/dist = get_dist(bot_pawn, beacon)
 		if(beacon == previous_target || dist <= 1)
 			continue
-		if(dist > closest_distance)
+		if(dist > closest_distance || dist > patrol_movement.maximum_length)
+			continue
+		if(LAZYACCESS(ignore_list, beacon)) // recently failed to path there
 			continue
 		closest_distance = dist
 		final_target = beacon
@@ -177,16 +181,24 @@
 		EVLOG_TEXT(controller, EVLOG_CATEGORY_AI_BEHAVIORS, "[bot_pawn] find_next_beacon_target: previous beacon is deleted")
 		return AI_BEHAVIOR_DELAY | AI_BEHAVIOR_FAILED
 
-	var/atom/final_target
-	for(var/obj/machinery/navbeacon/beacon as anything in GLOB.navbeacons["[bot_pawn.z]"])
-		if(beacon.location == prev_beacon.codes[NAVBEACON_PATROL_NEXT])
-			final_target = beacon
-			break
-
+	var/list/beacons = GLOB.navbeacons["[bot_pawn.z]"]
+	var/obj/machinery/navbeacon/final_target = find_patrol_beacon(beacons, prev_beacon.codes[NAVBEACON_PATROL_NEXT])
 	if(isnull(final_target))
 		EVLOG_TEXT(controller, EVLOG_CATEGORY_AI_BEHAVIORS, "[bot_pawn] find_next_beacon_target: no beacon with location=[prev_beacon.codes[NAVBEACON_PATROL_NEXT]] (prev=[prev_beacon])")
 		controller.clear_blackboard_key(BB_PREVIOUS_BEACON_TARGET)
 		return AI_BEHAVIOR_DELAY | AI_BEHAVIOR_FAILED
+
+	// Skip beacons we recently failed to reach, or that are too far to path to from here, rather than
+	// standing still while trying each of them in turn. If none of the chain will do, start over from the nearest beacon.
+	var/list/ignore_list = controller.blackboard[BB_TEMPORARY_IGNORE_LIST]
+	var/datum/ai_movement/jps/patrol_movement = SSai_movement.movement_types[controller.patrol_movement_type]
+	var/skipped = 0
+	while(LAZYACCESS(ignore_list, final_target) || get_dist(bot_pawn, final_target) > patrol_movement.maximum_length)
+		final_target = find_patrol_beacon(beacons, final_target.codes[NAVBEACON_PATROL_NEXT])
+		if(isnull(final_target) || final_target == prev_beacon || ++skipped >= length(beacons))
+			EVLOG_TEXT(controller, EVLOG_CATEGORY_AI_BEHAVIORS, "[bot_pawn] find_next_beacon_target: no reachable beacon after [prev_beacon], falling back to the nearest beacon")
+			controller.clear_blackboard_key(BB_PREVIOUS_BEACON_TARGET)
+			return AI_BEHAVIOR_FAILED
 
 	controller.set_blackboard_key(BB_PREVIOUS_BEACON_TARGET, final_target)
 	controller.set_blackboard_key(target_key, final_target)
@@ -195,6 +207,33 @@
 /datum/bt_node/ai_behavior/find_next_beacon_target/finish_action(datum/ai_controller/controller, succeeded)
 	. = ..()
 
+/// Returns the beacon in beacons whose location is the given patrol code, if any.
+/datum/bt_node/ai_behavior/find_next_beacon_target/proc/find_patrol_beacon(list/beacons, location)
+	for(var/obj/machinery/navbeacon/beacon as anything in beacons)
+		if(beacon.location == location)
+			return beacon
+
+
+/// Moves to a patrol beacon with the bot's patrol movement (longer paths), and notes the beacon as unreachable when pathing gives up on it.
+/datum/bt_node/ai_behavior/move_to_target/patrol_beacon
+	/// How many beacons in a row we failed to path to.
+	var/failures_in_a_row = 0
+
+/datum/bt_node/ai_behavior/move_to_target/patrol_beacon/setup(datum/ai_controller/basic_controller/bot/controller)
+	movement_type = controller.patrol_movement_type
+	return ..()
+
+/datum/bt_node/ai_behavior/move_to_target/patrol_beacon/finish_action(datum/ai_controller/basic_controller/bot/controller, succeeded)
+	if(succeeded)
+		failures_in_a_row = 0
+	else if(movement_failed)
+		// skip it for a while: the patrol goes on to the beacon after it
+		controller.note_unreachable_target(controller.blackboard[target_key])
+		// and if that one failed too, start over from the nearest beacon instead of trying the whole chain from here
+		if(++failures_in_a_row >= 2)
+			failures_in_a_row = 0
+			controller.clear_blackboard_key(BB_PREVIOUS_BEACON_TARGET)
+	return ..()
 
 /// Records the beacon as visited and clears the target key once the bot is on the same turf.
 /datum/bt_node/ai_behavior/arrive_at_beacon

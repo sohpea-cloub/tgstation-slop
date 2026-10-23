@@ -12,6 +12,8 @@
 	ai_movement = /datum/ai_movement/jps/bot
 	max_target_distance = AI_BOT_PATH_LENGTH
 	ai_traits = DEFAULT_AI_FLAGS | RUN_WHILE_UNWATCHED
+	///movement used to travel between patrol beacons, which can be further apart than other targets
+	var/patrol_movement_type = /datum/ai_movement/jps/bot/travel_to_beacon
 	///keys to be reset when the bot is reset
 	var/list/reset_keys = list(
 		BB_BEACON_TARGET,
