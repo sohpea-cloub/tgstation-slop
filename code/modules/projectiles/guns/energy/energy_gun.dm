@@ -126,6 +126,12 @@
 	balloon_alert(user, "beacon synced")
 	RegisterSignal(our_beacon, COMSIG_QDELETING, PROC_REF(handle_beacon_disable))
 
+/obj/item/gun/energy/e_gun/dragnet/setup_turret_projectile(obj/projectile/fired_projectile)
+	. = ..()
+	var/obj/projectile/energy/snare/snare = fired_projectile
+	if(istype(snare))
+		snare.dragnet_ref = WEAKREF(src)
+
 ///Handles clearing the linked_beacon reference in the event that it is deleted.
 /obj/item/gun/energy/e_gun/dragnet/proc/handle_beacon_disable(datum/source)
 	SIGNAL_HANDLER

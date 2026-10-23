@@ -5,6 +5,8 @@
 	damage_type = STAMINA
 	hitsound = 'sound/items/weapons/taserhit.ogg'
 	range = 10
+	///Weakref to the DRAGnet whose beacon we teleport to, when we weren't fired from it directly (turrets, emitters)
+	var/datum/weakref/dragnet_ref
 
 /obj/projectile/energy/snare/Initialize(mapload)
 	. = ..()
@@ -12,7 +14,7 @@
 
 /obj/projectile/energy/snare/on_hit(atom/target, blocked = 0, pierce_hit)
 	var/obj/item/dragnet_beacon/destination_beacon = null
-	var/obj/item/gun/energy/e_gun/dragnet/our_dragnet = fired_from
+	var/obj/item/gun/energy/e_gun/dragnet/our_dragnet = dragnet_ref?.resolve() || fired_from
 	if(our_dragnet && istype(our_dragnet))
 		destination_beacon = our_dragnet.linked_beacon
 
