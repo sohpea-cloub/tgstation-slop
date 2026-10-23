@@ -375,6 +375,8 @@ GLOBAL_LIST_EMPTY(antagonists)
 	if(!antag_moodlet)
 		return
 	var/mob/living/target = mob_override || owner.current
+	if(!isliving(target)) // ghosts can be made antagonists by admins
+		return
 	target.add_mood_event("antag_moodlet_[type]", antag_moodlet)
 
 /**
@@ -384,6 +386,8 @@ GLOBAL_LIST_EMPTY(antagonists)
 	if(!antag_moodlet)
 		return
 	var/mob/living/target = mob_override || owner.current
+	if(!isliving(target)) // ghosts can be made antagonists by admins
+		return
 	target.clear_mood_event("antag_moodlet_[type]")
 
 /**

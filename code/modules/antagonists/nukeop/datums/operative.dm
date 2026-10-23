@@ -45,7 +45,8 @@
 /datum/antagonist/nukeop/on_gain()
 	give_alias()
 	forge_objectives()
-	owner.current.add_personality(/datum/personality/callous)
+	if(isliving(owner.current)) // admins can make a ghost an operative through the traitor panel
+		owner.current.add_personality(/datum/personality/callous)
 	. = ..()
 	owner.set_assigned_role(SSjob.get_job_type(job_type))
 	equip_op()
