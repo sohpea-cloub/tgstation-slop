@@ -119,7 +119,7 @@
 		return
 	var/mob/living/carbon/human/traitor_mob = current
 	if (!istype(traitor_mob))
-		var/datum/status_effect/shapechange_mob/shapeshift = current.has_status_effect(/datum/status_effect/shapechange_mob)
+		var/datum/status_effect/shapechange_mob/shapeshift = current.has_status_effect_type(/datum/status_effect/shapechange_mob)
 		if (!ishuman(shapeshift?.caster_mob))
 			return
 		traitor_mob = shapeshift.caster_mob

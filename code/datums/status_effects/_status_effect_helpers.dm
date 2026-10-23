@@ -85,6 +85,28 @@
 
 	return null
 
+/**
+ * Checks if this mob has a status effect of the passed type or any of its subtypes
+ *
+ * Unlike [/mob/proc/has_status_effect], this matches by typepath, not by ID,
+ * so it also finds subtypes that set an ID of their own.
+ *
+ * checked_type - TYPEPATH of a status effect to check for. Checks for its typepath (and subtypes), not its ID
+ *
+ * Returns the first matching instance of a status effect, or NULL if none were found.
+ */
+/mob/proc/has_status_effect_type(datum/status_effect/checked_type)
+	return null
+
+/mob/living/has_status_effect_type(datum/status_effect/checked_type)
+	RETURN_TYPE(/datum/status_effect)
+
+	for(var/datum/status_effect/present_effect as anything in status_effects)
+		if(istype(present_effect, checked_type))
+			return present_effect
+
+	return null
+
 ///Gets every status effect of an ID and returns all of them in a list, rather than the individual 'has_status_effect'
 /mob/living/proc/get_all_status_effect_of_id(datum/status_effect/checked_effect)
 	RETURN_TYPE(/list/datum/status_effect)
