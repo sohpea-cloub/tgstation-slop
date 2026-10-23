@@ -1691,6 +1691,9 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 /// Mob is shapeshifted, e.g. via a polymorph belt.
 #define TRAIT_SHAPESHIFTED "shapeshifted"
 
+/// Mob has shapeshifted into another mob and is stored inside of it, their mind lives in that other mob until they change back.
+#define TRAIT_SHAPESHIFT_CASTER "shapeshift_caster"
+
 /// Turf is one that ai mobs will generally avoid pathing through
 /// Doesn't need to be applied to any turfs that override can_cross_safely
 #define TRAIT_AI_AVOID_TURF "warning_turf"

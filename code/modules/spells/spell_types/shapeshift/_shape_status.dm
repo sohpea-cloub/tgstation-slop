@@ -35,6 +35,9 @@
 	return ..()
 
 /datum/status_effect/shapechange_mob/on_apply()
+	// Flag the caster before their mind moves, so anything reacting to the mind changing bodies
+	// (like heretic knowledge) can tell this isn't a real change of body
+	ADD_TRAIT(caster_mob, TRAIT_SHAPESHIFT_CASTER, TRAIT_STATUS_EFFECT(id))
 	caster_mob.mind?.transfer_to(owner)
 	caster_mob.forceMove(owner)
 	ADD_TRAIT(caster_mob, TRAIT_NO_TRANSFORM, TRAIT_STATUS_EFFECT(id))
@@ -92,6 +95,7 @@
 	UnregisterSignal(caster_mob, list(COMSIG_QDELETING, COMSIG_LIVING_DEATH))
 
 	REMOVE_TRAIT(caster_mob, TRAIT_NO_TRANSFORM, TRAIT_STATUS_EFFECT(id))
+	REMOVE_TRAIT(caster_mob, TRAIT_SHAPESHIFT_CASTER, TRAIT_STATUS_EFFECT(id))
 	caster_mob.remove_status_effect(/datum/status_effect/grouped/stasis, STASIS_SHAPECHANGE_EFFECT)
 
 	var/atom/former_loc = owner.loc
