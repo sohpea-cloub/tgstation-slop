@@ -72,6 +72,12 @@
 	if(nuke_team?.tracked_nuke && nuke_team?.memorized_code)
 		memorize_code()
 
+/datum/antagonist/nukeop/on_removal()
+	// Syndicate model cyborgs are always in the faction, other silicons only get it from this datum
+	if(issilicon(owner.current) && !istype(owner.current, /mob/living/silicon/robot/model/syndicate))
+		owner.current.remove_faction(ROLE_SYNDICATE)
+	return ..()
+
 /datum/antagonist/nukeop/get_team()
 	return nuke_team
 
@@ -130,6 +136,8 @@
 	return finish_preview_icon(final_icon)
 
 /datum/antagonist/nukeop/proc/equip_op()
+	if(issilicon(owner.current)) // cyborgs don't get the outfit that gives humans the faction
+		owner.current.add_faction(ROLE_SYNDICATE)
 	if(!ishuman(owner.current))
 		return
 
