@@ -21,6 +21,7 @@
 	RegisterSignals(movable_target, GLOB.movement_type_removetrait_signals, PROC_REF(on_movement_type_trait_loss))
 	RegisterSignal(movable_target, SIGNAL_ADDTRAIT(TRAIT_NO_FLOATING_ANIM), PROC_REF(on_no_floating_anim_trait_gain))
 	RegisterSignal(movable_target, SIGNAL_REMOVETRAIT(TRAIT_NO_FLOATING_ANIM), PROC_REF(on_no_floating_anim_trait_loss))
+	RegisterSignal(movable_target, COMSIG_ATOM_TEMPORARY_ANIMATION_START, PROC_REF(on_temporary_animation))
 	attached_atoms[movable_target] = TRUE
 
 	if(movable_target.movement_type & (FLOATING|FLYING) && !HAS_TRAIT(movable_target, TRAIT_NO_FLOATING_ANIM))
@@ -30,6 +31,7 @@
 	var/list/signals_to_remove = list(
 		SIGNAL_ADDTRAIT(TRAIT_NO_FLOATING_ANIM),
 		SIGNAL_REMOVETRAIT(TRAIT_NO_FLOATING_ANIM),
+		COMSIG_ATOM_TEMPORARY_ANIMATION_START,
 	)
 	signals_to_remove += GLOB.movement_type_addtrait_signals
 	signals_to_remove += GLOB.movement_type_removetrait_signals
@@ -80,4 +82,16 @@
 /datum/element/movetype_handler/proc/on_no_floating_anim_trait_loss(atom/movable/source, trait)
 	SIGNAL_HANDLER
 	if(source.movement_type & (FLOATING|FLYING))
+		DO_FLOATING_ANIM(source)
+
+/// Called when something plays an animation that replaces the floating one (like the drop animation of items). Restarts the bobbing once it's over.
+/datum/element/movetype_handler/proc/on_temporary_animation(atom/movable/source, animation_duration)
+	SIGNAL_HANDLER
+	if(animation_duration > 0 && (source.movement_type & (FLOATING|FLYING)))
+		addtimer(CALLBACK(src, PROC_REF(restore_floating_anim), source), animation_duration)
+
+/datum/element/movetype_handler/proc/restore_floating_anim(atom/movable/source)
+	if(QDELETED(source) || !attached_atoms[source])
+		return
+	if(source.movement_type & (FLOATING|FLYING) && !HAS_TRAIT(source, TRAIT_NO_FLOATING_ANIM))
 		DO_FLOATING_ANIM(source)
