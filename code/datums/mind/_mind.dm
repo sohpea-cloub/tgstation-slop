@@ -184,6 +184,8 @@
 		key = new_character.key
 
 	if(new_character.mind) //disassociate any mind currently in our new body's mind variable
+		// its combo hud is still on this body, and would stop ours from being added below (add_alt_appearance does nothing if the key is taken)
+		QDEL_NULL(new_character.mind.antag_hud)
 		new_character.mind.set_current(null)
 
 	var/mob/living/old_current = current
