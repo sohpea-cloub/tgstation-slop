@@ -146,6 +146,9 @@
 	atom_target.name = picked_item::name
 	atom_target.desc = picked_item::desc
 	atom_target.icon_state = INITIAL_ICON_STATE(picked_item)
+	// Anything that rebuilds icon_state in update_icon_state() (masks, for one) works from base_icon_state,
+	// so it has to follow the disguise or the next update_appearance() would revert it to our own icon_state.
+	atom_target.base_icon_state = picked_item::base_icon_state || INITIAL_ICON_STATE(picked_item)
 
 	if(isitem(atom_target))
 		var/obj/item/item_target = target
