@@ -57,6 +57,18 @@ ADMIN_VERB(admin_ghost, R_ADMIN, "AGhost", "Become a ghost without DNR.", ADMIN_
 			ADD_TRAIT(ghost, TRAIT_ORBITING_FORBIDDEN, is_invisimin ? ADMIN_TRAIT : STEALTH_MODE_TRAIT)
 			QDEL_NULL(ghost.orbiters)
 
+		// The invisimin now lives on the ghost, don't leave it on the body for whoever controls it next
+		if(is_invisimin)
+			body.remove_traits(list(
+				TRAIT_INVISIMIN,
+				TRAIT_ORBITING_FORBIDDEN,
+				TRAIT_MOVE_PHASING,
+				TRAIT_PIERCEIMMUNE,
+				TRAIT_INVISIBLE_TO_CAMERA,
+			), ADMIN_TRAIT)
+			body.add_to_all_human_data_huds()
+			body.RemoveInvisibility(INVISIBILITY_SOURCE_INVISIMIN)
+
 		BLACKBOX_LOG_ADMIN_VERB("Admin Ghost")
 
 ADMIN_VERB(invisimin, R_ADMIN, "Invisimin", "Toggles ghost-like invisibility.", ADMIN_CATEGORY_GAME)
