@@ -526,6 +526,7 @@
 	icon_state = "dragoonpole0"
 	inhand_icon_state = "dragoonpole0"
 	base_icon_state = "dragoonpole"
+	worn_icon_state = "spearglass0" // no dedicated suit storage sprite yet
 	attack_verb_continuous = list("attacks", "pokes", "jabs", "tears", "gores", "lances")
 	attack_verb_simple = list("attack", "poke", "jab", "tear", "gore", "lance")
 	throwforce = 24
