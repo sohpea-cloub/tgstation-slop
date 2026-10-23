@@ -117,7 +117,8 @@
 	var/mutable_appearance/overlay = mutable_appearance('icons/mob/nonhuman-player/alien.dmi', "burst_lie")
 	owner.add_overlay(overlay)
 
-	var/atom/xeno_loc = get_turf(owner)
+	// Burst into the container the host is in (closet, body bag...), like the host's remains do; drop_location() skips ones that can't hold things (mechs, morgue trays)
+	var/atom/xeno_loc = owner.drop_location() || get_turf(owner)
 	var/mob/living/carbon/alien/larva/new_xeno = new(xeno_loc)
 	new_xeno.PossessByPlayer(ghost.key)
 	SEND_SOUND(new_xeno, sound('sound/mobs/non-humanoids/hiss/hiss5.ogg',0,0,0,100)) //To get the player's attention
