@@ -27,6 +27,8 @@
 	var/category
 	/// The amount of material to remove from the recipe's result
 	var/list/removed_mats
+	/// Assoc list of stack path = amount (per craft) that is also created on the floor, on top of the result (e.g. the rods of reinforced glass)
+	var/list/byproducts
 
 	///crafting_flags var to hold bool values
 	var/crafting_flags = CRAFT_CHECK_DENSITY
@@ -44,6 +46,7 @@
 	trait_modifier = 1,
 	category,
 	list/removed_mats,
+	list/byproducts,
 )
 
 	src.title = title
@@ -59,6 +62,7 @@
 	src.category = src.category || category || CAT_MISC
 
 	src.removed_mats = removed_mats
+	src.byproducts = byproducts
 
 	// We create base64 image only if item have color. Otherwise use icon_ref for TGUI
 	var/obj/item/result = result_type

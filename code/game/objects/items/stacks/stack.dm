@@ -474,6 +474,10 @@
 
 	builder.investigate_log("crafted [recipe.title]", INVESTIGATE_CRAFTING)
 
+	for(var/obj/item/stack/byproduct_type as anything in recipe.byproducts)
+		var/obj/item/stack/byproduct = new byproduct_type(builder.drop_location(), recipe.byproducts[byproduct_type] * multiplier)
+		byproduct.add_fingerprint(builder)
+
 	// Apply mat datums
 	if(LAZYLEN(used_stack.mats_per_unit) && !(recipe.crafting_flags & CRAFT_NO_MATERIALS))
 		var/list/result_mats = used_stack.mats_per_unit.Copy()
