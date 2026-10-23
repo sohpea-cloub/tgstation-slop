@@ -426,11 +426,8 @@
 /mob/living/carbon/updatehealth()
 	if(HAS_TRAIT(src, TRAIT_GODMODE))
 		return
-	var/total_burn = 0
-	var/total_brute = 0
-	for(var/obj/item/bodypart/BP as anything in get_bodyparts())
-		total_brute += (BP.brute_dam * BP.body_damage_coeff)
-		total_burn += (BP.burn_dam * BP.body_damage_coeff)
+	var/total_burn = get_weighted_fire_loss()
+	var/total_brute = get_weighted_brute_loss()
 	set_health(round(maxHealth - get_oxy_loss() - get_tox_loss() - total_burn - total_brute, DAMAGE_PRECISION))
 	update_stat()
 	update_stamina()

@@ -227,6 +227,9 @@
 		var/any_embeds = carbontarget.has_embedded_objects()
 		if(any_damage || (mode == SCANNER_VERBOSE && (any_missing || any_wounded || any_embeds)))
 			render_list += "<hr>"
+			// The overall row shows the damage that counts against health (limb damage coefficients applied), like the % healthy above
+			var/overall_brute_loss = carbontarget.get_weighted_brute_loss()
+			var/overall_fire_loss = carbontarget.get_weighted_fire_loss()
 			var/dmgreport = "<span class='info ml-1'>Body status:</span>\
 							<font face='Verdana'>\
 							<table class='ml-2'>\
@@ -239,8 +242,8 @@
 							</tr>\
 							<tr>\
 							<td><font color='#ff3333'><b>Overall:</b></font></td>\
-							<td><font color='#ff3333'><b>[ceil(brute_loss)]</b></font></td>\
-							<td><font color='#ff9933'><b>[ceil(fire_loss)]</b></font></td>\
+							<td><font color='#ff3333'><b>[ceil(overall_brute_loss)]</b></font></td>\
+							<td><font color='#ff9933'><b>[ceil(overall_fire_loss)]</b></font></td>\
 							<td><font color='#00cc66'><b>[ceil(tox_loss)]</b></font></td>\
 							<td><font color='#33ccff'><b>[ceil(oxy_loss)]</b></font></td>\
 							</tr>"

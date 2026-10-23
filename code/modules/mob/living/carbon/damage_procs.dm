@@ -44,6 +44,25 @@
 
 
 /**
+ * Returns the brute damage that actually counts against this mob's health:
+ * each bodypart's brute damage multiplied by its body_damage_coeff.
+ * get_brute_loss() is the raw sum, which is what healing and "set" procs work with.
+ */
+/mob/living/carbon/proc/get_weighted_brute_loss()
+	var/amount = 0
+	for(var/obj/item/bodypart/bodypart as anything in get_bodyparts())
+		amount += bodypart.brute_dam * bodypart.body_damage_coeff
+	return round(amount, DAMAGE_PRECISION)
+
+/// As get_weighted_brute_loss(), for burn damage.
+/mob/living/carbon/proc/get_weighted_fire_loss()
+	var/amount = 0
+	for(var/obj/item/bodypart/bodypart as anything in get_bodyparts())
+		amount += bodypart.burn_dam * bodypart.body_damage_coeff
+	return round(amount, DAMAGE_PRECISION)
+
+
+/**
  * Returns the amount of bruteloss across all bodyparts meeting the matching bodytype.
  * Useful for if you would like to check the bruteloss for only organic bodyparts, for example.
  *
