@@ -89,6 +89,20 @@
 	// That shouldn't lead to a decon
 	if(HAS_TRAIT(parent, TRAIT_LIGHTING_DEBUGGED))
 		return
+
+	// Things riding a transport platform (elevators, trams) move along with it while the wall they hang on stays behind,
+	// so try to mount on whatever is at the new location instead of falling off right away
+	if(forced)
+		for(var/obj/structure/transport/linear/platform in get_turf(parent))
+			if(!(parent in platform.transport_contents))
+				continue
+			var/obj/target = parent
+			qdel(src)
+			if(!target.find_and_mount_on_atom())
+				target.visible_message(message = span_warning("\The [target] falls apart!"), vision_distance = 5)
+				target.deconstruct(FALSE)
+			return
+
 	drop_wallmount()
 
 ///Called when the object is about to be shuttle rotated so we have to delete ourself and mount again later
