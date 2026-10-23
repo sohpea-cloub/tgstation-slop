@@ -38,7 +38,13 @@
 	. = ..()
 	if(. || !istype(target))
 		return
-	target.AddComponent(/datum/component/fantasy, upgrade_amount, null, null, can_backfire, TRUE)
+	// Items that already hold their bonuses innately (mythril) refuse to be fortified, tell the user instead of wasting the scroll
+	if(HAS_TRAIT(target, TRAIT_INNATELY_FANTASTICAL_ITEM))
+		target.balloon_alert(user, "already fortified!")
+		return TRUE
+	if(!target.AddComponent(/datum/component/fantasy, upgrade_amount, null, null, can_backfire, TRUE))
+		target.balloon_alert(user, "can't be fortified!")
+		return TRUE
 	uses -= 1
 	if(!uses)
 		visible_message(span_warning("[src] vanishes, its magic completely consumed from the fortification."))
