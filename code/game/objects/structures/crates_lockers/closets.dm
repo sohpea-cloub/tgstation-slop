@@ -518,12 +518,19 @@ GLOBAL_LIST_EMPTY(roundstart_station_closets)
 	if(throwing)
 		throwing.finalize(FALSE)
 
-/obj/structure/closet/proc/take_contents(mapload = FALSE)
+/**
+ * Pulls everything on our turf into the closet.
+ * * mapload - Whether this is the initial population of the closet on mapload.
+ * * dense_allowed - If FALSE, dense objects are left alone even if this closet type allows them (allow_dense).
+ *   Closing a crate passes FALSE: nothing dense can normally get on the tile of an open crate, so a dense object there got
+ *   past its density (falling down a z-level, teleporting) and shouldn't be swallowed by the crate.
+ */
+/obj/structure/closet/proc/take_contents(mapload = FALSE, dense_allowed = TRUE)
 	var/atom/location = drop_location()
 	if(!location)
 		return
 	for(var/atom/movable/AM in location)
-		if(AM != src && insert(AM, mapload) == LOCKER_FULL) // limit reached
+		if(AM != src && insert(AM, mapload, dense_allowed) == LOCKER_FULL) // limit reached
 			if(mapload) // Yea, it's a mapping issue. Blame mappers.
 				log_mapping("Closet storage capacity of [type] exceeded on mapload at [AREACOORD(src)]")
 			break
@@ -559,20 +566,20 @@ GLOBAL_LIST_EMPTY(roundstart_station_closets)
 /obj/structure/closet/proc/after_open(mob/living/user, force = FALSE)
 	return
 
-/obj/structure/closet/proc/insert(atom/movable/inserted, mapload = FALSE)
+/obj/structure/closet/proc/insert(atom/movable/inserted, mapload = FALSE, dense_allowed = TRUE)
 	if(length(contents) >= storage_capacity)
 		if(!mapload)
 			return LOCKER_FULL
 		//For maploading, we only return LOCKER_FULL if the movable was otherwise insertable. This way we can avoid logging false flags.
-		return insertion_allowed(inserted) ? LOCKER_FULL : FALSE
-	if(!insertion_allowed(inserted))
+		return insertion_allowed(inserted, dense_allowed) ? LOCKER_FULL : FALSE
+	if(!insertion_allowed(inserted, dense_allowed))
 		return FALSE
 	if(SEND_SIGNAL(src, COMSIG_CLOSET_INSERT, inserted) & COMPONENT_CLOSET_INSERT_INTERRUPT)
 		return TRUE
 	inserted.forceMove(src)
 	return TRUE
 
-/obj/structure/closet/proc/insertion_allowed(atom/movable/AM)
+/obj/structure/closet/proc/insertion_allowed(atom/movable/AM, dense_allowed = TRUE)
 	if(ismob(AM))
 		if(!isliving(AM)) //let's not put ghosts or eye mobs inside closets...
 			return FALSE
@@ -594,7 +601,7 @@ GLOBAL_LIST_EMPTY(roundstart_station_closets)
 	else if(istype(AM, /obj/structure/closet))
 		return FALSE
 	else if(isobj(AM))
-		if((!allow_dense && AM.density) || AM.anchored || AM.has_buckled_mobs() || ismecha(AM))
+		if((AM.density && (!allow_dense || !dense_allowed)) || AM.anchored || AM.has_buckled_mobs() || ismecha(AM))
 			return FALSE
 		else if(isitem(AM) && !HAS_TRAIT(AM, TRAIT_NODROP))
 			return TRUE
@@ -614,7 +621,7 @@ GLOBAL_LIST_EMPTY(roundstart_station_closets)
 		return FALSE
 	if(!before_close(user) || (SEND_SIGNAL(src, COMSIG_CLOSET_PRE_CLOSE, user) & BLOCK_CLOSE))
 		return FALSE
-	take_contents()
+	take_contents(dense_allowed = FALSE)
 	playsound(loc, close_sound, close_sound_volume, TRUE, -3)
 	opened = FALSE
 	set_density(TRUE)
