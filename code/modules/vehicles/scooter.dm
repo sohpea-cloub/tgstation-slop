@@ -40,6 +40,8 @@
 	desc = "An old, battered skateboard. It's still rideable, but probably unsafe."
 	icon_state = "skateboard"
 	density = FALSE
+	// You hop onto a skateboard, you don't need hands for it (riding it doesn't either)
+	buckle_requires_hands = FALSE
 	custom_materials = list(/datum/material/iron = SHEET_MATERIAL_AMOUNT * 10)
 	///Sparks datum for when we grind on tables
 	var/datum/effect_system/basic/spark_spread/sparks

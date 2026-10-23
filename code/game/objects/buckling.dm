@@ -15,6 +15,8 @@
 	var/max_buckled_mobs = 1
 	/// Whether things buckled to this atom can be pulled while they're buckled
 	var/buckle_prevents_pull = FALSE
+	/// Whether a carbon user needs a usable hand to buckle themselves to us. Things you just hop onto (like skateboards) don't. Buckling someone else always needs a hand.
+	var/buckle_requires_hands = TRUE
 
 //Interaction
 /atom/movable/attack_hand(mob/living/user, list/modifiers)
@@ -288,7 +290,7 @@
 	if(!Adjacent(user) || !Adjacent(target) || !isturf(user.loc) || user.incapacitated || target.anchored)
 		return FALSE
 
-	if(iscarbon(user))
+	if((buckle_requires_hands || user != target) && iscarbon(user))
 		var/mob/living/carbon/carbon_user = user
 		if(carbon_user.usable_hands <= 0)
 			return FALSE
