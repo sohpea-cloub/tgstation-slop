@@ -1,7 +1,5 @@
 import {
-  Box,
   Button,
-  Dimmer,
   NoticeBox,
   Section,
   Table,
@@ -33,11 +31,7 @@ export const NtosJobManagerContent = (props) => {
   return (
     <Section>
       {cooldown > 0 && (
-        <Dimmer>
-          <Box bold textAlign="center" fontSize="20px">
-            On Cooldown: {cooldown}s
-          </Box>
-        </Dimmer>
+        <NoticeBox>Slot changes are on cooldown: {cooldown}s</NoticeBox>
       )}
       <Table>
         <Table.Row header>
