@@ -755,7 +755,8 @@ GLOBAL_LIST_EMPTY(cached_storage_typecaches)
 		attempt_insert(thing, user)
 		return COMPONENT_CANCEL_ATTACK_CHAIN
 
-	if(!isturf(thing.loc))
+	// Items sitting on a plate (like an oven tray) are reachable and can be gathered like those on a turf.
+	if(!isturf(thing.loc) && !istype(thing.loc, /obj/item/plate))
 		return COMPONENT_CANCEL_ATTACK_CHAIN
 
 	INVOKE_ASYNC(src, PROC_REF(collect_on_turf), thing, user)
