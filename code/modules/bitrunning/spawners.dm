@@ -17,6 +17,8 @@
 	..()
 
 	if(antag)
+		if(isnull(spawned_mob.mind)) // The player's client can drop before (or during) login, which leaves the mob without a mind
+			spawned_mob.mind_initialize()
 		spawned_mob.mind.add_antag_datum(/datum/antagonist/domain_ghost_actor)
 		spawned_mob.mind.set_assigned_role(SSjob.get_job_type(/datum/job/bitrunning_glitch))
 
