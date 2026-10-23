@@ -165,7 +165,7 @@ GAME_VERB(/obj/item/borg/apparatus, verb_dropHeld, "Drop", null)
 
 /obj/item/borg/apparatus/beaker/service/add_glass()
 	stored = new /obj/item/reagent_containers/cup/glass/drinkingglass(src)
-	handle_reflling(stored, loc.loc, force = TRUE)
+	handle_reflling(stored, loc, force = TRUE)
 
 /obj/item/borg/apparatus/beaker/service/proc/handle_reflling(obj/item/reagent_containers/cup/glass, mob/living/silicon/robot/bro, force = FALSE)
 	if (isnull(bro))
@@ -177,10 +177,10 @@ GAME_VERB(/obj/item/borg/apparatus, verb_dropHeld, "Drop", null)
 		glass.AddComponent(/datum/component/reagent_refiller, power_draw_callback = CALLBACK(bro, TYPE_PROC_REF(/mob/living/silicon/robot, draw_power)))
 
 /obj/item/borg/apparatus/beaker/service/Entered(atom/movable/arrived, atom/old_loc, list/atom/old_locs)
+	. = ..()
 	if (!istype(arrived, /obj/item/reagent_containers/cup/glass))
 		return
 	handle_reflling(arrived)
-	return ..()
 
 ///Used by the service borg drink apparatus upgrade, holds drink-related items
 /obj/item/borg/apparatus/beaker/drink
