@@ -4,8 +4,6 @@ ADMIN_VERB(fax_panel, R_ADMIN, "Fax Panel", "View and respond to faxes sent to C
 
 /// Admin Fax Panel. Tool for sending fax messages faster.
 /datum/fax_panel_interface
-	/// All faxes in from machinery list()
-	var/available_faxes = list()
 	/// List with available stamps
 	var/stamp_list = list()
 
@@ -18,12 +16,6 @@ ADMIN_VERB(fax_panel, R_ADMIN, "Fax Panel", "View and respond to faxes sent to C
 	var/default_paper_name = "Standard Report"
 
 /datum/fax_panel_interface/New()
-	//Get all faxes, and save them to our list.
-	for(var/obj/machinery/fax/fax as anything in SSmachines.get_machines_by_type_and_subtypes(/obj/machinery/fax))
-		if(istype(fax, /obj/machinery/fax/admin))
-			continue
-		available_faxes += WEAKREF(fax)
-
 	//Get all stamps
 	for(var/stamp in valid_subtypesof(/obj/item/stamp))
 		var/obj/item/stamp/real_stamp = new stamp()
@@ -34,20 +26,24 @@ ADMIN_VERB(fax_panel, R_ADMIN, "Fax Panel", "View and respond to faxes sent to C
 	//Give our paper special status, to read everywhere.
 	fax_paper.request_state = TRUE
 
+/// Returns all the faxes an admin can send to. Looked up live, since faxes can be renamed, built or destroyed while the panel is open.
+/datum/fax_panel_interface/proc/get_available_faxes()
+	var/list/faxes = list()
+	for(var/obj/machinery/fax/fax as anything in SSmachines.get_machines_by_type_and_subtypes(/obj/machinery/fax))
+		if(istype(fax, /obj/machinery/fax/admin))
+			continue
+		faxes += fax
+	return faxes
+
 /**
  * Return fax if name exists
  * Arguments:
  * * name - Name of fax what we try to find.
  */
 /datum/fax_panel_interface/proc/get_fax_by_name(name)
-	if(!length(available_faxes))
-		return null
-
-	for(var/datum/weakref/weakrefed_fax as anything in available_faxes)
-		var/obj/machinery/fax/potential_fax = weakrefed_fax.resolve()
-		if(potential_fax && istype(potential_fax))
-			if(potential_fax.fax_name == name)
-				return potential_fax
+	for(var/obj/machinery/fax/potential_fax as anything in get_available_faxes())
+		if(potential_fax.fax_name == name)
+			return potential_fax
 	return null
 
 /datum/fax_panel_interface/ui_interact(mob/user, datum/tgui/ui)
@@ -68,10 +64,8 @@ ADMIN_VERB(fax_panel, R_ADMIN, "Fax Panel", "View and respond to faxes sent to C
 	for(var/stamp in stamp_list)
 		data["stamps"] += list(stamp[1]) // send only names.
 
-	for(var/datum/weakref/weakrefed_fax as anything in available_faxes)
-		var/obj/machinery/fax/another_fax = weakrefed_fax.resolve()
-		if(another_fax && istype(another_fax))
-			data["faxes"] += list(another_fax.fax_name)
+	for(var/obj/machinery/fax/another_fax as anything in get_available_faxes())
+		data["faxes"] += list(another_fax.fax_name)
 
 	return data
 
@@ -86,6 +80,11 @@ ADMIN_VERB(fax_panel, R_ADMIN, "Fax Panel", "View and respond to faxes sent to C
 
 	if(params["faxName"])
 		action_fax = get_fax_by_name(params["faxName"])
+
+	if(!action_fax && (action == "follow" || action == "send"))
+		to_chat(ui.user, span_warning("No fax machine named \"[params["faxName"]]\" exists (it may have been renamed or destroyed). The fax list was refreshed."))
+		update_static_data(ui.user, ui)
+		return TRUE
 
 	switch(action)
 
