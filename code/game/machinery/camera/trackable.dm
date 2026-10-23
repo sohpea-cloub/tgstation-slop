@@ -209,7 +209,11 @@
 /datum/trackable/proc/track_mob(mob/living/tracker, mob/living/tracked)
 	if(!tracker || tracker.stat == DEAD)
 		return
-	// Need to make sure the tracked mob is in our list
-	track_name(tracker, tracked.name)
+	// Track the exact mob we were given: looking it up by name would pick the first mob when several share a name (like "Unknown")
+	if(!isliving(tracked) || !tracked.can_track(tracker))
+		to_chat(tracker, span_notice("Target is not on or near any active cameras. Tracking failed."))
+		return
+	to_chat(tracker, span_notice("Now tracking [tracked.name] on camera."))
+	set_tracked_mob(tracked, tracker)
 
 #undef CAMERA_TICK_LIMIT
