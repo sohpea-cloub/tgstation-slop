@@ -40,6 +40,11 @@
 
 /obj/item/resonator/proc/create_resonance(target, mob/user)
 	var/turf/target_turf = get_turf(target)
+	if(HAS_TRAIT(user, TRAIT_PACIFISM))
+		for(var/mob/living/victim in target_turf)
+			if(victim != user)
+				balloon_alert(user, "you don't want to harm!")
+				return
 	var/obj/effect/temp_visual/resonance/resonance_field = locate(/obj/effect/temp_visual/resonance) in target_turf
 	if(resonance_field)
 		resonance_field.damage_multiplier = quick_burst_mod
@@ -131,7 +136,11 @@
 		mineral_turf.gets_drilled(creator)
 	check_pressure(src_turf)
 	playsound(src_turf, 'sound/items/weapons/resonator_blast.ogg', 50, TRUE)
+	// A pacifist's fields still crush rock but hurt no one: fauna friendly to a pacifist (gondola heart) would never fight back
+	var/harmless = creator && HAS_TRAIT(creator, TRAIT_PACIFISM)
 	for(var/mob/living/attacked_living in src_turf)
+		if(harmless)
+			continue
 		if(creator)
 			log_combat(creator, attacked_living, "used a resonator field on", "resonator")
 			SEND_SIGNAL(creator, COMSIG_LIVING_RESONATOR_BURST, creator, attacked_living)
