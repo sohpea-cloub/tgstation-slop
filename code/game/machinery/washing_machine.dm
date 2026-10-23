@@ -299,7 +299,7 @@ GLOBAL_LIST_INIT(dye_registry, list(
 	new /obj/item/food/meat/slab/corgi(loc)
 	qdel(src)
 
-/mob/living/basic/pet/machine_wash(obj/machinery/washing_machine/washer)
+/mob/living/basic/machine_wash(obj/machinery/washing_machine/washer)
 	washer.bloody_mess = TRUE
 	investigate_log("has been gibbed by a washing machine.", INVESTIGATE_DEATHS)
 	gib()

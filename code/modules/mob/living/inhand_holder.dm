@@ -48,7 +48,11 @@
 
 /obj/item/mob_holder/proc/on_mob_deleted()
 	SIGNAL_HANDLER
+	var/mob/living/deleted_mob = held_mob
 	held_mob = null
+	// get it out of our contents, or our own Destroy() would qdel it a second time
+	if(deleted_mob?.loc == src)
+		deleted_mob.moveToNullspace()
 	if (isliving(loc))
 		var/mob/living/holder = loc
 		holder.temporarilyRemoveItemFromInventory(src, force = TRUE)
