@@ -569,6 +569,9 @@
 /obj/structure/table/glass/proc/check_break(mob/living/M)
 	if(is_flipped)
 		return FALSE
+	// Dwarves walk under tables rather than over them
+	if(HAS_TRAIT(M, TRAIT_DWARF))
+		return FALSE
 	if(M.has_gravity() && M.mob_size > MOB_SIZE_SMALL && !(M.movement_type & MOVETYPES_NOT_TOUCHING_GROUND))
 		table_shatter(M)
 
