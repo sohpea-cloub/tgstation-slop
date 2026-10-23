@@ -171,6 +171,25 @@ GLOBAL_VAR_INIT(bsa_unlock, FALSE)
 /obj/machinery/bsa/full/wrench_act(mob/living/user, obj/item/I)
 	return FALSE
 
+/obj/machinery/bsa/full/shuttleRotate(rotation, params)
+	// It only has sprites and firing lines for west and east: a quarter turn can't be shown (and would make it fire at itself),
+	// so it keeps its direction and footprint then. A half turn swaps west and east.
+	if(round(SIMPLIFY_DEGREES(rotation) / 90) % 2)
+		return ..(rotation, params & ~(ROTATE_DIR|ROTATE_OFFSET))
+	. = ..(rotation, params & ~ROTATE_OFFSET) // the icons aren't mirror images of each other, so use the offsets set when it was made
+	if(!(params & ROTATE_DIR) || !rotation)
+		return
+	if(dir == EAST)
+		icon_state = "cannon_east"
+		pixel_x = -128
+		bound_x = -128
+	else
+		icon_state = "cannon_west"
+		pixel_x = -192
+		bound_x = -192
+	cut_overlay(top_layer)
+	get_layer()
+
 /obj/machinery/bsa/full/proc/get_front_turf()
 	switch(dir)
 		if(WEST)
