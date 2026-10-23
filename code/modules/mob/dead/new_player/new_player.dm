@@ -247,6 +247,8 @@
 	if(humanc)
 		if(job.job_flags & JOB_ASSIGN_QUIRKS)
 			if(CONFIG_GET(flag/roundstart_traits))
+				if(humanc.client?.prefs?.should_be_random_hardcore(job, humanc.mind))
+					humanc.client.prefs.hardcore_random_setup(humanc)
 				SSquirks.AssignQuirks(humanc, humanc.client)
 		else // clear any personalities the prefs added since our job clearly does not want them
 			humanc.clear_personalities()
