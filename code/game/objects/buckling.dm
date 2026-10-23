@@ -263,6 +263,12 @@
 	if(target.has_buckled_mobs())
 		return FALSE
 
+	// Likewise for riding something which is itself riding something: the rider can't follow the stack's movement
+	if(ismob(src))
+		var/mob/src_mob = src
+		if(src_mob.buckled)
+			return FALSE
+
 	// If the buckle requires restraints, make sure the target is actually restrained.
 	if(buckle_requires_restraints && !HAS_TRAIT(target, TRAIT_RESTRAINED))
 		return FALSE
