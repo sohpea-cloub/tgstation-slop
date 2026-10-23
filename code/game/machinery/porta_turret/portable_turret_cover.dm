@@ -24,6 +24,15 @@
 //>necessary
 //I'm not fixing it because i'm fucking bored of this code already, but someone should just reroute these to the parent turret's procs.
 
+/// The cover is only a visual part of the turret: damage dealt to it (drills, mech weapons, fire...) goes to the turret itself,
+/// otherwise the cover is destroyed and the turret just builds itself a fresh one.
+/obj/machinery/porta_turret_cover/take_damage(damage_amount, damage_type = BRUTE, damage_flag = "", sound_effect = TRUE, attack_dir, armour_penetration = 0)
+	return parent_turret?.take_damage(damage_amount, damage_type, damage_flag, sound_effect, attack_dir, armour_penetration)
+
+/// Explosions hit the turret on the same tile as well, so the cover must not take them a second time.
+/obj/machinery/porta_turret_cover/ex_act(severity, target)
+	return FALSE
+
 /obj/machinery/porta_turret_cover/attack_ai(mob/user)
 	return ..() || parent_turret.attack_ai(user)
 
