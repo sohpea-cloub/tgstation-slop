@@ -120,4 +120,6 @@
 		if(antag.owner)
 			result += "<b>[printplayer(antag.owner)]</b>"
 
+	result += "</div>"
+
 	return result.Join("<br>")
