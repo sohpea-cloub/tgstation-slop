@@ -244,6 +244,8 @@
 		for(var/obj/item/food/item in bag.contents)
 			if(content_count >= max_items)
 				break
+			if(HAS_TRAIT(item, TRAIT_FOOD_REACTION_MADE))
+				continue
 			bag.atom_storage.attempt_remove(item, src)
 
 		content_count = get_content_count() // Refresh the cache for UI
@@ -256,6 +258,9 @@
 		return ITEM_INTERACT_SUCCESS
 
 	if(istype(tool, /obj/item/food))
+		if(HAS_TRAIT(tool, TRAIT_FOOD_REACTION_MADE))
+			to_chat(user, span_warning("\The [src] can't extract any biomass from \the [tool]!"))
+			return ITEM_INTERACT_BLOCKING
 		if(content_count >= max_items)
 			to_chat(user, span_warning("\The [src] is already full! Activate it to free up some space."))
 			return ITEM_INTERACT_FAILURE
@@ -334,6 +339,9 @@
  * subsequently be deleted.
  */
 /obj/machinery/biogenerator/proc/convert_to_biomass(obj/item/food/food_to_convert)
+	if(HAS_TRAIT(food_to_convert, TRAIT_FOOD_REACTION_MADE))
+		qdel(food_to_convert)
+		return
 	var/nutriments = ROUND_UP(food_to_convert.reagents.get_reagent_amount(/datum/reagent/consumable/nutriment, type_check = REAGENT_PARENT_TYPE))
 	biomass += nutriments * productivity
 	qdel(food_to_convert)

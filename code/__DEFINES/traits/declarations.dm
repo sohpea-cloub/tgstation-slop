@@ -924,6 +924,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_HANDMADE "food_made_by_chef"
 /// This atom has a quality_food_ingredient element attached
 #define TRAIT_QUALITY_FOOD_INGREDIENT "quality_food_ingredient"
+/// This food was synthesised straight from reagents by a chemical reaction (tofu, cheese...), so it can't be recycled into biomass: it would be free biomass from cheap reagents
+#define TRAIT_FOOD_REACTION_MADE "food_reaction_made"
 /// This (edible) atom won't inherit the item of the item it was processed from in the form "a slice of [name]"
 #define TRAIT_FOOD_DONT_INHERIT_NAME_FROM_PROCESSED "food_dont_inherit_name_from_processed"
 /// The items needs two hands to be carried

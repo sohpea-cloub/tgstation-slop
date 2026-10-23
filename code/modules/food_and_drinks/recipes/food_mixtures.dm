@@ -97,6 +97,7 @@
 		var/atom/location = holder.my_atom.drop_location()
 		for(var/i in 1 to created_volume)
 			var/obj/item/food/result = new resulting_food_path(location)
+			ADD_TRAIT(result, TRAIT_FOOD_REACTION_MADE, REF(src))
 			if(ispath(resulting_food_path, /obj/item/food) && !isnull(resulting_reagent_purity))
 				result.reagents?.set_all_reagents_purity(resulting_reagent_purity)
 
