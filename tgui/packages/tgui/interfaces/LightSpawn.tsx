@@ -51,57 +51,60 @@ export function LightSpawn(props) {
 
   const [currentTemplate, setCurrentTemplate] = useState(default_id);
   const [currentCategory, setCurrentCategory] = useState(default_category);
+  const [workingDir, setWorkingDir] = useState<number>(Direction.North);
 
   const category_keys = category_ids ? Object.keys(category_ids) : [];
 
   return (
     <Window title={'Light Spawn'} width={600} height={400}>
       <Window.Content scrollable>
-        <Stack vertical>
-          <Stack.Item>
-            <Section scrollable width="100%">
-              <Tabs>
-                {category_keys.map((category, index) => (
-                  <Tabs.Tab
-                    key={category}
-                    selected={currentCategory === category}
-                    onClick={() => setCurrentCategory(category)}
-                    fontSize="14px"
-                    bold
-                    textColor="#eee"
-                  >
-                    {category}
-                  </Tabs.Tab>
-                ))}
-              </Tabs>
-              <Tabs>
-                {category_ids[currentCategory].map((id) => (
-                  <Tabs.Tab
-                    key={id}
-                    selected={currentTemplate === id}
-                    onClick={() => setCurrentTemplate(id)}
-                  >
-                    <Stack vertical>
-                      <Stack.Item
-                        align="center"
-                        className={classes([
-                          'lights32x32',
-                          `light_fantastic_${id}`,
-                        ])}
-                      />
-                      <Stack.Item fontSize="14px" textColor="#cee" nowrap>
-                        {templates[id].light_info.name}
-                      </Stack.Item>
-                    </Stack>
-                  </Tabs.Tab>
-                ))}
-              </Tabs>
-            </Section>
-          </Stack.Item>
-          <Stack.Item>
-            <LightInfo light={templates[currentTemplate]} />
-          </Stack.Item>
-        </Stack>
+        <DirectionContext.Provider value={[workingDir, setWorkingDir]}>
+          <Stack vertical>
+            <Stack.Item>
+              <Section scrollable width="100%">
+                <Tabs>
+                  {category_keys.map((category, index) => (
+                    <Tabs.Tab
+                      key={category}
+                      selected={currentCategory === category}
+                      onClick={() => setCurrentCategory(category)}
+                      fontSize="14px"
+                      bold
+                      textColor="#eee"
+                    >
+                      {category}
+                    </Tabs.Tab>
+                  ))}
+                </Tabs>
+                <Tabs>
+                  {category_ids[currentCategory].map((id) => (
+                    <Tabs.Tab
+                      key={id}
+                      selected={currentTemplate === id}
+                      onClick={() => setCurrentTemplate(id)}
+                    >
+                      <Stack vertical>
+                        <Stack.Item
+                          align="center"
+                          className={classes([
+                            'lights32x32',
+                            `light_fantastic_${id}`,
+                          ])}
+                        />
+                        <Stack.Item fontSize="14px" textColor="#cee" nowrap>
+                          {templates[id].light_info.name}
+                        </Stack.Item>
+                      </Stack>
+                    </Tabs.Tab>
+                  ))}
+                </Tabs>
+              </Section>
+            </Stack.Item>
+            <Stack.Item>
+              <LightInfo light={templates[currentTemplate]} />
+            </Stack.Item>
+          </Stack>
+        </DirectionContext.Provider>
       </Window.Content>
     </Window>
   );
@@ -226,7 +229,7 @@ function DirectionButton(props: DirectedButtonProps) {
   return (
     <Button
       icon={icon}
-      selected={workingDir & dir}
+      selected={workingDir === dir}
       onClick={() => setWorkingDir(dir)}
     />
   );
