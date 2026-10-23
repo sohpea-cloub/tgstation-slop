@@ -2562,6 +2562,9 @@
 			to_chat(affected_mob, span_warning("You feel your scalp mutate, but you are still hopelessly bald."))
 		else
 			to_chat(affected_mob, span_notice("Your scalp mutates, a full head of hair sprouting from it."))
+			// Hairless species never picked a hairstyle (it stays Bald), which would make the new hair invisible
+			if(human_mob.hairstyle == "Bald")
+				human_mob.set_hairstyle("Very Long Hair", update = FALSE)
 			human_mob.update_body_parts()
 
 /datum/reagent/baldium
