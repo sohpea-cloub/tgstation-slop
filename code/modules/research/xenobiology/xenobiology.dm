@@ -1020,6 +1020,7 @@ GLOBAL_LIST_INIT(slime_extract_auto_activate_reactions, init_slime_auto_activate
 	clothing.max_heat_protection_temperature = FIRE_IMMUNITY_MAX_TEMP_PROTECT
 	clothing.heat_protection = clothing.body_parts_covered
 	clothing.resistance_flags |= FIRE_PROOF
+	clothing.GetComponent(/datum/component/toggle_attached_clothing)?.inherit_parent_modifications()
 	uses --
 	if(uses <= 0)
 		qdel(src)

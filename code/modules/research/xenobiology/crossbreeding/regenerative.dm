@@ -135,6 +135,7 @@ Regenerative extracts:
 	clothing_piece.max_heat_protection_temperature = FIRE_IMMUNITY_MAX_TEMP_PROTECT
 	clothing_piece.heat_protection = clothing_piece.body_parts_covered
 	clothing_piece.resistance_flags |= FIRE_PROOF
+	clothing_piece.GetComponent(/datum/component/toggle_attached_clothing)?.inherit_parent_modifications()
 
 /obj/item/slimecross/regenerative/silver
 	colour = SLIME_TYPE_SILVER

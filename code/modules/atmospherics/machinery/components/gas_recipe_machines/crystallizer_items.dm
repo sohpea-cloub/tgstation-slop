@@ -33,6 +33,7 @@
 		worn_item.min_cold_protection_temperature = SPACE_SUIT_MIN_TEMP_PROTECT
 		worn_item.cold_protection = worn_item.body_parts_covered
 		worn_item.clothing_flags |= STOPSPRESSUREDAMAGE
+		worn_item.GetComponent(/datum/component/toggle_attached_clothing)?.inherit_parent_modifications()
 
 	uses--
 	if(uses <= 0)

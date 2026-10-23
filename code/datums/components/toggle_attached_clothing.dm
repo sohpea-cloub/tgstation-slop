@@ -139,12 +139,32 @@
 			remove_deployable()
 		return
 	currently_deployed = TRUE
+	inherit_parent_modifications()
 	on_deployed?.Invoke(deployable)
 	if (parent_icon_state_suffix)
 		parent_gear.icon_state = "[INITIAL_ICON_STATE(parent_gear)][parent_icon_state_suffix]"
 		parent_gear.worn_icon_state = parent_gear.icon_state
 	parent_gear.update_slot_icon()
 	wearer.update_mob_action_buttons()
+
+/// Gives our deployable the protections our parent gained after it was made (fireproofing, spaceproofing, ...), so they aren't lost on the deployed part
+/datum/component/toggle_attached_clothing/proc/inherit_parent_modifications()
+	if (!deployable)
+		return
+	var/obj/item/clothing/parent_clothing = parent
+	var/obj/item/clothing/deployed_clothing = deployable
+	if (!istype(parent_clothing) || !istype(deployed_clothing))
+		return
+	if ((parent_clothing.resistance_flags & FIRE_PROOF) && !(initial(parent_clothing.resistance_flags) & FIRE_PROOF))
+		deployed_clothing.resistance_flags |= FIRE_PROOF
+	if (parent_clothing.max_heat_protection_temperature > initial(parent_clothing.max_heat_protection_temperature) && parent_clothing.max_heat_protection_temperature > deployed_clothing.max_heat_protection_temperature)
+		deployed_clothing.max_heat_protection_temperature = parent_clothing.max_heat_protection_temperature
+		deployed_clothing.heat_protection = deployed_clothing.body_parts_covered
+	if (parent_clothing.min_cold_protection_temperature != initial(parent_clothing.min_cold_protection_temperature) && parent_clothing.min_cold_protection_temperature)
+		deployed_clothing.min_cold_protection_temperature = parent_clothing.min_cold_protection_temperature
+		deployed_clothing.cold_protection = deployed_clothing.body_parts_covered
+	if ((parent_clothing.clothing_flags & STOPSPRESSUREDAMAGE) && !(initial(parent_clothing.clothing_flags) & STOPSPRESSUREDAMAGE))
+		deployed_clothing.clothing_flags |= STOPSPRESSUREDAMAGE
 
 /// Undeploy gear if it moves slots somehow
 /datum/component/toggle_attached_clothing/proc/on_parent_equipped(obj/item/clothing/source, mob/equipper, slot)
