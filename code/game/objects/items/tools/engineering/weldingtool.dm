@@ -287,6 +287,9 @@
 /obj/item/weldingtool/proc/isOn()
 	return welding
 
+/obj/item/weldingtool/can_be_crafting_tool()
+	return get_fuel() > 0
+
 /// If welding tool ran out of fuel during a construction task, construction fails.
 /obj/item/weldingtool/tool_use_check(mob/living/user, amount, heat_required)
 	if(!isOn() || !check_fuel())

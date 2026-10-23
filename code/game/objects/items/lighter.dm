@@ -233,6 +233,9 @@
 	else
 		cig.attempt_light(user, src, span_notice("[user] holds \the [src] out for [target_mob], and lights [target_mob.p_their()] [cig.name]."))
 
+/obj/item/lighter/can_be_crafting_tool()
+	return get_fuel() > 0
+
 ///Checks if the lighter is able to perform a welding task.
 /obj/item/lighter/tool_use_check(mob/living/user, amount, heat_required)
 	if(!lit)

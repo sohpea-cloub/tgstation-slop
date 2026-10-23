@@ -1265,6 +1265,10 @@ GAME_VERB_SRC(/obj/item, verb_pickup, oview(1), "Pick up", null)
 	if(.)
 		SEND_SIGNAL(src, COMSIG_TOOL_START_USE, user)
 
+/// Whether this item's tool behaviour counts for crafting recipes right now (e.g. a welder needs fuel).
+/obj/item/proc/can_be_crafting_tool()
+	return TRUE
+
 /// A check called by [/obj/item/proc/tool_start_check] once, and by use_tool on every tick of delay.
 /obj/item/proc/tool_use_check(mob/living/user, amount, heat_required)
 	return !amount

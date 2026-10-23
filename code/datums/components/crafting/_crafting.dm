@@ -182,7 +182,7 @@
 		if(isitem(object))
 			var/obj/item/item = object
 			LAZYADDASSOCLIST(.[CONTENTS_INSTANCES], item.type, item)
-			if(item.tool_behaviour)
+			if(item.tool_behaviour && item.can_be_crafting_tool())
 				var/current_tool_speed = .[CONTENTS_TOOL_BEHAVIOUR][item.tool_behaviour]
 				if(current_tool_speed < item.toolspeed)
 					.[CONTENTS_TOOL_BEHAVIOUR][item.tool_behaviour] = item.toolspeed
@@ -211,7 +211,7 @@
 				within_source += item_stored_within
 
 	for(var/obj/item/item as anything in within_source)
-		if(!item.tool_behaviour)
+		if(!item.tool_behaviour || !item.can_be_crafting_tool())
 			continue
 		var/current_tool_speed = .[CONTENTS_TOOL_BEHAVIOUR][item.tool_behaviour]
 		if(current_tool_speed < item.toolspeed)
