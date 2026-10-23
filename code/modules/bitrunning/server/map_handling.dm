@@ -129,13 +129,12 @@
 
 	generated_domain.load_advanced_npcs(lucky_ghosts)
 	RegisterSignal(generated_domain, COMSIG_LAZY_TEMPLATE_LOADED, PROC_REF(on_template_loaded))
-	generated_domain.lazy_load()
+	domain_reservation = generated_domain.lazy_load()
 
 	return TRUE
 
 /// Loads in necessary map items like hololadder spawns, caches, etc
 /obj/machinery/quantum_server/proc/load_map_items()
-	var/turf/goal_turfs = list()
 	var/turf/cache_turfs = list()
 	var/turf/curiosity_turfs = list()
 
@@ -224,9 +223,15 @@
 	sever_connections() /// just in case someone's connected
 	SEND_SIGNAL(src, COMSIG_BITRUNNER_DOMAIN_SCRUBBED) // avatar cleanup just in case
 
-	if(length(generated_domain.reservations))
-		var/datum/turf_reservation/res = generated_domain.reservations[1]
-		res.Release()
+	// Released turfs keep their signal registrations through ChangeTurf, and get reused by later reservations
+	for(var/turf/goal_turf as anything in goal_turfs)
+		UnregisterSignal(goal_turf, list(COMSIG_ATOM_ENTERED, COMSIG_ATOM_EXAMINE))
+	goal_turfs.Cut()
+
+	// Release our own reservation, not generated_domain.reservations[1]: that list keeps every past load of the domain, by any server
+	if(domain_reservation)
+		generated_domain?.reservations -= domain_reservation
+		QDEL_NULL(domain_reservation)
 
 	var/list/creatures = spawned_threat_refs + mutation_candidate_refs
 	for(var/datum/weakref/creature_ref as anything in creatures)

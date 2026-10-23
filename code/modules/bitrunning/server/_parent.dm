@@ -48,6 +48,10 @@
 	var/threat_prob_max = 15
 	/// The turfs we can place a hololadder on.
 	var/list/turf/exit_turfs = list()
+	/// The send turfs of the loaded domain, whose signals we listen to
+	var/list/turf/goal_turfs = list()
+	/// The turf reservation holding our loaded domain (the domain datum's reservations list is shared by every server)
+	var/datum/turf_reservation/domain_reservation
 	/// Determines if we broadcast to entertainment monitors or not
 	var/broadcasting = FALSE
 	/// Cooldown between being able to toggle broadcasting
