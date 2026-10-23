@@ -102,12 +102,13 @@ GLOBAL_DATUM(rpgloot_controller, /datum/rpgloot_controller)
 		if(!(fantasy_item.flags_1 & INITIALIZED_1) || QDELETED(fantasy_item))
 			continue
 
+		// Nullspace items are pooled (e.g. in SSwardrobe), they get fantasy when they're taken out of the pool
+		if(isnull(fantasy_item.loc))
+			continue
+
 		// Same exclusions as items spawned after the event started (stacks, trash, paper...)
 		if(can_be_fantastical(fantasy_item))
 			fantasy_item.AddComponent(/datum/component/fantasy)
-
-		if(isnull(fantasy_item.loc))
-			continue
 
 		if(istype(fantasy_item, /obj/item/storage))
 			var/obj/item/storage/storage_item = fantasy_item

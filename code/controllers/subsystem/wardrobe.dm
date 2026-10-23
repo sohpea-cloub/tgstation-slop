@@ -259,6 +259,8 @@ SUBSYSTEM_DEF(wardrobe)
 
 	if(object.loc != null)
 		object.moveToNullspace()
+	// Pooled items shouldn't carry rpgloot modifiers, they're reapplied when the item is provided again
+	qdel(object.GetComponent(/datum/component/fantasy))
 	var/datum/callback/do_on_insert = stock_info[WARDROBE_STOCK_CALL_INSERT]
 	if(do_on_insert)
 		do_on_insert.object = object
@@ -299,6 +301,9 @@ SUBSYSTEM_DEF(wardrobe)
 		do_on_removal.object = requested_object
 		do_on_removal.Invoke()
 		do_on_removal.object = null
+
+	// Items made fresh get fantasy from their initialization, but a pooled item was initialized long ago
+	GLOB.rpgloot_controller?.on_new_item_in_existence(null, requested_object)
 
 	stock_hit++
 	hit_map[requested_type]++
