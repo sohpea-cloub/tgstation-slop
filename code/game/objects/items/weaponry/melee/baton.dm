@@ -178,6 +178,8 @@
 
 	// if not harm batonning, we override the default attack properties do do nothing
 	if(!harmbatonning)
+		// the stun is still a real hit as far as shields are concerned
+		SET_ATTACK_BLOCK_DAMAGE(attack_modifiers, CALCULATE_FORCE(src, attack_modifiers))
 		SET_ATTACK_FORCE(attack_modifiers, 0)
 		MUTE_ATTACK_HITSOUND(attack_modifiers)
 		HIDE_ATTACK_MESSAGES(attack_modifiers)

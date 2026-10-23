@@ -348,7 +348,8 @@
 
 	if(user != src)
 		// This doesn't factor in armor, or most damage modifiers (physiology). Your mileage may vary
-		if(check_block(attacking_item, final_force, "\the [attacking_item]", MELEE_ATTACK, attacking_item.armour_penetration, attacking_item.damtype))
+		var/block_damage = (BLOCK_DAMAGE_OVERRIDE in attack_modifiers) ? attack_modifiers[BLOCK_DAMAGE_OVERRIDE] : final_force
+		if(check_block(attacking_item, block_damage, "\the [attacking_item]", MELEE_ATTACK, attacking_item.armour_penetration, attacking_item.damtype))
 			LAZYSET(attack_modifiers, DAMAGE_DONE, 0)
 			return ATTACK_FAILED
 

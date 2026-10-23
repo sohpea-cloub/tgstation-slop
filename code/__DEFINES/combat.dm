@@ -412,11 +412,18 @@ GLOBAL_LIST_INIT(all_precise_body_zones, list(BODY_ZONE_PRECISE_EYES, BODY_ZONE_
 #define SILENCE_HITSOUND "silence_hitsound"
 /// Set towards the end of an attack with how much actual damage was dealt
 #define DAMAGE_DONE "damage_done"
+/// If set in modifiers, blocking checks (shields, armor block chance) use this as the attack's damage instead of its final force. For attacks that do no damage but should still count as a real hit, like a stun baton. Set via [SET_ATTACK_BLOCK_DAMAGE]
+#define BLOCK_DAMAGE_OVERRIDE "block_damage_override"
 
 /// Used in attack chain to set the force of the attack without changing the base force of the item.
 #define SET_ATTACK_FORCE(atk_mods, value) \
 	if(!islist(atk_mods)) { atk_mods = list() }; \
 	atk_mods[FORCE_OVERRIDE] = value;
+
+/// Used in attack chain to set the damage that blocking checks see, without changing the force of the attack.
+#define SET_ATTACK_BLOCK_DAMAGE(atk_mods, value) \
+	if(!islist(atk_mods)) { atk_mods = list() }; \
+	atk_mods[BLOCK_DAMAGE_OVERRIDE] = value;
 
 /// Used in attack chain to add or remove force from the attack without changing the base force of the item.
 #define MODIFY_ATTACK_FORCE(atk_mods, amount) \
