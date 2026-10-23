@@ -244,6 +244,8 @@
 /// Handles editing a crime on a particular record.
 /obj/machinery/computer/records/security/proc/edit_crime(mob/user, datum/record/crew/target, list/params)
 	var/datum/crime/editing_crime = locate(params["crime_ref"]) in target.crimes
+	if(!editing_crime)
+		editing_crime = locate(params["crime_ref"]) in target.citations
 	if(!editing_crime?.valid)
 		return FALSE
 
