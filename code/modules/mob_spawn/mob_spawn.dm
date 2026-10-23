@@ -273,10 +273,13 @@
 	ASSERT(istype(user))
 
 	user.log_message("became a [prompt_name].", LOG_GAME)
+	var/datum/mind/previous_mind = user.mind
 	if(!temp_body)
 		user.mind = null // dissassociate mind, don't let it follow us to the next life
 
 	var/mob/created = create(user, apply_prefs = apply_prefs)
+	if(!ismob(created) && !temp_body && isnull(user.mind) && !QDELETED(user))
+		user.mind = previous_mind // nothing was spawned: don't leave the ghost cut off from its body
 	if(ismob(created))
 		SEND_SIGNAL(src, COMSIG_GHOSTROLE_SPAWNED, created)
 		if(subtract_uses)
