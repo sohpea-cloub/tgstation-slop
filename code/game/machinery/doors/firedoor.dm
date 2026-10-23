@@ -726,6 +726,9 @@
 	icon = 'icons/obj/doors/edge_Doorfire.dmi'
 	can_crush = FALSE
 	flags_1 = ON_BORDER_1
+	// Like full-tile firelocks (which never block clicks to the adjacent tile), a closed sideways one must not
+	// stop us reaching what shares its tile, e.g. a ladder, from the side it faces
+	pass_flags_self = parent_type::pass_flags_self | LETPASSCLICKS
 	can_atmos_pass = ATMOS_PASS_PROC
 	assemblytype = /obj/structure/firelock_frame/border_only
 
