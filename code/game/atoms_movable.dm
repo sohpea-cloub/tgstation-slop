@@ -880,7 +880,7 @@
 
 	if(set_dir_on_move && dir != direct && update_dir)
 		setDir(direct)
-	if(. && has_buckled_mobs() && !handle_buckled_mob_movement(loc, direct, glide_size_override)) //movement failed due to buckled mob(s)
+	if(. && has_buckled_mobs() && !handle_buckled_mob_movement(loc, direct, glide_size_override, oldloc)) //movement failed due to buckled mob(s)
 		. = FALSE
 
 	if(currently_z_moving)
@@ -1473,12 +1473,34 @@
 	if (quickstart)
 		thrown_thing.tick()
 
-/atom/movable/proc/handle_buckled_mob_movement(newloc, direct, glide_size_override)
-	for(var/mob/living/buckled_mob as anything in buckled_mobs)
+/atom/movable/proc/handle_buckled_mob_movement(newloc, direct, glide_size_override, atom/oldloc)
+	for(var/mob/living/buckled_mob as anything in buckled_mobs.Copy())
+		// Something moved us without them, or them without us (a transit tube, a teleport, a z-level change).
+		// Don't drag them over from wherever they are now: they aren't riding us anymore.
+		if(oldloc && is_separated_from_buckled(buckled_mob, oldloc, newloc))
+			unbuckle_mob(buckled_mob, force = TRUE)
+			continue
 		if(!buckled_mob.Move(newloc, direct, glide_size_override)) //If a mob buckled to us can't make the same move as us
 			Move(buckled_mob.loc, direct) //Move back to its location
 			last_move = buckled_mob.last_move
 			return FALSE
+	return TRUE
+
+/**
+ * Returns TRUE if a mob buckled to us is no longer with us, so it isn't actually riding us anymore.
+ * They are together while they share a turf: before a move, the mover's old turf, after it, its new one.
+ *
+ * Arguments:
+ * * buckled_mob - the mob buckled to us
+ * * oldloc - where we were before the move being checked, or our current loc
+ * * newloc - where we are moving, if we are
+ */
+/atom/movable/proc/is_separated_from_buckled(mob/living/buckled_mob, atom/oldloc = loc, atom/newloc)
+	var/turf/rider_turf = get_turf(buckled_mob)
+	if(rider_turf == get_turf(oldloc))
+		return FALSE
+	if(newloc && rider_turf == get_turf(newloc))
+		return FALSE
 	return TRUE
 
 /atom/movable/proc/force_pushed(atom/movable/pusher, force = MOVE_FORCE_DEFAULT, direction)

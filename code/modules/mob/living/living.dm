@@ -1046,6 +1046,10 @@ GAME_VERB_PROC(/mob/living, mob_sleep, "Sleep", null)
 /mob/living/Move(atom/newloc, direct, glide_size_override)
 	if(lying_angle != 0)
 		lying_angle_on_movement(direct)
+	// We and what we're buckled to got separated (a transit tube took it, a teleport or a z-level change took one of us):
+	// we aren't riding it anymore, so don't drag it over from wherever it is.
+	if (buckled && buckled.loc != newloc && buckled.is_separated_from_buckled(src) && !HAS_TRAIT(src, TRAIT_CANNOT_BE_UNBUCKLED))
+		buckled.unbuckle_mob(src, force = TRUE)
 	if (buckled && buckled.loc != newloc) //not updating position
 		if (!buckled.anchored)
 			buckled.moving_from_pull = moving_from_pull
