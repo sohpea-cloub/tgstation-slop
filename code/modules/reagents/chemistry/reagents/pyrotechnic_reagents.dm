@@ -120,6 +120,8 @@
 	taste_description = "salt"
 	chemical_flags = REAGENT_CAN_BE_SYNTHESIZED
 	randomized_spawns = REAGENT_SPAWN_ALL_RANDOM_SPAWNS
+	/// Tile coordinates -> world.time until which that tile's detonation from an explosion is spent
+	var/static/list/blast_times = list()
 
 /datum/reagent/gunpowder/on_new(data)
 	. = ..()
@@ -135,7 +137,16 @@
 	SIGNAL_HANDLER
 	if(source.flags_1 & PREVENT_CONTENTS_EXPLOSION_1)
 		return
-	var/location = get_turf(holder.my_atom)
+	var/turf/location = get_turf(holder.my_atom)
+	// Only one gunpowder detonation per tile per blast: every container on a tile is hit by the same explosion,
+	// so without this a stack of pills each makes its own explosion. The rest just burns up. Keyed by coordinates
+	// as the explosion may replace the turf.
+	var/blast_key = location ? "[location.x],[location.y],[location.z]" : null
+	if(blast_key)
+		if(world.time < blast_times[blast_key])
+			holder.clear_reagents()
+			return
+		blast_times[blast_key] = world.time + 1 SECONDS
 	var/datum/effect_system/reagents_explosion/expl = new(location, 1 + round(volume / 6, 1), message = FALSE)
 	expl.start(holder.my_atom)
 	holder.clear_reagents()
