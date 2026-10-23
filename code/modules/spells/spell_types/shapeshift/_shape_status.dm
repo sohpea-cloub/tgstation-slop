@@ -187,12 +187,15 @@
 			if (CAN_HAVE_BLOOD(owner) && CAN_HAVE_BLOOD(caster_mob))
 				owner.set_blood_volume(caster_mob.get_blood_volume())
 
+	// Mind transfer happens in the parent proc, so actions which are bound to the caster's mind and not their body
+	// (such as the martial arts button) have already moved over to the shape by the time we get here.
+	// If we moved them first they'd be left behind and get made all over again for the shape.
+	. = ..()
+
 	for(var/datum/action/bodybound_action as anything in caster_mob.actions)
 		if(bodybound_action.target != caster_mob)
 			continue
 		bodybound_action.Grant(owner)
-
-	return ..()
 
 /datum/status_effect/shapechange_mob/from_spell/restore_caster(kill_caster_after)
 	var/datum/action/cooldown/spell/shapeshift/source_spell = source_weakref.resolve()
