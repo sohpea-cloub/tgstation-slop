@@ -56,7 +56,7 @@
 	visible_message(span_notice("[src] retracts all of it's unpacked components."))
 	for(var/o in packed_things)
 		var/obj/object = o
-		UnregisterSignal(object, COMSIG_MOVABLE_MOVED)
+		UnregisterSignal(object, list(COMSIG_MOVABLE_MOVED, COMSIG_ATOM_BEFORE_SHUTTLE_MOVE, COMSIG_ATOM_AFTER_SHUTTLE_MOVE))
 		object.forceMove(src)
 	set_anchored(FALSE)
 	unpacked = FALSE
@@ -76,6 +76,8 @@
 		var/obj/thing = packed_things[iteration]
 		thing.forceMove(T)
 		RegisterSignal(thing, COMSIG_MOVABLE_MOVED, PROC_REF(lost_part))
+		RegisterSignal(thing, COMSIG_ATOM_BEFORE_SHUTTLE_MOVE, PROC_REF(part_before_shuttle_move))
+		RegisterSignal(thing, COMSIG_ATOM_AFTER_SHUTTLE_MOVE, PROC_REF(part_after_shuttle_move))
 		iteration++
 	unpacked = TRUE
 
@@ -109,14 +111,32 @@
 			new /obj/effect/temp_visual/cart_space/bad(T)
 	return has_space
 
+/// The shuttle is about to carry this part along with the cart: don't treat that as the part being moved away
+/obj/machinery/food_cart/proc/part_before_shuttle_move(atom/movable/source)
+	SIGNAL_HANDLER
+
+	UnregisterSignal(source, COMSIG_MOVABLE_MOVED)
+
+/// Everything has been moved by the shuttle: if the part ended up somewhere else than next to the cart, it is lost, otherwise keep watching it
+/obj/machinery/food_cart/proc/part_after_shuttle_move(atom/movable/source)
+	SIGNAL_HANDLER
+
+	if(QDELETED(source))
+		return
+	if(source.z != z || get_dist(source, src) > 3)
+		lost_part(source)
+		return
+	RegisterSignal(source, COMSIG_MOVABLE_MOVED, PROC_REF(lost_part), override = TRUE)
+
 /obj/machinery/food_cart/proc/lost_part(atom/movable/source, force)
 	SIGNAL_HANDLER
 
 	//okay, so it's deleting the fridge or griddle which are more important. We're gonna break the machine then
-	UnregisterSignal(cart_griddle, list(COMSIG_QDELETING, COMSIG_MOVABLE_MOVED))
-	UnregisterSignal(cart_smartfridge, list(COMSIG_QDELETING, COMSIG_MOVABLE_MOVED))
-	UnregisterSignal(cart_table, list(COMSIG_QDELETING, COMSIG_MOVABLE_MOVED))
-	UnregisterSignal(cart_tent, list(COMSIG_QDELETING, COMSIG_MOVABLE_MOVED))
+	var/static/list/part_signals = list(COMSIG_QDELETING, COMSIG_MOVABLE_MOVED, COMSIG_ATOM_BEFORE_SHUTTLE_MOVE, COMSIG_ATOM_AFTER_SHUTTLE_MOVE)
+	UnregisterSignal(cart_griddle, part_signals)
+	UnregisterSignal(cart_smartfridge, part_signals)
+	UnregisterSignal(cart_table, part_signals)
+	UnregisterSignal(cart_tent, part_signals)
 	atom_break()
 
 /obj/machinery/food_cart/atom_break(damage_flag)
