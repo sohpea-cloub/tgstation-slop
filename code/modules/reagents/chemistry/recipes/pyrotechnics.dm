@@ -625,7 +625,9 @@
 	var/atom/holder_atom = holder.my_atom
 	if(QDELETED(holder_atom))
 		return
-	tesla_zap(source = holder_atom, zap_range = 7, power = power, cutoff = 1 KILO JOULES, zap_flags = zap_flags)
+	// Zaps are found with oview(), which sees nothing from inside a container (a box, a bag, someone's hands)
+	var/atom/zap_source = isturf(holder_atom.loc) ? holder_atom : get_turf(holder_atom)
+	tesla_zap(source = zap_source, zap_range = 7, power = power, cutoff = 1 KILO JOULES, zap_flags = zap_flags)
 	playsound(holder_atom, 'sound/machines/defib/defib_zap.ogg', 50, TRUE)
 
 /datum/chemical_reaction/reagent_explosion/teslium_lightning/heat
