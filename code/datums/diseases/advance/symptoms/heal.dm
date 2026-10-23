@@ -592,11 +592,9 @@
 
 /datum/symptom/heal/radiation/Heal(mob/living/carbon/carbon_host, datum/disease/advance/our_disease, actual_power)
 	var/heal_amt = actual_power
-	var/needs_update = FALSE
-	needs_update += carbon_host.adjust_tox_loss(-2 * heal_amt, updating_health = FALSE)
+	// No toxin healing: the irradiated component ends once toxin damage hits 0, so healing it would cure the very irradiation that powers this symptom
 	var/brute_burn_heal = carbon_host.heal_overall_damage(heal_amt, heal_amt, required_bodytype = healable_bodytypes, updating_health = FALSE)
-	needs_update += brute_burn_heal
-	if(needs_update)
+	if(brute_burn_heal)
 		carbon_host.updatehealth()
 	if(brute_burn_heal && prob(4))
 		to_chat(carbon_host, span_notice("Your skin glows faintly, and you feel your wounds mending themselves."))
