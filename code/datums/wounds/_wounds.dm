@@ -399,12 +399,13 @@
  * Arguments:
  * * new_wound- The wound instance you want to replace this
  * * smited- If this is a smite, we don't care about this wound for stat tracking purposes (not yet implemented)
+ * * new_wound_source- The source of the new wound; if null, the new wound inherits our source
  */
-/datum/wound/proc/replace_wound(datum/wound/new_wound, smited = FALSE, attack_direction = attack_direction)
+/datum/wound/proc/replace_wound(datum/wound/new_wound, smited = FALSE, attack_direction = attack_direction, new_wound_source = null)
 	already_scarred = TRUE
 	var/obj/item/bodypart/cached_limb = limb // remove_wound() nulls limb so we have to track it locally
 	remove_wound(replaced=TRUE)
-	new_wound.apply_wound(cached_limb, old_wound = src, smited = smited, attack_direction = attack_direction, wound_source = wound_source, replacing = TRUE)
+	new_wound.apply_wound(cached_limb, old_wound = src, smited = smited, attack_direction = attack_direction, wound_source = new_wound_source || wound_source, replacing = TRUE)
 	if(HAS_TRAIT(src, TRAIT_WOUND_SCANNED) && severity > new_wound.severity)
 		for(var/trait_source in GET_TRAIT_SOURCES(src, TRAIT_WOUND_SCANNED))
 			ADD_TRAIT(new_wound, TRAIT_WOUND_SCANNED, trait_source)

@@ -1,5 +1,5 @@
 /// Allows us to roll for and apply a wound without actually dealing damage. Used for aggregate wounding power with pellet clouds
-/obj/item/bodypart/proc/painless_wound_roll(wounding_type, wounding_dmg, wound_bonus, exposed_wound_bonus, sharpness=NONE, wound_clothing)
+/obj/item/bodypart/proc/painless_wound_roll(wounding_type, wounding_dmg, wound_bonus, exposed_wound_bonus, sharpness=NONE, wound_clothing = TRUE, damage_source)
 	SHOULD_CALL_PARENT(TRUE)
 
 	if(!owner || wounding_dmg <= WOUND_MINIMUM_DAMAGE || wound_bonus == CANT_WOUND || HAS_TRAIT(owner, TRAIT_GODMODE))
@@ -32,7 +32,7 @@
 			wounding_type = WOUND_BLUNT
 		if (((exterior_ready_to_dismember && interior_ready_to_dismember) || dismemberable_by_total_damage(mangled_state)) && try_dismember(wounding_type, wounding_dmg, wound_bonus, exposed_wound_bonus))
 			return
-	return check_wounding(wounding_type, wounding_dmg, wound_bonus, exposed_wound_bonus, wound_clothing)
+	return check_wounding(wounding_type, wounding_dmg, wound_bonus, exposed_wound_bonus, damage_source = damage_source, wound_clothing = wound_clothing)
 
 /**
  * check_wounding() is where we handle rolling for, selecting, and applying a wound if we meet the criteria
@@ -126,7 +126,7 @@
 
 	var/datum/wound/new_wound = new possible_wound
 	if(replaced_wound)
-		new_wound = replaced_wound.replace_wound(new_wound, attack_direction = attack_direction)
+		new_wound = replaced_wound.replace_wound(new_wound, attack_direction = attack_direction, new_wound_source = damage_source)
 	else
 		new_wound.apply_wound(src, attack_direction = attack_direction, wound_source = damage_source)
 	log_wound(owner, new_wound, damage, wound_bonus, exposed_wound_bonus, base_roll) // dismembering wounds are logged in the apply_wound() for loss wounds since they delete themselves immediately, these will be immediately returned
