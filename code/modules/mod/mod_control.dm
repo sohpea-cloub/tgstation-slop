@@ -40,6 +40,8 @@
 	var/ui_theme = "ntos"
 	/// If the suit is deployed and turned on.
 	var/active = FALSE
+	/// Whether a chameleon module is currently disguising the suit, in which case its icon_state is not ours to set.
+	var/disguised = FALSE
 	/// If the suit wire/module hatch is open.
 	var/open = FALSE
 	/// If the suit is ID locked.
@@ -403,6 +405,8 @@
 	return ..()
 
 /obj/item/mod/control/update_icon_state()
+	if(disguised)
+		return ..() // the chameleon module owns our icon_state while it's active
 	icon_state = "[skin]-[base_icon_state][active ? "-sealed" : ""]"
 	return ..()
 

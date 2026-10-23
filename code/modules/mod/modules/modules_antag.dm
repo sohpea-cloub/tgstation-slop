@@ -335,6 +335,7 @@
 	update_look()
 
 /obj/item/mod/module/chameleon/proc/update_look()
+	mod.disguised = TRUE
 	mod.name = initial(current_disguise.name)
 	mod.desc = initial(current_disguise.desc)
 	mod.icon_state = initial(current_disguise.icon_state)
@@ -349,6 +350,7 @@
 	RegisterSignal(mod, COMSIG_MOD_ACTIVATE, PROC_REF(return_look))
 
 /obj/item/mod/module/chameleon/proc/return_look()
+	mod.disguised = FALSE
 	mod.name = "[mod.theme.name] [initial(mod.name)]"
 	mod.desc = "[initial(mod.desc)] [mod.theme.desc]"
 	mod.icon_state = "[mod.skin]-[initial(mod.icon_state)]"
