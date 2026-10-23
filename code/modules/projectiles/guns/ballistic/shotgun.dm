@@ -178,6 +178,10 @@
 		balloon_alert(user, "switched to tube B")
 	else
 		balloon_alert(user, "switched to tube A")
+	// If the chamber is empty (e.g. the old tube just ran dry), feed the new tube's shell in so the next click fires instead of dry-firing
+	if(!chambered)
+		chamber_round()
+	update_appearance()
 
 /obj/item/gun/ballistic/shotgun/automatic/dual_tube/click_alt(mob/living/user)
 	rack()
