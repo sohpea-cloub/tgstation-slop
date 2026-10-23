@@ -136,6 +136,7 @@
 	name = "mining order"
 	order_flags = ORDER_INVISIBLE
 	crate_name = "shaft mining delivery crate"
+	crate_type = /obj/structure/closet/crate/cargo/mining
 	access = ACCESS_MINING
 	test_ignored = TRUE
 
