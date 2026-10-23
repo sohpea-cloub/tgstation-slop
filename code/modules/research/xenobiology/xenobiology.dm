@@ -130,9 +130,12 @@ GLOBAL_LIST_INIT(slime_extract_auto_activate_reactions, init_slime_auto_activate
 	)
 
 	var/list/slime_extract_paths = subtypesof(/obj/item/slime_extract)
-	for(var/datum/chemical_reaction/slime/slime_reaction as anything in subtypesof(/datum/chemical_reaction/slime))
+	for(var/slime_reaction_type in subtypesof(/datum/chemical_reaction/slime))
+		// the reagent list can't be read reliably off a typepath, so check an actual instance
+		var/datum/chemical_reaction/slime/slime_reaction = new slime_reaction_type()
 		var/recipe_extract_type = slime_reaction.required_container
 		if(!(recipe_extract_type in slime_extract_paths))
+			qdel(slime_reaction)
 			continue
 
 		var/skip = FALSE
@@ -141,13 +144,14 @@ GLOBAL_LIST_INIT(slime_extract_auto_activate_reactions, init_slime_auto_activate
 				skip = TRUE
 				break
 		if(skip)
+			qdel(slime_reaction)
 			continue
 
 		var/list/recipes = recipe_list[recipe_extract_type]
 		if(!recipes)
 			recipes = list()
 			recipe_list[recipe_extract_type] = recipes
-		recipes.Add(new slime_reaction())
+		recipes.Add(slime_reaction)
 
 	return recipe_list
 
