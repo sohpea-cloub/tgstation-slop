@@ -151,8 +151,11 @@ ADMIN_VERB(shuttle_panel, R_ADMIN, "Shuttle Manipulator", "Opens the shuttle man
 	if(isnull(selection))
 		return
 
+	var/shuttle_name = name || shuttle_id
 	switch(selection)
 		if("Infinite Transit")
+			message_admins("[key_name_admin(user)] sent [shuttle_name] into infinite transit with the shuttle manipulator.")
+			log_admin("[key_name(user)] sent [shuttle_name] into infinite transit with the shuttle manipulator.")
 			destination = null
 			mode = SHUTTLE_IGNITING
 			setTimer(ignitionTime)
@@ -160,15 +163,21 @@ ADMIN_VERB(shuttle_panel, R_ADMIN, "Shuttle Manipulator", "Opens the shuttle man
 		if("Delete Shuttle")
 			if(tgui_alert(user, "Really delete [name || shuttle_id]?", "Delete Shuttle", list("Cancel", "Really!")) != "Really!")
 				return
+			message_admins("[key_name_admin(user)] deleted [shuttle_name] with the shuttle manipulator.")
+			log_admin("[key_name(user)] deleted [shuttle_name] with the shuttle manipulator.")
 			jumpToNullSpace()
 
 		if("Into The Sunset (delete & greentext 'escape')")
 			if(tgui_alert(user, "Really delete [name || shuttle_id] and greentext escape objectives?", "Delete Shuttle", list("Cancel", "Really!")) != "Really!")
 				return
+			message_admins("[key_name_admin(user)] sent [shuttle_name] into the sunset with the shuttle manipulator.")
+			log_admin("[key_name(user)] sent [shuttle_name] into the sunset with the shuttle manipulator.")
 			intoTheSunset()
 
 		else
 			if(options[selection])
+				message_admins("[key_name_admin(user)] flew [shuttle_name] to [selection] with the shuttle manipulator.")
+				log_admin("[key_name(user)] flew [shuttle_name] to [selection] with the shuttle manipulator.")
 				request(options[selection])
 
 /obj/docking_port/mobile/emergency/admin_fly_shuttle(mob/user)
@@ -195,4 +204,6 @@ ADMIN_VERB(shuttle_panel, R_ADMIN, "Shuttle Manipulator", "Opens the shuttle man
 		return
 	target_dock = options[selection]
 	if(!QDELETED(target_dock))
+		message_admins("[key_name_admin(user)] retargeted [name || shuttle_id] to [selection] with the shuttle manipulator.")
+		log_admin("[key_name(user)] retargeted [name || shuttle_id] to [selection] with the shuttle manipulator.")
 		destination = target_dock
