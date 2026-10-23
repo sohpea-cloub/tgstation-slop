@@ -236,8 +236,11 @@
 
 			var/move_failed = FALSE
 			if(!M.Move(oldloc) || !Move(oldMloc))
-				M.forceMove(oldMloc)
-				forceMove(oldloc)
+				// Only undo the swap itself: what we bumped into may have taken us somewhere else (a transit tube dispenser puts us in a pod)
+				if(M.loc == oldloc)
+					M.forceMove(oldMloc)
+				if(loc == oldMloc)
+					forceMove(oldloc)
 				move_failed = TRUE
 			if(!src_passmob)
 				pass_flags &= ~PASSMOB
@@ -246,7 +249,7 @@
 
 			now_pushing = FALSE
 
-			if(!move_failed)
+			if(!move_failed || loc != oldloc) // we swapped, or we got taken somewhere else: don't push them now
 				return TRUE
 
 	//okay, so we didn't switch. but should we push?
