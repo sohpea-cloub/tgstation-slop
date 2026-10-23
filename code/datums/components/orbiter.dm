@@ -184,14 +184,16 @@
 	var/turf/newturf = get_turf(master)
 	if(!newturf)
 		qdel(src)
+		return
 
-	var/atom/curloc = master.loc
 	for(var/atom/movable/movable_orbiter as anything in orbiter_list)
 		if(QDELETED(movable_orbiter) || movable_orbiter.loc == newturf)
 			continue
 		movable_orbiter.abstract_move(newturf)
-		if(CHECK_TICK && master.loc != curloc)
-			// We moved again during the checktick, cancel current operation
+		// Compare turfs, not master.loc: a held or contained master keeps the same loc while whatever carries it walks away,
+		// and finishing this stale loop would drop orbiters on a turf the master has already left (ending their orbit).
+		if(CHECK_TICK && get_turf(master) != newturf)
+			// We moved again during the checktick, the newer move_react call takes over
 			break
 
 
