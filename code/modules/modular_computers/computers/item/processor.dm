@@ -44,6 +44,17 @@
 	machinery_computer = null
 	return ..()
 
+// We live inside the console, so our own messages would have no viewers; speak through the console instead.
+/obj/item/modular_computer/processor/visible_message(message, self_message, blind_message, vision_distance = DEFAULT_MESSAGE_RANGE, list/ignored_mobs, visible_message_flags = NONE)
+	if(machinery_computer)
+		return machinery_computer.visible_message(message, self_message, blind_message, vision_distance, ignored_mobs, visible_message_flags)
+	return ..()
+
+/obj/item/modular_computer/processor/audible_message(message, deaf_message, hearing_distance = DEFAULT_MESSAGE_RANGE, self_message, audible_message_flags = NONE)
+	if(machinery_computer)
+		return machinery_computer.audible_message(message, deaf_message, hearing_distance, self_message, audible_message_flags)
+	return ..()
+
 /obj/item/modular_computer/processor/use_energy(amount = 0, check_programs = TRUE)
 	var/obj/machinery/machine_holder = physical
 	if(machine_holder.powered())
