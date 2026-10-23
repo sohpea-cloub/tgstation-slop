@@ -1,6 +1,9 @@
 /datum/species/human/cerulean
 	name = "\improper Cerulean"
 	id = SPECIES_CERULEAN
+	// Not TRAIT_USES_SKINTONES (inherited from humans): the body is colored by the fish tail color
+	// (see /datum/status_effect/organ_set_bonus/fish), so skin tone does nothing for them.
+	inherent_traits = list()
 	mutant_organs = list(/obj/item/organ/tail/fish/cerulean = /datum/sprite_accessory/tails/fish/cerulean::name)
 	mutanttongue = /obj/item/organ/tongue/fish
 	mutantlungs = /obj/item/organ/lungs/fish
