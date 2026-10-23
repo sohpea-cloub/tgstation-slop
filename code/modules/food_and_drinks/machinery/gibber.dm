@@ -130,6 +130,12 @@
 	else
 		start_gibbing(user)
 
+/obj/machinery/gibber/attack_robot(mob/user, list/modifiers)
+	. = ..()
+	if(.)
+		return
+	return attack_hand(user, modifiers)
+
 /obj/machinery/gibber/wrench_act(mob/living/user, obj/item/tool)
 	. = ..()
 	default_unfasten_wrench(user, tool)
