@@ -14,7 +14,7 @@
 	fire_sound = 'sound/items/weapons/batonextend.ogg'
 	pinless = TRUE
 	max_charges = 1
-	item_flags = NEEDS_PERMIT | NOBLUDGEON
+	item_flags = NEEDS_PERMIT
 	sharpness = SHARP_POINTY
 	force = 18
 	antimagic_flags = NONE
