@@ -4,7 +4,7 @@
 	if(HAS_TRAIT(M, TRAIT_PRIMITIVE)) //no lavalizards either.
 		to_chat(M, span_warning("The knowledge to use this device eludes you!"))
 		return
-	log_message("[M] tried to move into [src].", LOG_MECHA)
+	log_message("[key_name(M)] tried to move into [src].", LOG_MECHA)
 	if(dna_lock && M.has_dna())
 		var/mob/living/carbon/entering_carbon = M
 		if(entering_carbon.dna.unique_enzymes != dna_lock)
@@ -51,7 +51,7 @@
 	newoccupant.forceMove(src)
 	newoccupant.update_mouse_pointer()
 	add_fingerprint(newoccupant)
-	log_message("[newoccupant] moved in as pilot.", LOG_MECHA)
+	log_message("[key_name(newoccupant)] moved in as pilot.", LOG_MECHA)
 	setDir(SOUTH)
 	playsound(src, 'sound/machines/windowdoor.ogg', 50, TRUE)
 	set_mouse_pointer()
@@ -162,7 +162,7 @@
 		return ..()
 	var/mob/living/ejector = M
 	mob_container.forceMove(newloc)//ejecting mob container
-	log_message("[mob_container] moved out.", LOG_MECHA)
+	log_message("[ismob(mob_container) ? key_name(mob_container) : mob_container] moved out.", LOG_MECHA)
 	SStgui.close_user_uis(M, src)
 	if(istype(mob_container, /obj/item/brain_processor))
 		var/obj/item/brain_processor/mmi = mob_container

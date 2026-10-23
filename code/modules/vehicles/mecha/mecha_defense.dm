@@ -65,18 +65,18 @@
 	user.do_attack_animation(src, ATTACK_EFFECT_PUNCH)
 	playsound(loc, 'sound/items/weapons/tap.ogg', 40, TRUE, -1)
 	user.visible_message(span_danger("[user] hits [src]. Nothing happens."), null, null, COMBAT_MESSAGE_RANGE)
-	log_message("Attack by hand/paw (no damage). Attacker - [user].", LOG_MECHA, color="red")
+	log_message("Attack by hand/paw (no damage). Attacker - [key_name(user)].", LOG_MECHA, color="red")
 
 /obj/vehicle/sealed/mecha/attack_paw(mob/user, list/modifiers)
 	return attack_hand(user, modifiers)
 
 /obj/vehicle/sealed/mecha/attack_alien(mob/living/user, list/modifiers)
-	log_message("Attack by alien. Attacker - [user].", LOG_MECHA, color="red")
+	log_message("Attack by alien. Attacker - [key_name(user)].", LOG_MECHA, color="red")
 	playsound(loc, 'sound/items/weapons/slash.ogg', 100, TRUE)
 	return attack_generic(user, rand(user.melee_damage_lower, user.melee_damage_upper), BRUTE, MELEE, 0)
 
 /obj/vehicle/sealed/mecha/attack_animal(mob/living/simple_animal/user, list/modifiers)
-	log_message("Attack by simple animal. Attacker - [user].", LOG_MECHA, color="red")
+	log_message("Attack by simple animal. Attacker - [key_name(user)].", LOG_MECHA, color="red")
 	if(!user.melee_damage_upper && !user.obj_damage)
 		user.emote("custom", message = "[user.friendly_verb_continuous] [src].")
 		return FALSE
@@ -99,7 +99,7 @@
 /obj/vehicle/sealed/mecha/attack_hulk(mob/living/carbon/human/user)
 	. = ..()
 	if(.)
-		log_message("Attack by hulk. Attacker - [user].", LOG_MECHA, color="red")
+		log_message("Attack by hulk. Attacker - [key_name(user)].", LOG_MECHA, color="red")
 		log_combat(user, src, "punched", "hulk powers")
 
 /obj/vehicle/sealed/mecha/blob_act(obj/structure/blob/B)
@@ -365,7 +365,7 @@
 	)
 
 	log_combat(user, src, "attacked", attacking_item)
-	log_message("Attacked by [user]. Item - [attacking_item], Damage - [damage_taken]", LOG_MECHA)
+	log_message("Attacked by [key_name(user)]. Item - [attacking_item], Damage - [damage_taken]", LOG_MECHA)
 	return damage_taken
 
 /obj/vehicle/sealed/mecha/attack_generic(mob/user, damage_amount, damage_type, damage_flag, effects, armor_penetration)

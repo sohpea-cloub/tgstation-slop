@@ -179,7 +179,7 @@
 	for(var/turf/closed/mineral/wall in range(drill.chassis, 1))
 		if(get_dir(drill.chassis, wall) & drill.chassis.dir)
 			wall.gets_drilled()
-	drill.log_message("[user] drilled through [src]", LOG_MECHA)
+	drill.log_message("[key_name(user)] drilled through [src]", LOG_MECHA)
 	drill.move_ores()
 
 /turf/open/misc/asteroid/drill_act(obj/item/mecha_parts/mecha_equipment/drill/drill)

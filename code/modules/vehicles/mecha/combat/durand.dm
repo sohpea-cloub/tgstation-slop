@@ -127,7 +127,7 @@
 
 /obj/vehicle/sealed/mecha/durand/attack_generic(mob/user, damage_amount = 0, damage_type = BRUTE, damage_flag = 0, sound_effect = 1, armor_penetration = 0)
 	if(defense_check(get_turf(user)))
-		log_message("Attack absorbed by defense field. Attacker - [user].", LOG_MECHA, color="orange")
+		log_message("Attack absorbed by defense field. Attacker - [key_name(user)].", LOG_MECHA, color="orange")
 		return shield.attack_generic(user, damage_amount, damage_type, damage_flag, sound_effect, armor_penetration)
 	return ..()
 
@@ -140,7 +140,7 @@
 
 /obj/vehicle/sealed/mecha/durand/attackby(obj/item/weapon, mob/user as mob, list/modifiers, list/attack_modifiers)
 	if(defense_check(get_turf(user)))
-		log_message("Attack absorbed by defense field. Attacker - [user], with [weapon]", LOG_MECHA, color="orange")
+		log_message("Attack absorbed by defense field. Attacker - [key_name(user)], with [weapon]", LOG_MECHA, color="orange")
 		return shield.attackby(weapon, user, modifiers)
 	return ..()
 
