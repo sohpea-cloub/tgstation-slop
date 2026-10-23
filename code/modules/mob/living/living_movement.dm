@@ -1,11 +1,15 @@
 /mob/living/Moved(atom/old_loc, movement_dir, forced, list/old_locs, momentum_change = TRUE)
-	. = ..()
-	update_turf_movespeed(loc)
+	// Update whether we negate gravity before the parent call, which starts our drift (newtonian_move)
+	// based on whether we have gravity at our new location. Otherwise, stepping from a floor onto
+	// groundless turf with magboots would still count as having gravity, and give us no momentum.
 	if(HAS_TRAIT(src, TRAIT_NEGATES_GRAVITY))
 		if(!isgroundlessturf(loc))
 			ADD_TRAIT(src, TRAIT_IGNORING_GRAVITY, IGNORING_GRAVITY_NEGATION)
 		else
 			REMOVE_TRAIT(src, TRAIT_IGNORING_GRAVITY, IGNORING_GRAVITY_NEGATION)
+
+	. = ..()
+	update_turf_movespeed(loc)
 
 	var/turf/old_turf = get_turf(old_loc)
 	var/turf/new_turf = get_turf(src)
