@@ -740,10 +740,52 @@ GLOBAL_LIST_EMPTY(colored_images)
 
 /datum/controller/subsystem/air/proc/setup_template_machinery(list/atmos_machines)
 	var/obj/machinery/atmospherics/AM
+	var/list/template_machines = list()
 	for(var/A in 1 to atmos_machines.len)
 		AM = atmos_machines[A]
 		AM.atmos_init()
+		template_machines[AM] = TRUE
 		CHECK_TICK
+
+	// Machines outside the template that the template's machines just connected to (a pipe running into the template's edge).
+	// They were set up before the template loaded, so their nodes don't point back at the new machines and their pipenets
+	// don't include them. Building the template's pipenets through them would steal the members of a pipenet that lives on
+	// (or, for a component, fail to find the port). So connect them back, tear down their pipenet on the template's side
+	// and rebuild it with the template's machines in it.
+	var/list/obj/machinery/atmospherics/border_machines = list()
+	for(var/A in 1 to atmos_machines.len)
+		AM = atmos_machines[A]
+		for(var/obj/machinery/atmospherics/node in AM.nodes)
+			if(!template_machines[node])
+				border_machines |= node
+
+	// No CHECK_TICK from here until these pipenets are rebuilt: SSair mustn't start rebuilding them on its own halfway.
+	for(var/obj/machinery/atmospherics/border_machine as anything in border_machines)
+		border_machine.atmos_init()
+
+	var/list/datum/pipeline/rebuilt_pipenets = list()
+	for(var/obj/machinery/atmospherics/border_machine as anything in border_machines)
+		if(istype(border_machine, /obj/machinery/atmospherics/pipe))
+			var/obj/machinery/atmospherics/pipe/border_pipe = border_machine
+			if(border_pipe.parent && !(border_pipe.parent in rebuilt_pipenets))
+				border_pipe.destroy_network()
+		else
+			var/obj/machinery/atmospherics/components/border_component = border_machine
+			for(var/obj/machinery/atmospherics/node in border_component.nodes)
+				if(!template_machines[node])
+					continue
+				var/datum/pipeline/old_pipenet = border_component.return_pipenet(node)
+				if(!old_pipenet || (old_pipenet in rebuilt_pipenets))
+					continue
+				if(length(old_pipenet.members))
+					qdel(old_pipenet)
+				else
+					border_component.nullify_pipenet(old_pipenet)
+		var/datum/pipeline/build_target = border_machine.get_rebuild_target()
+		while(build_target)
+			build_target.build_pipeline_blocking(border_machine)
+			build_target = border_machine.get_rebuild_target()
+		rebuilt_pipenets |= border_machine.return_pipenets()
 
 	for(var/A in 1 to atmos_machines.len)
 		AM = atmos_machines[A]
