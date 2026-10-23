@@ -95,6 +95,11 @@
 
 	sync_mind()
 
+	// The admin combo HUD's traits live on the mob it was enabled on, so a new mob doesn't have them: turn it off
+	// (otherwise the antag HUD below would stay on for this mob while the other HUDs are gone)
+	if(client.combo_hud_enabled && !HAS_TRAIT_FROM(src, TRAIT_SECURITY_HUD, ADMIN_TRAIT))
+		client.disable_combo_hud()
+
 	//Reload alternate appearances
 	for(var/datum/atom_hud/alternate_appearance/alt_hud as anything in GLOB.active_alternate_appearances)
 		alt_hud.check_hud(src)
