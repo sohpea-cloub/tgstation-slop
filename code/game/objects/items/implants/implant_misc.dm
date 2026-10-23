@@ -79,10 +79,22 @@
 		to interface with telecommunications networks. It's mainly useful for those who expect either \
 		equipment loss or lack the ability to use standalone radio equipment easily."
 
+GLOBAL_DATUM_INIT(implant_radio_state, /datum/ui_state/implant_radio_state, new)
+
+/// Like deep_inventory_state, but being restrained (handcuffed) doesn't stop you from using an implanted radio, since it needs no hands.
+/datum/ui_state/implant_radio_state
+
+/datum/ui_state/implant_radio_state/can_use_topic(src_object, mob/user)
+	if(!user.contains(src_object))
+		return UI_CLOSE
+	. = user.shared_ui_interaction(src_object)
+	if(. == UI_UPDATE && !INCAPACITATED_IGNORING(user, INCAPABLE_RESTRAINTS))
+		return UI_INTERACTIVE
+
 /obj/item/implant/radio/activate()
 	. = ..()
-	// needs to be GLOB.deep_inventory_state otherwise it won't open
-	radio.ui_interact(usr, state = GLOB.deep_inventory_state)
+	// needs a state that checks for the deep inventory otherwise it won't open
+	radio.ui_interact(usr, state = GLOB.implant_radio_state)
 
 /obj/item/implant/radio/Initialize(mapload)
 	. = ..()
@@ -93,6 +105,8 @@
 	radio.name = "internal radio"
 	radio.subspace_transmission = subspace_transmission
 	radio.canhear_range = 0
+	// the radio needs no hands, so handcuffs shouldn't stop the user from using it
+	radio.interaction_flags_atom |= INTERACT_ATOM_IGNORE_RESTRAINED
 	if(radio_key)
 		radio.keyslot = new radio_key
 	radio.recalculateChannels()
