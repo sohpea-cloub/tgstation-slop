@@ -32,7 +32,8 @@
 	var/new_name = pick(GLOB.posibrain_names)
 	var/new_id = num2text(rand(1, 999), 3, 10)
 	set_name("[new_name]-[new_id]")
-	if(autoping)
+	// Sealed in an envelope (mail goodies): ghosts can't take it until it's unwrapped
+	if(autoping && !is_sealed_in_mail())
 		ping_ghosts("created", TRUE)
 
 /obj/item/brain_processor/positronic/Destroy(force)
@@ -103,6 +104,9 @@
 
 /obj/item/brain_processor/positronic/attack_ghost(mob/user)
 	if(is_occupied())
+		return
+	if(is_sealed_in_mail())
+		to_chat(user, span_warning("[src] is sealed inside [loc] and can't be activated."))
 		return
 	if(LAZYACCESS(ckeys_entered, user.ckey))
 		to_chat(user, span_warning("You cannot re-enter [src] a second time!"))
@@ -190,6 +194,10 @@
 	if(astype(loc, /mob/living/silicon/robot)?.mmi == src)
 		return TRUE
 	return FALSE
+
+/// Whether we are inside a piece of mail, which can't be possessed until it is opened.
+/obj/item/brain_processor/positronic/proc/is_sealed_in_mail()
+	return istype(loc, /obj/item/mail)
 
 /obj/item/brain_processor/positronic/proc/is_searching()
 	return !!ghost_ping_timer // lol
