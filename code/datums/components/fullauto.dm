@@ -319,8 +319,9 @@
 /obj/item/gun/proc/do_autofire_shot(datum/source, atom/target, mob/living/shooter, allow_akimbo, params)
 	var/obj/item/gun/akimbo_gun = shooter.get_inactive_held_item()
 	var/bonus_spread = 0
-	if(istype(akimbo_gun) && weapon_weight < WEAPON_MEDIUM && allow_akimbo)
-		if(akimbo_gun.weapon_weight < WEAPON_MEDIUM && akimbo_gun.can_trigger_gun(shooter))
+	// Same rules as manual akimbo firing in fire_gun(): combat mode only, and not for those who can't dual wield
+	if(istype(akimbo_gun) && weapon_weight < WEAPON_MEDIUM && allow_akimbo && shooter.combat_mode && !HAS_TRAIT(shooter, TRAIT_NO_GUN_AKIMBO))
+		if(akimbo_gun.weapon_weight < WEAPON_MEDIUM && akimbo_gun.can_trigger_gun(shooter, akimbo_usage = TRUE))
 			if(!akimbo_gun.can_shoot())
 				addtimer(CALLBACK(akimbo_gun, TYPE_PROC_REF(/obj/item/gun, shoot_with_empty_chamber), shooter), 0.1 SECONDS)
 			else
