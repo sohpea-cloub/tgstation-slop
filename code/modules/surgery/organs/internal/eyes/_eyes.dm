@@ -132,6 +132,12 @@
 	if(call_update)
 		affected_human.update_eyes()
 
+/obj/item/organ/eyes/get_availability(datum/species/owner_species, mob/living/owner_mob)
+	// Psykers have their eyes removed when they are psykerized, and navigate by echolocation instead
+	if(istype(owner_mob?.get_bodypart(BODY_ZONE_HEAD), /obj/item/bodypart/head/psyker))
+		return FALSE
+	return ..()
+
 /obj/item/organ/eyes/on_mob_remove(mob/living/carbon/organ_owner, special, movement_flags)
 	. = ..()
 	// Don't forget about the eyelids
