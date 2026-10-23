@@ -102,10 +102,13 @@
 	burning_volume = 0.3//But burns fast
 	chemical_flags = REAGENT_CAN_BE_SYNTHESIZED
 	randomized_spawns = REAGENT_SPAWN_ALL_RANDOM_SPAWNS
+	/// Does this boil into plasma gas when it is hot enough, or is it spilled while hot? Virus plasma and the like are not liquid plasma.
+	var/boils_into_gas = TRUE
 
 /datum/reagent/toxin/plasma/on_new(data)
 	. = ..()
-	RegisterSignal(holder, COMSIG_REAGENTS_TEMP_CHANGE, PROC_REF(on_temp_change))
+	if(boils_into_gas)
+		RegisterSignal(holder, COMSIG_REAGENTS_TEMP_CHANGE, PROC_REF(on_temp_change))
 
 /datum/reagent/toxin/plasma/Destroy()
 	UnregisterSignal(holder, COMSIG_REAGENTS_TEMP_CHANGE)
@@ -140,7 +143,7 @@
 	holder.del_reagent(type)
 
 /datum/reagent/toxin/plasma/expose_turf(turf/open/exposed_turf, reac_volume)
-	if(!istype(exposed_turf))
+	if(!istype(exposed_turf) || !boils_into_gas)
 		return
 	var/temp = holder ? holder.chem_temp : T20C
 	if(temp >= LIQUID_PLASMA_BP)

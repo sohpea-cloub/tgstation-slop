@@ -2662,6 +2662,7 @@
 
 /datum/reagent/toxin/plasma/plasmavirusfood
 	name = "Virus Plasma"
+	boils_into_gas = FALSE
 	color = "#A270A8" // rgb: 166,157,169
 	taste_description = "bitterness"
 	taste_mult = 1.5
@@ -2670,6 +2671,7 @@
 
 /datum/reagent/toxin/plasma/plasmavirusfood/weak
 	name = "Weakened Virus Plasma"
+	boils_into_gas = FALSE
 	color = "#A28CA5" // rgb: 206,195,198
 	taste_description = "bitterness"
 	taste_mult = 1.5
