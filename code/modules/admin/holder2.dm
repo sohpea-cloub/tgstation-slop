@@ -173,6 +173,10 @@ GLOBAL_PROTECT(href_token)
 		return
 	if(owner)
 		GLOB.admins -= owner
+		// build mode needs R_BUILD, don't let it linger once we're no longer an admin
+		if(istype(owner.click_intercept, /datum/buildmode))
+			var/datum/buildmode/build_mode = owner.click_intercept
+			build_mode.quit()
 		owner.remove_admin_verbs()
 		owner.holder = null
 		owner = null
