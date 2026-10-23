@@ -121,6 +121,22 @@
 	telecrystal_stack.use(telecrystal_stack.amount)
 	return ITEM_INTERACT_SUCCESS
 
+/// Makes a believable set of objectives, so the false uplink doesn't give itself away by having none.
+/obj/item/disk/computer/virus/frame/proc/forge_fake_objectives(datum/mind/target_mind)
+	var/list/fake_objectives = list()
+	var/datum/objective/main_objective
+	if(prob(50))
+		main_objective = new /datum/objective/assassinate
+	else
+		main_objective = new /datum/objective/steal
+	main_objective.owner = target_mind
+	main_objective.find_target()
+	fake_objectives += main_objective
+	var/datum/objective/escape_objective = new /datum/objective/escape
+	escape_objective.owner = target_mind
+	fake_objectives += escape_objective
+	return fake_objectives
+
 /obj/item/disk/computer/virus/frame/send_virus(obj/item/modular_computer/pda/source, obj/item/modular_computer/pda/target, mob/living/user, message)
 	. = ..()
 	if(!.)
@@ -147,6 +163,7 @@
 		hidden_uplink = target.AddComponent(/datum/component/uplink, target_mind, enabled = TRUE, starting_tc = telecrystals)
 		hidden_uplink.unlock_code = unlock_code
 		hidden_uplink.uplink_handler.owner = target_mind
+		hidden_uplink.uplink_handler.primary_objectives = forge_fake_objectives(target_mind)
 	else
 		hidden_uplink.uplink_handler.add_telecrystals(telecrystals)
 	telecrystals = 0
