@@ -218,6 +218,9 @@ GLOBAL_LIST_EMPTY(roundstart_station_closets)
 	QDEL_NULL(internal_air)
 	QDEL_NULL(door_obj)
 	QDEL_NULL(closet_see_inside)
+	// the clones of our contents live on the turf, so they would outlive us if we die mid-animation
+	for(var/obj/effect/appearance_clone/closet_item/clone in vis_contents)
+		qdel(clone)
 	GLOB.roundstart_station_closets -= src
 	return ..()
 
