@@ -122,6 +122,10 @@
 	return
 
 /mob/living/proc/handle_gravity(seconds_per_tick)
+	// Gravity is event based, off of our own movement and our loc's traits. A container we are in (mech, closet, vehicle...)
+	// moving between turfs, or its turf's gravity changing, notifies none of that, so check again while we're inside one
+	if(!isturf(loc))
+		refresh_gravity()
 	if(gravity_state > STANDARD_GRAVITY)
 		handle_high_gravity(gravity_state, seconds_per_tick)
 
