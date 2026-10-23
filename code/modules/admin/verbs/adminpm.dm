@@ -576,6 +576,13 @@ ADMIN_VERB(cmd_admin_pm_panel, R_NONE, "Admin PM", "Show a list of clients to PM
 
 	//clean the message if it's not sent by a high-rank admin
 	if(!check_rights(R_SERVER|R_DEBUG, 0) || ambiguious_recipient == EXTERNAL_PM_USER)//no sending html to the poor bots
+		var/message_length = length_char(message)
+		if(message_length > MAX_MESSAGE_LEN)
+			to_chat(src,
+				type = MESSAGE_TYPE_ADMINPM,
+				html = "[span_danger("Error: Admin-PM-Filter: Your message is [message_length] characters long, which exceeds the maximum of [MAX_MESSAGE_LEN]. It was not sent; shorten it and try again. Your message was:")]<br>[sanitize(message)]",
+				confidential = TRUE)
+			return
 		message = sanitize(copytext_char(message, 1, MAX_MESSAGE_LEN))
 		if(!message)
 			to_chat(src,

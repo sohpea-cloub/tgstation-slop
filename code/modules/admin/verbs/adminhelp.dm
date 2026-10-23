@@ -756,6 +756,11 @@ GLOBAL_DATUM_INIT(admin_help_ui_handler, /datum/admin_help_ui_handler, new)
 	if(user_client.adminhelptimerid)
 		return
 
+	var/message_length = length_char(message)
+	if(message_length > MAX_MESSAGE_LEN)
+		to_chat(user_client, span_danger("Your adminhelp is [message_length] characters long, which exceeds the maximum of [MAX_MESSAGE_LEN], so it was not sent. Please shorten it and try again. Your message was:<br>[sanitize(message)]"), confidential = TRUE)
+		return
+
 	perform_adminhelp(user_client, message, urgent)
 	ui.close()
 
