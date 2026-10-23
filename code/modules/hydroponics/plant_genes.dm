@@ -236,6 +236,11 @@
 	SIGNAL_HANDLER
 
 	var/turf/our_turf = get_turf(target)
+	// A border object (a directional window) that blocked the throw sits on a different tile than the plant: splat on the plant's side of it, not behind it
+	var/atom/border_target
+	if(isobj(target) && (target.flags_1 & ON_BORDER_1) && isturf(our_plant.loc) && our_plant.loc != our_turf)
+		border_target = target
+		our_turf = our_plant.loc
 	our_plant.forceMove(our_turf)
 	if(istype(our_plant))
 		if(ispath(our_plant.splat_type, /obj/effect/decal/cleanable/food/plant_smudge))
@@ -256,6 +261,8 @@
 	our_plant.reagents?.expose(our_turf)
 	for(var/things in our_turf)
 		our_plant.reagents?.expose(things)
+	if(border_target)
+		our_plant.reagents?.expose(border_target)
 
 	qdel(our_plant)
 
