@@ -252,6 +252,8 @@ GLOBAL_LIST_INIT(command_strings, list(
 	if (user)
 		log_silicon("[key_name(user)] disabled sapience for [src] ([initial(src.name)])")
 	can_be_possessed = FALSE
+	// Without the component the bot would stay listed in the spawners menu and keep its click-to-possess prompt
+	qdel(GetComponent(/datum/component/ghost_direct_control))
 	if(isnull(key))
 		return
 	if (user)
