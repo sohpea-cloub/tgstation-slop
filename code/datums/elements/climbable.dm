@@ -96,7 +96,7 @@
 								span_notice("You climb onto [climbed_thing]."))
 			log_combat(user, climbed_thing, "climbed onto")
 			if(adjusted_climb_stun)
-				user.Stun(adjusted_climb_stun)
+				user.Stun(adjusted_climb_stun, force_say = FALSE)
 			var/atom/movable/buckle_target = climbed_thing
 			if(istype(buckle_target))
 				if(buckle_target.is_buckle_possible(user))

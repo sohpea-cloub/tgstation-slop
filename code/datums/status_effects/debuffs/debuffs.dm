@@ -22,9 +22,11 @@
 	/// Suffixes attached to the force_say when applied, uses the "hurt" suffixes by default
 	var/list/alter_phrases
 
-/datum/status_effect/incapacitating/on_creation(mob/living/new_owner, set_duration)
+/datum/status_effect/incapacitating/on_creation(mob/living/new_owner, set_duration, no_force_say = FALSE)
 	if(isnum(set_duration))
 		duration = set_duration
+	if(no_force_say)
+		force_say_chance = 0
 	. = ..()
 	if(!.)
 		return

@@ -39,7 +39,8 @@
 		return S.duration
 	return 0
 
-/mob/living/proc/Stun(amount, ignore_canstun = FALSE) //Can't go below remaining duration
+/// Stuns for amount deciseconds. Can't go below remaining duration. force_say = FALSE stops the new stun from making a human blurt out a pain phrase.
+/mob/living/proc/Stun(amount, ignore_canstun = FALSE, force_say = TRUE)
 	amount *= GET_PHYSIOLOGY(src, PHYS_COEFF_STUN)
 	if(SEND_SIGNAL(src, COMSIG_LIVING_STATUS_STUN, amount, ignore_canstun) & COMPONENT_NO_STUN)
 		return
@@ -49,7 +50,7 @@
 	if(S)
 		S.duration = max(amount, S.duration)
 	else if(amount > 0)
-		S = apply_status_effect(/datum/status_effect/incapacitating/stun, amount)
+		S = apply_status_effect(/datum/status_effect/incapacitating/stun, amount, !force_say)
 	return S
 
 /mob/living/proc/SetStun(amount, ignore_canstun = FALSE) //Sets remaining duration
