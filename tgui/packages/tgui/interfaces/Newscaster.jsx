@@ -282,7 +282,7 @@ const NewscasterWantedScreen = (props) => {
                     <Box bold>{activeWanted.criminal}</Box>
                     <Box italic>{activeWanted.crime}</Box>
                   </Section>
-                  <Image src={activeWanted.image ? activeWanted.image : null} />
+                  {!!activeWanted.image && <Image src={activeWanted.image} />}
                   <Box italic>
                     Posted by{' '}
                     {activeWanted.author ? activeWanted.author : 'N/A'}
