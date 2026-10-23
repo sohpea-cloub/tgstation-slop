@@ -38,6 +38,19 @@
 			build_type = initial(build_type)
 		icon_state = "[base_icon_state][flipped]"
 
+GAME_VERB_SRC(/obj/structure/c_transit_tube, verb_flip, view(1), "Flip", null)
+
+	if(!usr.can_perform_action(src, NEED_DEXTERITY))
+		return
+
+	if(!flipped_build_type)
+		balloon_alert(usr, "can't be flipped!")
+		return
+
+	// post_rotation() expects the 180 degree turn to have already happened, and turns it back
+	setDir(turn(dir, ROTATION_FLIP))
+	post_rotation(usr, ROTATION_FLIP)
+
 /obj/structure/c_transit_tube/wrench_act(mob/living/user, obj/item/I)
 	..()
 	if(!can_wrench_in_loc(user))
