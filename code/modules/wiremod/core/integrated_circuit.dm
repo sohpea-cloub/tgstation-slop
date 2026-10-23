@@ -40,6 +40,9 @@ GLOBAL_LIST_EMPTY_TYPED(integrated_circuits, /obj/item/integrated_circuit)
 	/// Whether the integrated circuit is locked or not. Handled by the shell.
 	var/locked = FALSE
 
+	/// Whether components triggering right now (in any circuit, including nested modules) are doing so just to refresh their outputs (a shell was attached), and so shouldn't use any energy.
+	var/static/free_component_refresh = FALSE
+
 	/// Whether the integrated circuit is admin only. Disables power usage and allows admin circuits to be attached, at the cost of making it inaccessible to regular users.
 	var/admin_only = FALSE
 
@@ -212,7 +215,10 @@ GLOBAL_LIST_EMPTY_TYPED(integrated_circuits, /obj/item/integrated_circuit)
 		attached_component.register_shell(shell)
 		// Their input ports may be updated with user values, but the outputs haven't updated
 		// because on is FALSE
+		// This refresh isn't a real input, so it shouldn't cost any energy (and mustn't set off a rigged cell)
+		free_component_refresh = TRUE
 		attached_component.trigger_component()
+		free_component_refresh = FALSE
 
 /**
  * Unregisters the current shell attached to this circuit.
