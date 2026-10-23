@@ -25,7 +25,8 @@
 	var/max_list_count = 100
 
 /obj/item/circuit_component/list_literal/populate_options()
-	list_options = add_option_port("List Type", GLOB.wiremod_basic_types)
+	// A table is already a list of rows, so a "list of tables" nests lists and trips the overheat check below (returning null)
+	list_options = add_option_port("List Type", GLOB.wiremod_basic_types - PORT_TYPE_TABLE)
 
 /obj/item/circuit_component/list_literal/pre_input_received(datum/port/input/port)
 	if(port == list_options)
