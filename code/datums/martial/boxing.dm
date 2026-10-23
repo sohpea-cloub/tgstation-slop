@@ -81,6 +81,8 @@
 	return
 
 /datum/martial_art/boxing/disarm_act(mob/living/attacker, mob/living/defender)
+	if(HAS_TRAIT(attacker, TRAIT_PACIFISM) && !pacifist_style) // right click skips the combat mode pacifism check in attack_handler()
+		return MARTIAL_ATTACK_INVALID
 	if(honor_check(defender))
 		add_to_streak("D", defender)
 	INVOKE_ASYNC(src, PROC_REF(tussle), attacker, defender)
