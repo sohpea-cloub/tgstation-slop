@@ -297,6 +297,11 @@
 	if(HAS_TRAIT(owner, TRAIT_DEAF) || owner == hearing_args[HEARING_SPEAKER])
 		return
 
+	// Already in a trance: the next message heard is the hypnotic suggestion, so leave it alone
+	// (censoring it would make the trance hypnotize the victim with "*********" instead of what was said)
+	if(owner.has_status_effect(/datum/status_effect/trance))
+		return
+
 	var/regex/reg = new("(\\b[REGEX_QUOTE(trigger_phrase)]\\b)","ig")
 
 	if(findtext(hearing_args[HEARING_RAW_MESSAGE], reg))
@@ -304,6 +309,8 @@
 		hearing_args[HEARING_RAW_MESSAGE] = reg.Replace(hearing_args[HEARING_RAW_MESSAGE], span_hypnophrase("*********"))
 
 /datum/brain_trauma/severe/hypnotic_trigger/proc/hypnotrigger()
+	if(QDELETED(owner) || owner.has_status_effect(/datum/status_effect/trance))
+		return
 	to_chat(owner, span_warning("The words trigger something deep within you, and you feel your consciousness slipping away..."))
 	owner.apply_status_effect(/datum/status_effect/trance, rand(100,300), FALSE)
 
