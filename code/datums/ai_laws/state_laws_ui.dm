@@ -2,20 +2,19 @@
 /datum/state_laws_ui
 	/// Silicon that owns this UI.
 	VAR_PRIVATE/mob/living/silicon/owner
-	/// List of laws that are currently stated.
-	VAR_PRIVATE/list/to_state
+	/// List of law texts the user has unchecked, and so will not be stated.
+	/// Everything else (including laws added after the UI was last reset) is stated.
+	VAR_PRIVATE/list/not_to_state = list()
 	/// Whether the UI is locked to prevent multiple state law calls.
 	VAR_PRIVATE/locked = FALSE
 
 /datum/state_laws_ui/New(mob/living/silicon/owner)
 	src.owner = owner
-	if(owner.laws)
-		update_inherent_stated_laws(owner.laws)
 
-/// Used to update the to_state list to the passed ai law's inherent laws
-/// Call this when changing the AI's lawset entirely
-/datum/state_laws_ui/proc/update_inherent_stated_laws(datum/ai_laws/laws)
-	to_state = assoc_to_values(laws.inherent)
+/// Resets the selection so every law is stated again.
+/// Call this when changing the silicon's lawset entirely
+/datum/state_laws_ui/proc/reset_stated_laws()
+	not_to_state.Cut()
 
 /datum/state_laws_ui/Destroy()
 	owner = null
@@ -43,7 +42,7 @@
 	)
 
 /datum/state_laws_ui/ui_close(mob/user)
-	update_inherent_stated_laws(owner.laws)
+	reset_stated_laws()
 
 /datum/state_laws_ui/ui_state(mob/user)
 	return GLOB.not_incapacitated_state
@@ -59,8 +58,13 @@
 	var/list/data = list()
 
 	data["locked"] = locked
-	data["stated_laws"] = to_state
-	data["all_laws"] = get_laws_ui_data()
+	var/list/all_laws = get_laws_ui_data()
+	var/list/stated_laws = list()
+	for(var/list/law_data as anything in all_laws)
+		if(!(law_data["text"] in not_to_state))
+			stated_laws += law_data["text"]
+	data["stated_laws"] = stated_laws
+	data["all_laws"] = all_laws
 
 	return data
 
@@ -72,10 +76,10 @@
 		if("toggle_stated")
 			var/law = params["law"]
 			if(law)
-				if(law in to_state)
-					to_state -= law
+				if(law in not_to_state)
+					not_to_state -= law
 				else
-					to_state += law
+					not_to_state += law
 			return TRUE
 		if("state_laws")
 			state_laws()
@@ -96,31 +100,31 @@
 	var/list/lawcache_hacked = owner.laws.hacked.Copy()
 	var/list/lawcache_inherent = owner.laws.inherent.Copy()
 	var/list/lawcache_supplied = owner.laws.supplied.Copy()
-	var/list/to_state_cached = to_state.Copy()
+	var/list/not_to_state_cached = not_to_state.Copy()
 
 	//"radiomod" is inserted before a hardcoded message to change if and how it is handled by an internal radio.
 	owner.say("[owner.radiomod] Current Active Laws:", forced = forced_log_message)
 	sleep(1 SECONDS)
 
-	if (lawcache_zeroth && (force_all_laws || (lawcache_zeroth in to_state_cached)))
+	if (lawcache_zeroth && (force_all_laws || !(lawcache_zeroth in not_to_state_cached)))
 		owner.say("[owner.radiomod] 0. [lawcache_zeroth]", forced = forced_log_message, message_mods = list(MODE_SEQUENTIAL = TRUE, SAY_MOD_VERB = "states"))
 		sleep(1 SECONDS)
 
 	for (var/law in lawcache_hacked)
-		if (force_all_laws || (law in to_state_cached))
+		if (force_all_laws || !(law in not_to_state_cached))
 			owner.say("[owner.radiomod] [ion_num()]. [law]", forced = forced_log_message, message_mods = list(MODE_SEQUENTIAL = TRUE, SAY_MOD_VERB = "states"))
 			sleep(1 SECONDS)
 
 	var/number = 1
 	for (var/law_text, is_ioned in lawcache_inherent)
-		if (force_all_laws || (law_text in to_state_cached))
+		if (force_all_laws || !(law_text in not_to_state_cached))
 			owner.say("[owner.radiomod] [is_ioned ? ion_num() : number]. [law_text]", forced = forced_log_message, message_mods = list(MODE_SEQUENTIAL = TRUE, SAY_MOD_VERB = "states"))
 			if(!is_ioned)
 				number++
 			sleep(1 SECONDS)
 
 	for (var/law_text, is_ioned in lawcache_supplied)
-		if (force_all_laws || (law_text in to_state_cached))
+		if (force_all_laws || !(law_text in not_to_state_cached))
 			owner.say("[owner.radiomod] [is_ioned ? ion_num() : number]. [law_text]", forced = forced_log_message, message_mods = list(MODE_SEQUENTIAL = TRUE, SAY_MOD_VERB = "states"))
 			if(!is_ioned)
 				number++

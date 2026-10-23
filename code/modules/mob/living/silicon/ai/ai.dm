@@ -35,7 +35,7 @@
 	var/datum/antagonist/malf_ai/malf_datum = IS_MALF_AI(target_ai)
 	malf_datum?.add_law_zero()
 
-	law_ui.update_inherent_stated_laws(laws)
+	law_ui.reset_stated_laws()
 
 	create_eye()
 

@@ -200,7 +200,7 @@
 		give_messenger_ability()
 	START_PROCESSING(SSfastprocess, src)
 	make_laws()
-	law_ui.update_inherent_stated_laws(laws)
+	law_ui.reset_stated_laws()
 	var/obj/item/pai_card/pai_card = loc
 	if(!istype(pai_card)) // when manually spawning a pai, we create a card to put it into.
 		var/newcardloc = pai_card
