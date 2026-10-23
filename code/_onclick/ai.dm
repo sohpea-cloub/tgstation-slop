@@ -157,12 +157,19 @@
 /* Questions: Instead of an Emag check on every function, can we not add to airlocks onclick if emag return? */
 
 /* Atom Procs */
+/// Default AI ctrl click: the same interaction a normal mob gets from click_ctrl (e.g. pumps toggling), if the AI may reach it
 /atom/proc/AICtrlClick(mob/living/silicon/ai/user)
-	return
+	if(SEND_SIGNAL(user, COMSIG_MOB_CTRL_CLICKED, src) & COMSIG_MOB_CANCEL_CLICKON)
+		return
+	if(SEND_SIGNAL(src, COMSIG_CLICK_CTRL, user) & CLICK_ACTION_ANY)
+		return
+	if(user.can_perform_action(src, interaction_flags_click | SILENT_ADJACENCY))
+		click_ctrl(user)
 
+/// Default AI alt click: the same interaction a normal mob gets from click_alt
 /atom/proc/ai_click_alt(mob/living/silicon/ai/user)
 	SHOULD_CALL_PARENT(FALSE)
-	return
+	return click_alt(user)
 
 /atom/proc/AIShiftClick(mob/living/silicon/ai/user)
 	return FALSE

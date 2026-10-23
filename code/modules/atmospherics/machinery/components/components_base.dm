@@ -4,6 +4,7 @@
 /obj/machinery/atmospherics/components
 	hide = FALSE
 	layer = GAS_PUMP_LAYER
+	interaction_flags_click = ALLOW_SILICON_REACH
 	///Is the component welded?
 	var/welded = FALSE
 	///Current underfloor_accessibility state, determines if the component should show the pipe underneath it and what plane it renders on.
