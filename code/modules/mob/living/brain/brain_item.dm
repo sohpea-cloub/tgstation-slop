@@ -138,7 +138,8 @@
 	icon_state = "[initial(icon_state)][smooth_brain ? "-smooth" : ""]"
 	return ..()
 
-/obj/item/organ/brain/proc/transfer_identity(mob/living/L)
+/// Makes a brainmob for this brain out of L's identity. Also moves L's mind into it, unless transfer_mind is FALSE.
+/obj/item/organ/brain/proc/transfer_identity(mob/living/L, transfer_mind = TRUE)
 	name = "[L.name]'s [initial(name)]"
 	if(brainmob)
 		if(!decoy_override)
@@ -166,7 +167,7 @@
 		for(var/source in GET_TRAIT_SOURCES(L, TRAIT_BADDNA))
 			ADD_TRAIT(brainmob, TRAIT_BADDNA, source)
 
-	if(L.mind && L.mind.current && !decoy_override)
+	if(transfer_mind && L.mind && L.mind.current && !decoy_override)
 		L.mind.transfer_to(brainmob)
 		to_chat(brainmob, span_notice("You feel slightly disoriented. That's normal when you're just a brain."))
 

@@ -158,11 +158,17 @@
 	var/obj/item/organ/brain/new_brain = astype(transferred_user, /mob/living/carbon)?.get_organ_by_type(/obj/item/organ/brain)
 	if(!new_brain)
 		new_brain = new(src)
-		new_brain.transfer_identity(transferred_user)
 	else
-		new_brain.Remove(transferred_user, special = TRUE)
+		// NO_ID_TRANSFER: removing the brain would otherwise move the user's mind into its brainmob
+		new_brain.Remove(transferred_user, special = TRUE, movement_flags = NO_ID_TRANSFER)
 		new_brain.forceMove(src)
 
+	// We only copy the identity: the mind stays with the user, the caller moves it (see the proc above)
+	new_brain.transfer_identity(transferred_user, transfer_mind = FALSE)
+
+	// Whatever brain was in here (a cyborg's default one) is replaced, not dumped on the floor
+	if(brain)
+		qdel(remove_brain(null))
 	insert_brain(new_brain)
 
 /obj/item/brain_processor/organic/atom_deconstruct(disassembled = TRUE)
