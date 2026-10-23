@@ -30,6 +30,7 @@ GLOBAL_LIST_EMPTY(weakpoints_spawned)
 	/// These turfs are things we don't want to spawn new cracks onto.
 	var/static/list/skip_turfs = typecacheof(list(
 		/turf/open/space,
+		/turf/open/openspace, // Cracks spawned on these would fall down a z level (or into space beneath).
 		/turf/open/misc/asteroid,
 		/turf/open/misc/snow,
 	))
@@ -39,7 +40,7 @@ GLOBAL_LIST_EMPTY(weakpoints_spawned)
 	GLOB.weakpoints_spawned += src
 	alpha = 0
 	AddElement(/datum/element/undertile, TRAIT_T_RAY_VISIBLE, INVISIBILITY_OBSERVER, use_anchor = TRUE)
-	RegisterSignal(src, COMSIG_TURF_CHANGE, PROC_REF(turf_changed))
+	AddElement(/datum/element/connect_loc, list(COMSIG_TURF_CHANGE = PROC_REF(turf_changed)))
 	register_context()
 	animate(src, alpha = 255, time = 0.3 SECONDS)
 
@@ -138,16 +139,20 @@ GLOBAL_LIST_EMPTY(weakpoints_spawned)
 	return cracked_turfs
 
 /// If this turf becomes something we can't spawn a crack on, we should try and shift the crack or otherwise qdel.
-/obj/effect/weakpoint/proc/turf_changed(turf/source)
+/obj/effect/weakpoint/proc/turf_changed(turf/source, path, list/new_baseturfs, flags, list/post_change_callbacks)
 	SIGNAL_HANDLER
+	if(!ispath(path) || !is_type_in_typecache(path, skip_turfs))
+		return
+	// Move before the turf is replaced, otherwise we'd fall as soon as the new turf (e.g. openspace) initializes.
 	var/turf/option
 	var/list/turf/choices = get_adjacent_open_turfs(src)
 	while(!option && length(choices))
-		option = pick_n_take(get_adjacent_open_turfs(src))
-		if(locate(/obj/effect/weakpoint) in option)
+		var/turf/choice = pick_n_take(choices)
+		if(locate(/obj/effect/weakpoint) in choice)
 			continue
-		if(is_type_in_typecache(option, skip_turfs))
+		if(is_type_in_typecache(choice, skip_turfs))
 			continue
+		option = choice
 	if(!option)
 		qdel(src)
 		return
