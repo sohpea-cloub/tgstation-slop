@@ -48,6 +48,8 @@
 	refresh_actions()
 
 /datum/action_group/proc/refresh_actions()
+	// A null here (a button that was hard deleted) would runtime below and leave every button after it unpositioned
+	list_clear_nulls(actions)
 
 	// We don't use size() here because landings are not canon
 	var/total_rows = ROUND_UP(length(actions) / column_max)

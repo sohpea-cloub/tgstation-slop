@@ -517,6 +517,10 @@ GLOBAL_LIST_INIT(available_ui_styles, list(
 	if(position == SCRN_OBJ_FLOATING)
 		return
 
+	// A deleted button in one of our groups would stay there, fail to GC, and become a null that breaks every refresh
+	if(QDELETED(button))
+		return
+
 	if(button.location != SCRN_OBJ_DEFAULT)
 		hide_action(button)
 
@@ -542,6 +546,9 @@ GLOBAL_LIST_INIT(available_ui_styles, list(
 	button.location = position
 
 /datum/hud/proc/position_action_relative(atom/movable/screen/movable/action_button/button, atom/movable/screen/movable/action_button/relative_to)
+	if(QDELETED(button) || QDELETED(relative_to))
+		return
+
 	if(button.location != SCRN_OBJ_DEFAULT)
 		hide_action(button)
 
