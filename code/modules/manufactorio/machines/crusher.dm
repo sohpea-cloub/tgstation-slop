@@ -28,7 +28,7 @@
 /obj/machinery/power/manufacturing/crusher/receive_resource(obj/receiving, atom/from, receive_dir)
 	if(istype(receiving, /obj/item/stack/ore) || receiving.resistance_flags & INDESTRUCTIBLE || !isitem(receiving) || surplus() < crush_cost  || receive_dir != REVERSE_DIR(dir))
 		return MANUFACTURING_FAIL
-	if(length(contents - circuit) >= capacity && may_merge_in_contents_and_do_so(receiving))
+	if(length(contents - circuit) >= capacity && !may_merge_in_contents_and_do_so(receiving))
 		return MANUFACTURING_FAIL
 	receiving.Move(src, get_dir(receiving, src))
 	START_PROCESSING(SSmanufacturing, src)
@@ -40,8 +40,11 @@
 		withholding = null
 
 /obj/machinery/power/manufacturing/crusher/process(seconds_per_tick)
-	if(!isnull(withholding) && !send_resource(withholding, dir))
-		return
+	if(!isnull(withholding))
+		if(!send_resource(withholding, dir))
+			return
+		// stacks made from held materials start in nullspace, so Exited() never clears this
+		withholding = null
 	for(var/material in held_mats)
 		if(held_mats[material] >= 1)
 			var/new_amount = floor(held_mats[material])
