@@ -123,6 +123,12 @@
 
 	var/mob/user = ui.user
 	switch(action)
+		if("lock")
+			// silicons can't swipe an ID, so they toggle the interface lock directly
+			if(!HAS_SILICON_ACCESS(user))
+				return
+			locked = !locked
+			return TRUE
 		if("LZCargo")
 			using_beacon = FALSE
 			if (beacon)

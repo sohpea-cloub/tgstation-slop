@@ -16,6 +16,7 @@ import { CargoCatalog } from './Cargo/CargoCatalog';
 
 type Data = {
   locked: BooleanLike;
+  siliconUser: BooleanLike;
   points: number;
   using_beacon: BooleanLike;
   beaconzone: string;
@@ -29,8 +30,8 @@ type Data = {
 };
 
 export function CargoExpress(props) {
-  const { data } = useBackend<Data>();
-  const { beaconError, canBeacon, message, locked } = data;
+  const { act, data } = useBackend<Data>();
+  const { beaconError, canBeacon, message, locked, siliconUser } = data;
 
   return (
     <Window width={600} height={700}>
@@ -43,6 +44,13 @@ export function CargoExpress(props) {
                 <br />
                 {`Swipe a Cargo Technician-level ID card to unlock this interface.`}
               </Stack.Item>
+              {!!siliconUser && (
+                <Stack.Item>
+                  <Button icon="unlock" onClick={() => act('lock')}>
+                    Unlock
+                  </Button>
+                </Stack.Item>
+              )}
             </Stack>
           </Section>
         ) : (
