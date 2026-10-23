@@ -135,6 +135,7 @@
 	name = "photosynthetic potted plant"
 	desc = "A bioluminescent plant."
 	icon_state = "plant-09"
+	trimmable = FALSE
 	light_color = COLOR_BRIGHT_BLUE
 	light_range = 3
 
