@@ -33,12 +33,6 @@
 	CHECK_TICK
 	/**************************************************************************************************************/
 
-	// The fallback area is the area for shuttle turfs that have no area underneath them
-	// If it no longer/has never existed it will be created
-	var/area/fallback_area = GLOB.areas_by_type[fallback_area_type]
-	if(!fallback_area)
-		fallback_area = new fallback_area_type(null)
-
 	var/rotation = 0
 	if(new_dock.dir != dir) //Even when the dirs are the same rotation is coming out as not 0 for some reason
 		rotation = dir2angle(new_dock.dir)-dir2angle(dir)
@@ -79,6 +73,19 @@
 			remove_ripples()
 			return DOCKING_IMMOBILIZED
 
+	// The fallback area is the area for shuttle turfs that have no area underneath them
+	// If it no longer/has never existed it will be created
+	var/area/fallback_area = GLOB.areas_by_type[fallback_area_type]
+	var/fallback_area_created = FALSE
+	if(!fallback_area && istype(old_dock, /obj/docking_port/stationary/transit))
+		// transit areas are not unique, so leaving transit would make a new empty Hyperspace area every trip
+		var/obj/docking_port/stationary/transit/old_transit = old_dock
+		if(!QDELETED(old_transit.assigned_area))
+			fallback_area = old_transit.assigned_area
+	if(!fallback_area)
+		fallback_area = new fallback_area_type(null)
+		fallback_area_created = TRUE
+
 	// Moving to the new location will trample the ripples there at the exact
 	// same time any mobs there are trampled, to avoid any discrepancy where
 	// the ripples go away before it is safe.
@@ -89,6 +96,10 @@
 	cleanup_runway(new_dock, old_turfs, new_turfs, areas_to_move, underlying_areas, moved_atoms, rotation, movement_direction, fallback_area)
 
 	CHECK_TICK
+
+	// nothing needed the fallback area we made, don't leave it around empty
+	if(fallback_area_created && !length(fallback_area.contents))
+		qdel(fallback_area)
 
 	/*******************************************Unhiding turfs if necessary******************************************/
 	if(new_hidden_turfs)
