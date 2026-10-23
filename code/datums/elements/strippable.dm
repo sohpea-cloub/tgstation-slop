@@ -47,9 +47,10 @@
 		return
 
 	// Snowflake for cyborgs and bots buckling people by dragging them onto them, unless in combat mode.
+	// Bots that can't strip (a view-only menu is useless to them) never get the menu.
 	if(iscyborg(user) || isbot(user))
 		var/mob/living/bot_user = user
-		if (!bot_user.combat_mode)
+		if (!bot_user.combat_mode || !HAS_TRAIT(bot_user, TRAIT_CAN_STRIP))
 			return
 	// Snowflake for xeno consumption code
 	if (isalienadult(user))
