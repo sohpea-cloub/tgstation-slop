@@ -28,6 +28,10 @@
 		var/mob/living/moving_mob = parent
 		if((moving_mob.movement_type & MOVETYPES_NOT_TOUCHING_GROUND) && !IS_UNCONSCIOUS_OR_CRIT(moving_mob))
 			return MOVELOOP_SKIP_STEP
+		// A buckled mob is carried by whatever it is buckled to, which is conveyed on its own.
+		// Moving the mob too would drag that object a second time and make it skip tiles.
+		if(moving_mob.buckled)
+			return MOVELOOP_SKIP_STEP
 	var/atom/movable/moving_parent = parent
 	if(moving_parent.anchored || !moving_parent.has_gravity())
 		return MOVELOOP_SKIP_STEP
