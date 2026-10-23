@@ -49,7 +49,7 @@ type Log = {
   amount: number;
   time: string;
   noun: string;
-  user_data: UserData;
+  user_data: UserData | null;
 };
 
 enum Tab {
@@ -260,13 +260,13 @@ const LogsList = (props: LogsListProps) => {
     id: index,
     log,
     searchString: [
-      log.action.toLowerCase(),
-      log.user_data.name.toLowerCase(),
-      log.user_data.assignment.toLowerCase(),
-      log.raw_materials.toLowerCase(),
-      log.machine_name.toLowerCase(),
-      log.area_name.toLowerCase(),
-      log.noun.toLowerCase(),
+      log.action?.toLowerCase(),
+      log.user_data?.name?.toLowerCase(),
+      log.user_data?.assignment?.toLowerCase(),
+      log.raw_materials?.toLowerCase(),
+      log.machine_name?.toLowerCase(),
+      log.area_name?.toLowerCase(),
+      String(log.noun ?? '').toLowerCase(),
     ].join(' '),
   }));
 
@@ -324,7 +324,7 @@ const LogsList = (props: LogsListProps) => {
   );
 };
 
-const UserItem = (props: UserData) => {
+const UserItem = (props: Partial<UserData>) => {
   const {
     name = 'NAME_RES_FAIL',
     age = 0,
@@ -415,7 +415,7 @@ const LogEntry = (props: Log) => {
           </Stack.Item>
           <Stack.Item style={{ display: 'flex', alignItems: 'center' }}>
             <Button icon="user" color="gray">
-              {user_data.name} ({user_data.assignment})
+              {user_data?.name} ({user_data?.assignment})
             </Button>
           </Stack.Item>
         </Stack>
@@ -445,7 +445,7 @@ const LogEntry = (props: Log) => {
             <Table.Row className="candystripe" lineHeight={2}>
               <Table.Cell pl={1}>User</Table.Cell>
               <Table.Cell>
-                <UserItem {...user_data} />
+                <UserItem {...(user_data ?? {})} />
               </Table.Cell>
             </Table.Row>
           </Table>

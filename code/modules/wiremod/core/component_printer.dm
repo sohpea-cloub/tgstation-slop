@@ -429,7 +429,7 @@
 				say("Not enough materials.")
 				return TRUE
 
-			materials.use_materials(design["materials"], efficiency_coeff, 1, design["name"], design["materials"], user_data = user_data)
+			materials.use_materials(design["materials"], efficiency_coeff, 1, "processed", "[design["name"]]", user_data = user_data)
 			print_module(design)
 			balloon_alert_to_viewers("printed [design["name"]]")
 		if ("remove_mat")

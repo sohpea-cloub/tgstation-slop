@@ -582,9 +582,10 @@
 	area_name = get_area_name(M, TRUE)
 	action = _action
 	amount = _amount
-	noun = _noun
+	noun = "[_noun]" // the UI treats this as a string
 	materials = mats.Copy()
-	src.user_data = user_data
+	// some callers (smelters, lathes...) don't know who is using them. The UI needs a name and assignment for every entry
+	src.user_data = user_data || ID_DATA(null)
 	var/list/data = list(
 		"machine_name" = machine_name,
 		"area_name" = AREACOORD(M),
@@ -593,11 +594,11 @@
 		"noun" = noun,
 		"raw_materials" = get_raw_materials(""),
 		"direction" = amount < 0 ? "withdrawn" : "deposited",
-		"user_data" = user_data,
+		"user_data" = src.user_data,
 	)
 	logger.Log(
 		LOG_CATEGORY_SILO,
-		"[machine_name] in \[[AREACOORD(M)]\] [action] [abs(amount)]x [noun] | [get_raw_materials("")] | [user_data["name"]]",
+		"[machine_name] in \[[AREACOORD(M)]\] [action] [abs(amount)]x [noun] | [get_raw_materials("")] | [src.user_data["name"]]",
 		data,
 	)
 
