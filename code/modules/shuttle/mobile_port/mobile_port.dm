@@ -306,8 +306,10 @@
 				if(timeLeft(1) < callTime * engine_coeff)
 					setTimer(callTime * engine_coeff)
 			else
+				// Redirecting a shuttle that is already in flight must not restart its trip,
+				// or repeatedly swapping the destination would keep it in transit forever
+				remove_ripples()
 				destination = destination_port
-				setTimer(callTime * engine_coeff)
 		if(SHUTTLE_RECALL)
 			if(destination_port == destination)
 				setTimer(callTime * engine_coeff - timeLeft(1))
