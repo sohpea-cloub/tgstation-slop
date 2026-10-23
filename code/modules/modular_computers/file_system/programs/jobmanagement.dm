@@ -46,7 +46,8 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 
 
 /datum/computer_file/program/job_management/proc/can_close_job(datum/job/job)
-	if(job.total_positions > length(GLOB.player_list) * (max_relative_positions / 100))
+	// Only slots that aren't filled can be closed
+	if(job.total_positions > job.current_positions)
 		var/delta = (world.time / 10) - GLOB.time_last_changed_position
 		if((change_position_cooldown < delta) || (opened_positions[job.title] > 0))
 			return TRUE
