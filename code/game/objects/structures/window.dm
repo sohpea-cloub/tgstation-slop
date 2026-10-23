@@ -61,6 +61,7 @@
 		setDir()
 		obj_flags &= ~BLOCKS_CONSTRUCTION_DIR
 		obj_flags &= ~IGNORE_DENSITY
+		obj_flags |= BLOCK_Z_IN_DOWN //full tile windows are solid enough to stand on, like walls
 		AddElement(/datum/element/can_barricade)
 
 	//windows only block while reinforced and fulltile

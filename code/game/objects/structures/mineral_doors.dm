@@ -41,6 +41,7 @@
 	set_custom_materials(initialized_mineral.mats_per_unit, sheetAmount)
 	qdel(initialized_mineral)
 	air_update_turf(TRUE, TRUE)
+	obj_flags |= BLOCK_Z_IN_DOWN //closed, so it can be stood on from the z level above, like walls
 
 /obj/structure/mineral_door/Destroy()
 	if(!door_opened)
@@ -107,6 +108,7 @@
 	flick("[initial(icon_state)]opening",src)
 	sleep(1 SECONDS)
 	set_density(FALSE)
+	obj_flags &= ~BLOCK_Z_IN_DOWN
 	door_opened = TRUE
 	layer = OPEN_DOOR_LAYER
 	air_update_turf(TRUE, FALSE)
@@ -128,6 +130,7 @@
 	sleep(1 SECONDS)
 	set_density(TRUE)
 	set_opacity(TRUE)
+	obj_flags |= BLOCK_Z_IN_DOWN
 	door_opened = FALSE
 	layer = initial(layer)
 	air_update_turf(TRUE, TRUE)

@@ -42,6 +42,14 @@
 
 	air_update_turf(TRUE, TRUE)
 	update_appearance()
+	update_z_block()
+
+/// Closed false walls can be stood on from the z level above, like real walls
+/obj/structure/falsewall/proc/update_z_block()
+	if(density)
+		obj_flags |= BLOCK_Z_IN_DOWN
+	else
+		obj_flags &= ~BLOCK_Z_IN_DOWN
 
 /obj/structure/falsewall/attack_hand(mob/user, list/modifiers)
 	if(opening)
@@ -62,6 +70,7 @@
 	if(!QDELETED(src))
 		set_density(!density)
 		set_opacity(density)
+		update_z_block()
 		opening = FALSE
 		update_appearance()
 		air_update_turf(TRUE, !density)

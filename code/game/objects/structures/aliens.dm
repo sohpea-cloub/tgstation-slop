@@ -67,6 +67,8 @@
 /obj/structure/alien/resin/Initialize(mapload)
 	. = ..()
 	air_update_turf(TRUE, TRUE)
+	if(resintype) //resin walls and membranes, not other resin structures like flower buds
+		obj_flags |= BLOCK_Z_IN_DOWN //you can stand on these from the z level above, like on walls
 	ADD_TRAIT(src, TRAIT_INVERTED_DEMOLITION, INNATE_TRAIT)
 
 /obj/structure/alien/resin/Destroy()

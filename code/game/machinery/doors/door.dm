@@ -133,6 +133,7 @@
 	//doors only block while dense though so we have to use the proc
 	real_explosion_block = explosion_block
 	update_explosive_block()
+	update_z_block()
 	RegisterSignal(SSsecurity_level, COMSIG_SECURITY_LEVEL_CHANGED, PROC_REF(check_security_level))
 
 	var/static/list/loc_connections = list(
@@ -768,6 +769,14 @@
 /obj/machinery/door/set_density(new_value)
 	. = ..()
 	update_explosive_block()
+	update_z_block()
+
+/// Closed full-tile doors can be stood on from the z level above, like walls
+/obj/machinery/door/proc/update_z_block()
+	if(density && !(flags_1 & ON_BORDER_1))
+		obj_flags |= BLOCK_Z_IN_DOWN
+	else
+		obj_flags &= ~BLOCK_Z_IN_DOWN
 
 /obj/machinery/door/proc/update_explosive_block()
 	set_explosion_block(real_explosion_block)

@@ -11,6 +11,7 @@
 
 /obj/effect/forcefield/Initialize(mapload)
 	. = ..()
+	obj_flags |= BLOCK_Z_IN_DOWN //solid enough to stand on from the z level above
 	if(initial_duration > 0 SECONDS)
 		QDEL_IN(src, initial_duration)
 
