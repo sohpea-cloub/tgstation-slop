@@ -36,6 +36,9 @@
 		   cached_moles[/datum/gas/plasma] > 0.5\
 		|| cached_moles[/datum/gas/tritium] > 0.5\
 		|| cached_moles[/datum/gas/hydrogen] > 0.5)
+	// Hyper-noblium stops fire reactions (see gas_mixture/react()), so it must not start or feed a hotspot either
+	if(plas_trit_h2_threshold && cached_moles[/datum/gas/hypernoblium] >= REACTION_OPPRESSION_THRESHOLD && exposed_temperature > REACTION_OPPRESSION_MIN_TEMP)
+		plas_trit_h2_threshold = FALSE
 	var/freon_threshold = (cached_moles[/datum/gas/freon] > 0.5)
 	if(active_hotspot)
 		if(soh)
