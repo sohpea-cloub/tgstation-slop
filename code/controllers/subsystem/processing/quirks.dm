@@ -197,8 +197,9 @@ PROCESSING_SUBSYSTEM_DEF(quirks)
 			if (!(quirk in blacklist))
 				continue
 
-			for (var/other_quirk in blacklist)
-				if (other_quirk in new_quirks)
+			for (var/datum/quirk/other_quirk as anything in blacklist)
+				// new_quirks holds quirk names, not typepaths
+				if (initial(other_quirk.name) in new_quirks)
 					blacklisted = TRUE
 					break
 
