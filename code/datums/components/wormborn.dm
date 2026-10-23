@@ -46,6 +46,8 @@
 	mob_size = MOB_SIZE_HUGE
 	sentience_type = SENTIENCE_BOSS
 	mob_biotypes = MOB_ORGANIC|MOB_SPECIAL
+	// has no dead icon state, so a corpse would be invisible
+	basic_mob_flags = DEL_ON_DEATH
 
 /mob/living/basic/wizard_worm/has_gravity(turf/gravity_turf)
 	return TRUE
