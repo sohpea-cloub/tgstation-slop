@@ -110,7 +110,7 @@
 	perform_update_icon = FALSE
 	set_listening(listening)
 	set_broadcasting(broadcasting)
-	set_frequency(sanitize_frequency(frequency, freerange, (special_channels & RADIO_SPECIAL_SYNDIE)))
+	set_frequency(sanitize_tuned_frequency(frequency))
 	set_on(on)
 	perform_update_icon = TRUE
 
@@ -190,6 +190,16 @@
 		add_radio(src, GLOB.default_radio_channels[channel_name])
 
 	add_radio(src, frequency)
+
+/**
+ * Clamps a frequency this radio was tuned to by hand. Syndicate, CentCom and capture the flag frequencies are
+ * reserved: radios without the matching special channel (e.g. free-range intercoms) can't be tuned onto them.
+ */
+/obj/item/radio/proc/sanitize_tuned_frequency(new_frequency)
+	. = sanitize_frequency(new_frequency, freerange, (special_channels & RADIO_SPECIAL_SYNDIE))
+	if(. == FREQ_CENTCOM || . == FREQ_CTF_RED || . == FREQ_CTF_BLUE || . == FREQ_CTF_GREEN || . == FREQ_CTF_YELLOW)
+		if(!(special_channels & RADIO_SPECIAL_CENTCOM))
+			. = FREQ_COMMON
 
 /obj/item/radio/proc/make_syndie() // Turns normal radios into Syndicate radios!
 	qdel(keyslot)
@@ -536,7 +546,7 @@
 			else if(tune)
 				tune *= 10
 			if(tune)
-				set_frequency(sanitize_frequency(tune, freerange, (special_channels & RADIO_SPECIAL_SYNDIE)))
+				set_frequency(sanitize_tuned_frequency(tune))
 			. = TRUE
 
 		if("tune_to_channel")
