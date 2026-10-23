@@ -76,7 +76,7 @@
 /datum/element/swimming_tile/proc/dip_in(mob/living/floater)
 	SIGNAL_HANDLER
 
-	if(HAS_TRAIT(floater, TRAIT_SWIMMER) || (isvehicle(floater.buckled) || ismob(floater.buckled)) || !prob(exhaust_swimmer_prob))
+	if(HAS_TRAIT(floater, TRAIT_SWIMMER) || (floater.movement_type & MOVETYPES_NOT_TOUCHING_GROUND) || (isvehicle(floater.buckled) || ismob(floater.buckled)) || !prob(exhaust_swimmer_prob))
 		// Apply the status anyway for when they stop riding
 		floater.apply_status_effect(/datum/status_effect/swimming, ticking_stamina_cost, ticking_oxy_damage)
 		return
@@ -136,7 +136,7 @@
 	UnregisterSignal(owner, SIGNAL_REMOVETRAIT(TRAIT_IMMERSED))
 
 /datum/status_effect/swimming/tick(seconds_between_ticks)
-	if (HAS_TRAIT(owner, TRAIT_MOB_ELEVATED))
+	if (HAS_TRAIT(owner, TRAIT_MOB_ELEVATED) || (owner.movement_type & MOVETYPES_NOT_TOUCHING_GROUND))
 		return
 	if (owner.buckled) // We're going to generously assume that being buckled to any mob or vehicle leaves you above water
 		if (isvehicle(owner.buckled) || ismob(owner.buckled))
