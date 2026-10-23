@@ -37,9 +37,20 @@
 	if(!pod_moving && open_status == STATION_TUBE_OPEN && ismob(AM) && AM.dir == boarding_dir)
 		for(var/obj/structure/transit_tube_pod/pod in loc)
 			if(!pod.moving)
-				AM.forceMove(pod)
+				board_pod(AM, pod)
 				pod.update_appearance()
 				return
+
+/// Puts a movable in a pod, along with anyone buckled to it: they go in unbuckled, rather than being left behind on the platform.
+/obj/structure/transit_tube/station/proc/board_pod(atom/movable/boarder, obj/structure/transit_tube_pod/pod)
+	var/turf/boarding_from = get_turf(boarder)
+	var/list/riders = boarder.buckled_mobs?.Copy()
+	if(length(riders))
+		boarder.unbuckle_all_mobs(force = TRUE)
+	boarder.forceMove(pod)
+	for(var/mob/living/rider as anything in riders)
+		if(!QDELETED(rider) && !rider.buckled && get_turf(rider) == boarding_from)
+			rider.forceMove(pod)
 
 //pod insertion
 /obj/structure/transit_tube/station/mouse_drop_receive(obj/structure/c_transit_tube_pod/R, mob/user, params)
@@ -264,7 +275,7 @@
 	AM.visible_message(span_notice("[pod] forms around [AM]."), span_notice("[pod] materializes around you."))
 	playsound(src, 'sound/items/weapons/emitter2.ogg', 50, TRUE)
 	pod.setDir(turn(src.dir, -90))
-	AM.forceMove(pod)
+	board_pod(AM, pod)
 	pod.update_appearance()
 	launch_pod()
 
