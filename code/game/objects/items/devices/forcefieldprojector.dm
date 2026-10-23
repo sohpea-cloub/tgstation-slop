@@ -45,6 +45,9 @@
 	if(get_turf(src) == T)
 		to_chat(user, span_warning("Target is too close, aborting!"))
 		return ITEM_INTERACT_BLOCKING
+	if(!CAN_SEE_RANGED(T, user, field_distance_limit))
+		to_chat(user, span_warning("You can't see that location!"))
+		return ITEM_INTERACT_BLOCKING
 	if(LAZYLEN(current_fields) >= max_fields)
 		to_chat(user, span_warning("[src] cannot sustain any more forcefields!"))
 		return ITEM_INTERACT_BLOCKING
