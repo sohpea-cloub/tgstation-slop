@@ -52,6 +52,14 @@
 	//PRESTO FUCKIN MAJESTO
 	C.gain_trauma(/datum/brain_trauma/special/obsessed)//ZAP
 
+/datum/antagonist/obsessed/admin_remove(mob/user)
+	// The obsession lives in the brain trauma: if we only removed the antag datum, the trauma would stay behind
+	// (still granting the obsession's effects, and blocking a new obsessed from being added to the same mob).
+	var/datum/brain_trauma/special/obsessed/our_trauma = trauma
+	. = ..()
+	if(!QDELETED(our_trauma))
+		qdel(our_trauma)
+
 /datum/antagonist/obsessed/greet()
 	play_stinger()
 	owner.announce_objectives()
