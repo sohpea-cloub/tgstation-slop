@@ -85,7 +85,14 @@ GLOBAL_LIST_INIT(tendrils, list())
 
 		if (istype(rock, /turf/open/misc/asteroid) && prob(100 / sqrt(max(1, dist))))
 			infected_turfs[rock] = rock.type
-			rock.ChangeTurf(/turf/open/indestructible/necropolis, null, CHANGETURF_IGNORE_AIR)
+			var/turf/open/old_floor = rock
+			var/old_gas_mix = old_floor.initial_gas_mix
+			var/turf/open/necropolis = rock.ChangeTurf(/turf/open/indestructible/necropolis, null, CHANGETURF_IGNORE_AIR)
+			// Tendrils can be initialized before the turfs around them are, so the old turf's air can't be inherited.
+			// Keep the air the replaced turf would have had, otherwise we make active turfs against any non-lavaland atmos around us.
+			if(istype(necropolis) && necropolis.initial_gas_mix != old_gas_mix)
+				necropolis.initial_gas_mix = old_gas_mix
+				necropolis.air.copy_from(necropolis.create_gas_mixture())
 
 /mob/living/basic/mining/tendril/Destroy()
 	GLOB.tendrils -= src
