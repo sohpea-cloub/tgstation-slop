@@ -250,6 +250,11 @@
 	locker_suck = FALSE
 	if (last_tick_turf)
 		UnregisterSignal(last_tick_turf, COMSIG_ATOM_ENTERED)
+	// A bolt that was never fired (deleted with its staff, or a chameleon gun's template) takes its locker with it
+	if(!fired)
+		var/obj/structure/closet/decay/locker_temp_instance = locker_ref?.resolve()
+		if(locker_temp_instance)
+			qdel(locker_temp_instance)
 	for(var/atom/movable/AM in contents)
 		AM.forceMove(get_turf(src))
 	. = ..()
