@@ -424,6 +424,18 @@
 		return !fridge.machine_stat && fridge.visible_items() < fridge.max_n_of_items && fridge.can_load_item(item)
 	return FALSE
 
+/// Can items be left on our turf? Not under full-tile windows, closed airlocks and other dense things (tables and the like let items rest on them).
+/datum/manipulator_task/cargo/dropoff_base/drop/proc/turf_accepts_items()
+	if(!is_valid())
+		return FALSE
+	if(interaction_turf.density)
+		return FALSE
+	for(var/obj/blocker in interaction_turf)
+		if(!blocker.density || (blocker.flags_1 & ON_BORDER_1) || (blocker.pass_flags_self & LETPASSTHROW))
+			continue
+		return FALSE
+	return TRUE
+
 /// Where `target` would end up if dropped now, following our active priorities: a container on the turf that accepts it,
 /// or the turf itself. Null if none of the active priorities has anything to offer.
 /datum/manipulator_task/cargo/dropoff_base/drop/proc/find_drop_endpoint(atom/movable/target)
@@ -433,7 +445,9 @@
 		if(!prio.active)
 			continue
 		if(prio.atom_typepath == /turf)
-			return interaction_turf
+			if(turf_accepts_items())
+				return interaction_turf
+			continue
 		for(var/atom/movable/thing as anything in interaction_turf.contents)
 			if(can_store_in(thing, target))
 				return thing

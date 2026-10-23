@@ -20,6 +20,11 @@
 	if(!on || stopping)
 		return
 	next_cycle_scheduled = FALSE
+	if(!powered() || !use_energy(active_power_usage, force = FALSE))
+		balloon_alert_to_viewers("not enough power!")
+		drop_held_atom()
+		complete_stopping_task()
+		return
 	if(waiting_for_signal)
 		unregister_task_turf_signals()
 		waiting_for_signal = FALSE
@@ -37,11 +42,6 @@
 /// Attempts to launch the work cycle. Should only be ran on pressing the "Run" button.
 /obj/machinery/big_manipulator/proc/try_kickstart(mob/user)
 	if(!on || !anchored || stopping || current_task != null)
-		return FALSE
-
-	if(!use_energy(active_power_usage, force = FALSE))
-		on = FALSE
-		balloon_alert_to_viewers("not enough power!")
 		return FALSE
 
 	next_cycle_scheduled = FALSE
