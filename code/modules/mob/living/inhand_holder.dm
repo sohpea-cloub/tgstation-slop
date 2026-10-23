@@ -26,6 +26,13 @@
 		slot_flags = worn_slot_flags
 	update_weight_class(held_mob.held_w_class)
 	insert_mob(held_mob)
+	// The worn state defaults to the mob's current icon_state ("cat2", "mothroach_rest", ...), which often has no sprite in the head icon.
+	// Fall back to the held state, and if the pet still can't be drawn on a head, don't let it be worn there (it would be invisible).
+	if(!icon_exists(worn_icon, worn_icon_state || icon_state))
+		if(inhand_icon_state && icon_exists(worn_icon, inhand_icon_state))
+			worn_icon_state = inhand_icon_state
+		else if(!worn_slot_flags)
+			slot_flags = NONE
 	return ..()
 
 /obj/item/mob_holder/Destroy()
