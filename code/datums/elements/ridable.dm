@@ -76,6 +76,14 @@
 			span_warning("You can't get a grip on [potential_rider] because your hands are full!"))
 		return COMPONENT_BLOCK_BUCKLE
 
+	// the carried mob is draped over the carrier's shoulder, so their hands are as busy as a piggyback rider's
+	if((ride_check_flags & CARRIER_NEEDS_ARM) && iscarbon(potential_rider) && !equip_buckle_inhands(potential_rider, 2, target_living))
+		unequip_buckle_inhands(potential_rider, target_living)
+		unequip_buckle_inhands(target_living, target_living)
+		target_living.visible_message(span_warning("[target_living] can't get a grip on [potential_rider] because [potential_rider.p_their()] hands are full!"),
+			span_warning("You can't get a grip on [potential_rider] because [potential_rider.p_their()] hands are full!"))
+		return COMPONENT_BLOCK_BUCKLE
+
 	target_living.AddComponent(riding_component_type, potential_rider, force, ride_check_flags)
 
 /// Try putting the appropriate number of [riding offhand items][/obj/item/riding_offhand] into the target's hands, return FALSE if we can't
