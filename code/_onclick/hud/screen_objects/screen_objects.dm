@@ -1219,16 +1219,15 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen) // I hate this place
 		return
 
 	fullness = round(hungry.get_fullness(only_consumable = TRUE), 0.05)
+	// Keep these thresholds in line with /datum/mood/proc/update_nutrition_moodlets, so the bar is visible whenever we have a hunger moodlet
 	switch(fullness)
-		if(1 + NUTRITION_LEVEL_FULL to INFINITY)
+		if(NUTRITION_LEVEL_FULL to INFINITY)
 			state = HUNGER_STATE_FULL
-		if(1 + NUTRITION_LEVEL_HUNGRY to NUTRITION_LEVEL_FULL)
+		if(NUTRITION_LEVEL_HUNGRY to NUTRITION_LEVEL_FULL)
 			state = HUNGER_STATE_FINE
-		if(1 + NUTRITION_LEVEL_VERY_HUNGRY to NUTRITION_LEVEL_HUNGRY)
-			state = HUNGER_STATE_FINE
-		if(1 + NUTRITION_LEVEL_STARVING to NUTRITION_LEVEL_VERY_HUNGRY)
+		if(NUTRITION_LEVEL_STARVING to NUTRITION_LEVEL_HUNGRY)
 			state = HUNGER_STATE_HUNGRY
-		if(0 to NUTRITION_LEVEL_STARVING)
+		else
 			state = HUNGER_STATE_STARVING
 
 /atom/movable/screen/hunger/update_appearance(updates)
