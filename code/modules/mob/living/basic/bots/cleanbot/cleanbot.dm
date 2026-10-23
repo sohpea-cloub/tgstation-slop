@@ -103,6 +103,10 @@
 		/mob/living/basic/cockroach,
 		/mob/living/basic/mouse,
 	))
+	///things our cleaner leaves alone so that we can use them like any other mob
+	var/static/list/uncleanable_targets = typecacheof(list(
+		/obj/structure/ladder,
+	))
 	///trash we will burn
 	var/static/list/huntable_trash = typecacheof(list(
 		/obj/item/trash,
@@ -139,7 +143,7 @@
 	AddComponent(/datum/component/obeys_commands, pet_commands)
 	AddComponent(/datum/component/cleaner, \
 		base_cleaning_duration = 2 SECONDS, \
-		pre_clean_callback = CALLBACK(src, PROC_REF(update_bot_mode), BOT_CLEANING), \
+		pre_clean_callback = CALLBACK(src, PROC_REF(pre_clean)), \
 		on_cleaned_callback = CALLBACK(src, PROC_REF(update_bot_mode), BOT_IDLE), \
 	)
 
@@ -315,6 +319,14 @@
 	zone_selected = pick(BODY_ZONE_L_LEG, BODY_ZONE_R_LEG)
 	INVOKE_ASYNC(weapon, TYPE_PROC_REF(/obj/item, attack), stabbed_carbon, src)
 	stabbed_carbon.Knockdown(2 SECONDS)
+
+/// Called by our cleaner component before it starts cleaning something we clicked on.
+/mob/living/basic/bot/cleanbot/proc/pre_clean(datum/source, atom/target, mob/living/user)
+	// Things with an interaction of their own (like ladders) must not be scrubbed instead of being used.
+	if(is_type_in_typecache(target, uncleanable_targets))
+		return CLEAN_BLOCKED|CLEAN_DONT_BLOCK_INTERACTION
+	update_bot_mode(BOT_CLEANING)
+	return NONE
 
 /mob/living/basic/bot/cleanbot/proc/pre_attack(mob/living/source, atom/target, proximity, modifiers)
 	SIGNAL_HANDLER
