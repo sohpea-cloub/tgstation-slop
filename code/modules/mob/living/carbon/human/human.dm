@@ -623,6 +623,12 @@
 	if(!is_mouth_covered() && clean_lips())
 		. |= COMPONENT_CLEANED
 
+	// Wash temporary hair dye (e.g. colorful reagent) if our head is exposed
+	var/obj/item/bodypart/head/my_head = get_bodypart(BODY_ZONE_HEAD)
+	if(my_head?.washable_hair_color && !(covered_slots & HIDEHAIR))
+		set_washable_hair_color(null)
+		. |= COMPONENT_CLEANED
+
 	// Wash hands if exposed
 	if(!gloves && (clean_types & CLEAN_TYPE_BLOOD) && blood_in_hands > 0 && !(covered_slots & HIDEGLOVES))
 		blood_in_hands = 0

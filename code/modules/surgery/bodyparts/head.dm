@@ -59,6 +59,8 @@
 
 	/// An override color that can be cleared later, affects both hair and facial hair
 	var/override_hair_color = null
+	/// A temporary (washable) hair and facial hair color, e.g. from colorful reagent. Overrides the normal hair colors, but not the override or fixed ones.
+	var/washable_hair_color = null
 	/// An override that cannot be cleared under any circumstances, affects both hair and facial hair
 	var/fixed_hair_color = null
 

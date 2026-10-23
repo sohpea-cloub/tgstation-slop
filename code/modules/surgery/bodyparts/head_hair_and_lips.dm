@@ -181,6 +181,8 @@
 		hair_overlay.color = override_hair_color
 	else if(fixed_hair_color)
 		hair_overlay.color = fixed_hair_color
+	else if(washable_hair_color)
+		hair_overlay.color = washable_hair_color
 	else
 		hair_overlay.color = hair_color_to_use
 
@@ -319,6 +321,21 @@
 		hair_color = hex_string
 		my_head?.hair_color = hex_string
 
+	if(update)
+		update_hair()
+
+/**
+ * Sets a temporary hair and facial hair color on a human, which is removed again when they are washed.
+ * Pass null to remove it. Update calls update_hair().
+ **/
+/mob/living/proc/set_washable_hair_color(hex_string, update = TRUE)
+	return
+
+/mob/living/carbon/human/set_washable_hair_color(hex_string, update = TRUE)
+	var/obj/item/bodypart/head/my_head = get_bodypart(BODY_ZONE_HEAD)
+	if(isnull(my_head) || my_head.washable_hair_color == hex_string)
+		return
+	my_head.washable_hair_color = hex_string
 	if(update)
 		update_hair()
 

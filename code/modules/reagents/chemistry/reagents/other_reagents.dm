@@ -2421,8 +2421,7 @@
 
 	if (ishuman(exposed_mob))
 		var/mob/living/carbon/human/exposed_human = exposed_mob
-		exposed_human.set_facial_haircolor(picked_color, update = FALSE)
-		exposed_human.set_haircolor(picked_color)
+		exposed_human.set_washable_hair_color(picked_color)
 
 	if (!can_color_mobs)
 		return
