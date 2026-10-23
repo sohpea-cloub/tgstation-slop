@@ -51,3 +51,16 @@
 	window.send_update()
 
 	return !length(to_image)
+
+/**
+ * Whether this mob can see the contents of the given turf, for the purposes of listing them in the loot panel.
+ * viewers() counts a turf as seen if the mob has SEE_TURFS (meson goggles) even when it is out of line of sight,
+ * so unless the mob can see objects through walls (SEE_OBJS), we also require actual line of sight to it.
+ */
+/mob/proc/can_see_loot_turf(turf/target)
+	if(isnull(target) || !(src in viewers(target)))
+		return FALSE
+	if(sight & SEE_OBJS)
+		return TRUE
+	var/list/view_size = getviewsize(client?.view || world.view)
+	return src in view(max(view_size[1], view_size[2]), target)

@@ -76,7 +76,7 @@
 	return GLOB.always_state
 
 /datum/lootpanel/ui_status(mob/user, datum/ui_state/state)
-	if(!(user in viewers(source_turf)) || HAS_TRAIT(src, TRAIT_MOVE_VENTCRAWLING))
+	if(!user.can_see_loot_turf(source_turf) || HAS_TRAIT(src, TRAIT_MOVE_VENTCRAWLING))
 		return UI_CLOSE
 
 	if(!(astype(user, /mob/living)?.mobility_flags & (MOBILITY_USE|MOBILITY_PICKUP)))
