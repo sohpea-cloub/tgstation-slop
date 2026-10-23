@@ -83,6 +83,9 @@
 	if(HAS_TRAIT(victim, TRAIT_CANNOT_CRYSTALIZE))
 		return // no reviving during mafia, or other inconvenient times.
 
+	if(!can_crystalize(victim))
+		return // no head or no brain: nobody is there to come back.
+
 	to_chat(victim, span_nicegreen("Crystals start forming around your dead body."))
 	victim.visible_message(span_notice("Crystals start forming around [victim]."), ignored_mobs = victim)
 
@@ -93,6 +96,14 @@
 	RegisterSignal(victim, COMSIG_LIVING_DISARM_HIT, PROC_REF(reset_crystalizing))
 	RegisterSignal(victim, COMSIG_ATOM_EXAMINE, PROC_REF(on_examine), override = TRUE)
 	RegisterSignal(victim, COMSIG_MOB_APPLY_DAMAGE, PROC_REF(on_take_damage))
+
+///Whether this body can be revived by a crystal: it needs its head and brain (revive would regrow them, making a fresh brainless copy).
+/obj/item/organ/heart/ethereal/proc/can_crystalize(mob/living/carbon/ethereal)
+	if(!iscarbon(ethereal))
+		return FALSE
+	if(!ethereal.get_bodypart(BODY_ZONE_HEAD) || !ethereal.get_organ_slot(ORGAN_SLOT_BRAIN))
+		return FALSE
+	return TRUE
 
 ///Ran when disarmed, prevents the ethereal from reviving
 /obj/item/organ/heart/ethereal/proc/reset_crystalizing(mob/living/defender, mob/living/attacker, zone, obj/item/weapon)
@@ -114,6 +125,10 @@
 
 	if(ismob(location) || isitem(location) || iseffect(location) || HAS_TRAIT_FROM(src, TRAIT_HUSK, CHANGELING_DRAIN)) //Stops crystallization if they are eaten by a dragon, turned into a legion, consumed by his grace, etc.
 		to_chat(ethereal, span_warning("You were unable to finish your crystallization, for obvious reasons."))
+		stop_crystalization_process(ethereal, FALSE)
+		return
+	if(!can_crystalize(ethereal))
+		to_chat(ethereal, span_warning("You were unable to finish your crystallization, as there is nothing left of you to bring back."))
 		stop_crystalization_process(ethereal, FALSE)
 		return
 	COOLDOWN_START(src, crystalize_cooldown, INFINITY) //Prevent cheeky double-healing until we get out, this is against stupid admemery
@@ -233,6 +248,11 @@
 /obj/structure/ethereal_crystal/proc/heal_ethereal()
 	// revive will regenerate organs, so our heart refence is going to be null'd. Unreliable
 	var/mob/living/carbon/regenerating = ethereal_heart.owner
+
+	if(!ethereal_heart.can_crystalize(regenerating))
+		// lost the head or brain while crystalized: reviving would regrow them as an empty copy
+		qdel(src)
+		return
 
 	playsound(get_turf(regenerating), 'sound/mobs/humanoids/ethereal/ethereal_revive.ogg', 100)
 	to_chat(regenerating, span_notice("You burst out of the crystal with vigour... </span><span class='userdanger'>But at a cost."))
