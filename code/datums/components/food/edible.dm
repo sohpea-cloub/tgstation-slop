@@ -379,6 +379,12 @@ Behavior that's still missing from this component that original food items had t
 	if(feeder.combat_mode)
 		return
 
+	// Something we can't feed (a bot, an animal...) is hit as the weapon it is, not silently ignored while still counting as an attack
+	if(!iscarbon(eater) && isitem(owner))
+		var/obj/item/food_item = owner
+		if(food_item.force)
+			return
+
 	. = COMPONENT_CANCEL_ATTACK_CHAIN //Point of no return I suppose
 
 	if(IsFoodGone(owner, feeder))
