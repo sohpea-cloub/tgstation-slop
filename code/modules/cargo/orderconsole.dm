@@ -242,6 +242,10 @@
 
 	var/datum/bank_account/account
 
+	if(self_paid && !isliving(user)) // Observers/AI-interacting ghosts have no ID card or bank account to charge
+		say("No ID card detected.")
+		return
+
 	if(isliving(user))
 		var/mob/living/living_user = user
 		var/obj/item/card/id/id_card = living_user.get_idcard(TRUE)
