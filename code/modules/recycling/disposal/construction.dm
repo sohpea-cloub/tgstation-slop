@@ -34,7 +34,9 @@
 	pipename = initial(pipe_type.name)
 
 	AddElement(/datum/element/simple_rotation, post_rotation_proccall = PROC_REF(post_rotation))
-	AddElement(/datum/element/undertile, TRAIT_T_RAY_VISIBLE)
+	// Only pipes go under the floor; bins, outlets and chutes are dense once anchored and must stay visible above tiles
+	if(is_pipe())
+		AddElement(/datum/element/undertile, TRAIT_T_RAY_VISIBLE)
 
 	// this only gets used by pipes created by RPDs or pipe dispensers
 	if(flip)
