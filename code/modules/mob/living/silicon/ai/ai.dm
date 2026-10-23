@@ -832,6 +832,12 @@ GAME_VERB_PROC_DESC(/mob/living/silicon/ai, set_automatic_say_channel, "Set Auto
 	var/list/viewscale = getviewsize(client.view)
 	return get_dist(src, A) <= max(viewscale[1]*0.5,viewscale[2]*0.5)
 
+/// The AI can only examine what its cameras can see (or itself), not things on tiles hidden by camera static.
+/mob/living/silicon/ai/run_examinate(atom/examinify, force_examinate_more = FALSE)
+	if(client && examinify != src && examinify != eyeobj && !can_see(examinify))
+		return
+	return ..()
+
 /mob/living/silicon/ai/proc/relay_speech(atom/movable/speaker, datum/language/message_language, raw_message, radio_freq, list/spans, list/message_mods = list())
 	var/raw_translation = translate_language(speaker, message_language, raw_message, spans, message_mods)
 	var/atom/movable/source = speaker.GetSource() || speaker // is the speaker virtual/radio
