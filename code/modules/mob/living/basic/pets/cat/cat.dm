@@ -129,6 +129,9 @@
 
 /mob/living/basic/pet/cat/update_icon_state()
 	. = ..()
+	if (stat == DEAD)
+		icon_state = icon_dead
+		return
 	if (resting)
 		icon_state = "[icon_living]_rest"
 		return
