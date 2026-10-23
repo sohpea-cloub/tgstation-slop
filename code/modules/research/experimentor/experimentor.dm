@@ -343,6 +343,12 @@
 	if(!is_insertion_ready(user))
 		return ITEM_INTERACT_BLOCKING
 
+	// Experiments delete the loaded item, but a held mob just gets released again when its holder is deleted,
+	// which would make animals an infinite source of experiment results.
+	if(istype(weapon, /obj/item/mob_holder))
+		balloon_alert(user, "no living subjects!")
+		return ITEM_INTERACT_BLOCKING
+
 	if(!user.transferItemToLoc(weapon, src))
 		to_chat(user, span_warning("\The [weapon] is stuck to your hand!"))
 		return ITEM_INTERACT_BLOCKING
