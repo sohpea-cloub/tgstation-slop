@@ -652,6 +652,8 @@
 	if(!isliving(target))
 		if(isturf(target)) // non dense turfs
 			return can_hit_turfs && direct_target
+		if(istype(target, /obj/effect/decal/cleanable)) // floor clutter (blood, stabilized plasma...) is not something to shoot, even when clicked
+			return FALSE
 		if(target.layer < hit_threshhold)
 			return FALSE
 		else if(!direct_target) // non dense objects do not get hit unless specifically clicked
@@ -1256,6 +1258,19 @@
 	pixel_x = source.pixel_x - source.base_pixel_x
 	pixel_y = source.pixel_y - source.base_pixel_y
 	original = target
+	// clicking floor clutter (blood, stabilized plasma...) means shooting what is on that tile, not the clutter itself
+	if(istype(target, /obj/effect/decal/cleanable))
+		var/atom/movable/best_target
+		for(var/atom/movable/possible_target in target.loc)
+			if(possible_target == source || iseffect(possible_target) || HAS_TRAIT(possible_target, TRAIT_UNDERFLOOR))
+				continue
+			if(isliving(possible_target))
+				best_target = possible_target
+				break
+			if(isnull(best_target) || (possible_target.layer > best_target.layer))
+				best_target = possible_target
+		if(best_target)
+			original = best_target
 
 	// Trim off excess pixel_x/y by converting them into turf offset
 	if (abs(pixel_x) > ICON_SIZE_X / 2)
