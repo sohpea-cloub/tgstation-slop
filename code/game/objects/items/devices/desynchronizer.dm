@@ -82,10 +82,16 @@
 	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
 	anchored = TRUE
 	resistance_flags = INDESTRUCTIBLE
+	// Explosions on our turf must not reach the desynchronized user inside
+	flags_1 = PREVENT_CONTENTS_EXPLOSION_1
 
 /obj/effect/abstract/sync_holder/Initialize(mapload)
 	. = ..()
 	ADD_TRAIT(src, TRAIT_SECLUDED_LOCATION, INNATE_TRAIT)
+
+/// The user is out of sync with the turf's surroundings, so they get safe air instead of the turf's pressure and temperature
+/obj/effect/abstract/sync_holder/return_air()
+	return SSair.parse_gas_string(OPENTURF_DEFAULT_ATMOS)
 
 /obj/effect/abstract/sync_holder/relaymove(mob/living/user, direction)
 	// While faded out of spacetime, no, you cannot move.
