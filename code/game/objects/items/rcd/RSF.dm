@@ -69,6 +69,10 @@ RSF
 
 /obj/item/rsf/examine(mob/user)
 	. = ..()
+	var/mob/living/silicon/robot/robot_user = user
+	if(iscyborg(user) && robot_user.cell)
+		. += span_notice("It draws on your power cell, which can pay for [round(robot_user.cell.charge() / cyborg_energy_per_unit)] [discriptor].")
+		return
 	. += span_notice("It currently holds [matter]/[max_matter] [discriptor].")
 
 /obj/item/rsf/cyborg
@@ -131,7 +135,8 @@ RSF
 
 /obj/item/rsf/interact_with_atom(atom/interacting_with, mob/living/user, list/modifiers)
 	if(cooldown > world.time)
-		return NONE
+		balloon_alert(user, "still recharging!")
+		return ITEM_INTERACT_BLOCKING
 	if (!is_allowed(interacting_with))
 		return NONE
 	if(use_matter(dispense_cost, user))//If we can charge that amount of charge, we do so and return true
