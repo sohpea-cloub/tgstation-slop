@@ -95,6 +95,10 @@
 	abductor_tongue.mothership = "[team.name]"
 
 	new_abductor.real_name = "[team.name] [sub_role]"
+	// Clear out whatever they were already wearing (dropping it at their feet), otherwise the outfit's
+	// items are deleted for every slot that is already occupied (e.g. when an admin makes a clothed player an abductor)
+	for(var/obj/item/worn_item as anything in new_abductor.get_equipped_items(INCLUDE_POCKETS))
+		new_abductor.dropItemToGround(worn_item, force = TRUE)
 	new_abductor.equipOutfit(outfit)
 
 	// If we have a team skincolor, apply it here. Applied by admins or 2% chance of natural occurance
