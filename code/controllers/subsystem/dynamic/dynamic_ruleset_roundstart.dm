@@ -23,11 +23,11 @@
 	if(SSjob.check_job_eligibility(candidate, SSjob.get_job_type(job_typepath), "[name] Candidacy") != JOB_AVAILABLE)
 		return FALSE
 	// (Something else forced us to play a job that isn't AI)
-	var/forced_job = LAZYACCESS(SSjob.forced_occupations, candidate)
+	var/forced_job = LAZYACCESS(SSjob.forced_occupations, candidate.mind)
 	if(forced_job && forced_job != job_typepath)
 		return FALSE
 	// (Something else forced us NOT to play AI)
-	if(job_typepath::title in LAZYACCESS(SSjob.prevented_occupations, candidate))
+	if(job_typepath::title in LAZYACCESS(SSjob.prevented_occupations, candidate.mind))
 		return FALSE
 	return TRUE
 

@@ -35,9 +35,9 @@ SUBSYSTEM_DEF(job)
 
 	var/list/level_order = list(JP_HIGH, JP_MEDIUM, JP_LOW)
 
-	/// Lazylist of mob:occupation_string pairs. Forces mobs into certain occupations with highest priority.
+	/// Lazylist of mind:job typepath pairs. Forces minds into certain occupations with highest priority.
 	var/list/forced_occupations
-	/// Lazylist of mob:list(occupation_string) pairs. Prevents mobs from taking certain occupations at all.
+	/// Lazylist of mind:list(job title) pairs. Prevents minds from taking certain occupations at all.
 	var/list/prevented_occupations
 
 	/**
