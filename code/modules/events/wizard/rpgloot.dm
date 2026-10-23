@@ -80,9 +80,13 @@ GLOBAL_DATUM(rpgloot_controller, /datum/rpgloot_controller)
 	SIGNAL_HANDLER
 	if(!istype(created_item))
 		return
-	if(created_item.item_flags & SKIP_FANTASY_ON_SPAWN)
+	if(!can_be_fantastical(created_item))
 		return
 	created_item.AddComponent(/datum/component/fantasy)
+
+/// Whether the item may get fantasy. Stacks never do: each one would stop merging with its own kind (and sorting by name would break)
+/datum/rpgloot_controller/proc/can_be_fantastical(obj/item/checked)
+	return !isstack(checked) && !(checked.item_flags & SKIP_FANTASY_ON_SPAWN)
 
 /**
  * ### handle_current_items
@@ -98,7 +102,9 @@ GLOBAL_DATUM(rpgloot_controller, /datum/rpgloot_controller)
 		if(!(fantasy_item.flags_1 & INITIALIZED_1) || QDELETED(fantasy_item))
 			continue
 
-		fantasy_item.AddComponent(/datum/component/fantasy)
+		// Same exclusions as items spawned after the event started (stacks, trash, paper...)
+		if(can_be_fantastical(fantasy_item))
+			fantasy_item.AddComponent(/datum/component/fantasy)
 
 		if(isnull(fantasy_item.loc))
 			continue
