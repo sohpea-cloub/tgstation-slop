@@ -134,7 +134,7 @@
 	custom_materials = list(/datum/material/iron = HALF_SHEET_MATERIAL_AMOUNT)
 
 /obj/item/paint/paint_remover/interact_with_atom(atom/interacting_with, mob/living/user, list/modifiers)
-	if(!isturf(interacting_with) || !isobj(interacting_with))
+	if(!isturf(interacting_with) && !isobj(interacting_with))
 		return NONE
 	if(interacting_with.color != initial(interacting_with.color))
 		interacting_with.remove_atom_colour(WASHABLE_COLOUR_PRIORITY)
