@@ -32,6 +32,9 @@
  * * atom/location: the place/entity/mob where the body bag is being deployed from.
  */
 /obj/item/bodybag/proc/deploy_bodybag(mob/user, atom/location)
+	// A bag in nullspace is already deployed (its unfolded form holds it), deploying it again would make a second bag from nothing
+	if(isnull(loc) || isnull(location))
+		return null
 	var/obj/structure/closet/body_bag/item_bag = new unfoldedbag_path(location)
 	item_bag.open(user)
 	item_bag.add_fingerprint(user)
@@ -75,6 +78,9 @@
 	return ..()
 
 /obj/item/bodybag/bluespace/deploy_bodybag(mob/user, atom/location)
+	// Same as the parent: an already deployed bag (in nullspace) must not be deployed again, e.g. by a telekinetic grab still holding it
+	if(isnull(loc) || isnull(location))
+		return null
 	var/obj/structure/closet/body_bag/item_bag = new unfoldedbag_path(location)
 	for(var/atom/movable/inside in contents)
 		inside.forceMove(item_bag)
