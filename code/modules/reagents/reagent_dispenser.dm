@@ -29,8 +29,6 @@
 	var/obj/item/assembly_holder/rig = null
 	/// Whether this dispenser can be rigged with an assembly (and blown up with an igniter)
 	var/accepts_rig = FALSE
-	//overlay of attached assemblies
-	var/mutable_appearance/assembliesoverlay
 	/// The person who attached an assembly to this dispenser, for bomb logging purposes
 	var/last_rigger = ""
 	/// is it climbable? some of our wall-mounted dispensers should not have this
@@ -101,10 +99,7 @@
 		rig = holder
 		holder.master = src
 		holder.on_attach()
-		assembliesoverlay = holder
-		assembliesoverlay.pixel_w += 6
-		assembliesoverlay.pixel_z += 1
-		add_overlay(assembliesoverlay)
+		update_appearance(UPDATE_OVERLAYS)
 		RegisterSignal(src, COMSIG_IGNITER_ACTIVATE, PROC_REF(rig_boom))
 		log_bomber(user, "attached [holder.name] to ", src)
 		last_rigger = user
@@ -125,10 +120,23 @@
 
 	return NONE
 
+/obj/structure/reagent_dispensers/update_overlays()
+	. = ..()
+	if(!rig)
+		return
+	// Built here (not added by hand with add_overlay) so it's remade with the right plane when we change z level
+	var/mutable_appearance/rig_overlay = new(rig)
+	rig_overlay.plane = FLOAT_PLANE
+	rig_overlay.layer = FLOAT_LAYER
+	rig_overlay.pixel_w += 6
+	rig_overlay.pixel_z += 1
+	. += rig_overlay
+
 /obj/structure/reagent_dispensers/Exited(atom/movable/gone, direction)
 	. = ..()
 	if(gone == rig)
 		rig = null
+		update_appearance(UPDATE_OVERLAYS)
 
 /obj/structure/reagent_dispensers/attack_hand(mob/user, list/modifiers)
 	. = ..()
@@ -148,7 +156,7 @@
 		rig.forceMove(get_turf(user))
 	rig = null
 	last_rigger = null
-	cut_overlays(assembliesoverlay)
+	update_appearance(UPDATE_OVERLAYS)
 	UnregisterSignal(src, COMSIG_IGNITER_ACTIVATE)
 
 /obj/structure/reagent_dispensers/Initialize(mapload)
