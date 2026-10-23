@@ -92,7 +92,15 @@
 		to_chat(ghost, span_userdanger("The new vessel for your spirit has been destroyed! You remain an unbound ghost."))
 		return
 
-	bind_the_soule(ghost.mind, awakener)
+	// Ghosts that never had a body (lobby observers) have no mind at all, and a ghost's mind isn't
+	// linked to its client any more (mind.active is FALSE), so we make one if needed and move the key ourselves.
+	var/datum/mind/spirit_mind = ghost.mind
+	if(!spirit_mind)
+		spirit_mind = new /datum/mind(ghost.key)
+		spirit_mind.name = ghost.real_name
+		SSticker.minds += spirit_mind
+	spirit_mind.active = TRUE
+	bind_the_soule(spirit_mind, awakener, force_key_move = TRUE)
 
 	attempting_awakening = FALSE
 
@@ -103,9 +111,9 @@
 	if(valid_input_name)
 		bound_spirit.fully_replace_character_name(null, "The spirit of [valid_input_name]", log_new_name = TRUE)
 
-/datum/component/spirit_holding/proc/bind_the_soule(datum/mind/chosen_spirit, mob/awakener, name_override)
+/datum/component/spirit_holding/proc/bind_the_soule(datum/mind/chosen_spirit, mob/awakener, name_override, force_key_move = FALSE)
 	bound_spirit = new(parent)
-	chosen_spirit.transfer_to(bound_spirit)
+	chosen_spirit.transfer_to(bound_spirit, force_key_move = force_key_move)
 	bound_spirit.fully_replace_character_name(null, "The spirit of [name_override || parent]")
 	bound_spirit.get_language_holder().omnitongue = TRUE //Grants omnitongue
 
@@ -122,10 +130,13 @@
 /datum/component/spirit_holding/proc/custom_name(mob/awakener, iteration = 1)
 	if(iteration > 5)
 		return "indecision" // The spirit of indecision
-	var/chosen_name = sanitize_name(tgui_input_text(bound_spirit, "What are you named?", "Spectral Nomenclature", max_length = MAX_NAME_LEN))
+	var/chosen_input = tgui_input_text(bound_spirit, "What are you named?", "Spectral Nomenclature", max_length = MAX_NAME_LEN)
+	if(isnull(chosen_input)) // cancelled, or the spirit has no client: don't nag them, they keep the default name
+		return null
+	var/chosen_name = sanitize_name(chosen_input)
 	if(!chosen_name) // with the way that sanitize_name works, it'll actually send the error message to the awakener as well.
 		to_chat(awakener, span_warning("Your blade did not select a valid name! Please wait as they try again.")) // more verbose than what sanitize_name might pass in it's error message
-		return custom_name(awakener, iteration++)
+		return custom_name(awakener, iteration + 1)
 	return chosen_name
 
 ///signal fired from a mob moving inside the parent
