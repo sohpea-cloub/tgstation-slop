@@ -18,6 +18,8 @@
 	var/end_time
 	/// Flags of our action
 	var/timed_action_flags = NONE
+	/// Dummy container the user was phased in when we started, if any
+	var/obj/effect/dummy/phased_mob/phased_container
 	/// Status of the action to pass into the main wait loop
 	var/status = ACTION_WORKING
 
@@ -57,6 +59,7 @@
 /datum/timed_action/Destroy(force)
 	user = null
 	targets = null
+	phased_container = null
 	// Only qdel these two in case of an await() runtime/early deletion/whatever, otherwise let them play out their animation and self-delete
 	if (status == ACTION_WORKING)
 		qdel(progressbar)
@@ -73,6 +76,10 @@
 
 	if (!(timed_action_flags & IGNORE_USER_LOC_CHANGE))
 		RegisterSignal(user, COMSIG_MOVABLE_MOVED, PROC_REF(on_user_moved))
+		// A phased user never changes loc when they move (their dummy container does), so watch the dummy too
+		if (istype(user.loc, /obj/effect/dummy/phased_mob))
+			phased_container = user.loc
+			RegisterSignal(phased_container, COMSIG_MOVABLE_MOVED, PROC_REF(on_phased_container_moved))
 
 	if (!(timed_action_flags & IGNORE_INCAPACITATED))
 		RegisterSignal(user, SIGNAL_ADDTRAIT(TRAIT_INCAPACITATED), PROC_REF(on_user_incapacitated))
@@ -180,6 +187,15 @@
 		if (!target.Adjacent(user))
 			cancel()
 			return
+
+/// The dummy container our phased user is in moved: that's the user moving
+/datum/timed_action/proc/on_phased_container_moved(atom/movable/source, atom/old_loc, dir, forced, list/old_locs)
+	SIGNAL_HANDLER
+
+	if (source.loc == old_loc)
+		return
+
+	cancel()
 
 /datum/timed_action/proc/on_target_moved(atom/movable/source, atom/old_loc, dir, forced, list/old_locs)
 	SIGNAL_HANDLER
