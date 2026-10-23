@@ -2,10 +2,12 @@
 /obj/hitby(atom/movable/hit_by, skipcatch, hitpush, blocked, datum/thrownthing/throwingdatum)
 	..()
 	var/damage_taken = hit_by.throwforce
+	var/damage_type = BRUTE
 	if(isitem(hit_by))
 		var/obj/item/as_item = hit_by
 		damage_taken *= as_item.get_demolition_modifier(src)
-	take_damage(damage_taken, BRUTE, MELEE, 1, get_dir(src, hit_by))
+		damage_type = as_item.damtype
+	take_damage(damage_taken, damage_type, MELEE, 1, get_dir(src, hit_by))
 
 /obj/ex_act(severity, target)
 	if(resistance_flags & (INDESTRUCTIBLE|BOMB_PROOF))
