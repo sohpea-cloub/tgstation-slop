@@ -23,6 +23,26 @@
 	if(mapload && HAS_TRAIT(SSstation, STATION_TRAIT_HUMAN_AI))
 		return INITIALIZE_HINT_QDEL
 	ADD_TRAIT(src, TRAIT_CASTABLE_LOC, INNATE_TRAIT)
+	RegisterSignal(src, COMSIG_MOVABLE_MOVED, PROC_REF(on_moved_refresh_perspective))
+
+/// The carded AI's client eye is the card, which stays the same atom when whoever carries it drops it, so the
+/// client keeps looking at the old carrier. Look through the carrier while the card is held, and back at the card
+/// (changing the eye) once it is no longer in someone's hands.
+/obj/item/aicard/proc/on_moved_refresh_perspective(datum/source, atom/old_loc, ...)
+	SIGNAL_HANDLER
+	if(!AI?.client)
+		return
+	// Not right away: the parallax tracking the old eye is still reacting to this very move
+	addtimer(CALLBACK(src, PROC_REF(refresh_ai_perspective)), 0, TIMER_UNIQUE)
+
+/obj/item/aicard/proc/refresh_ai_perspective()
+	var/client/ai_client = AI?.client
+	if(!ai_client || AI.loc != src)
+		return
+	if(ismob(loc))
+		AI.reset_perspective(loc)
+	else if(ismob(ai_client.eye))
+		AI.reset_perspective()
 
 /obj/item/aicard/Destroy(force)
 	if(AI)

@@ -30,6 +30,7 @@
 	. = ..()
 	radio = new(src)
 	radio.set_broadcasting(FALSE) //researching radio mmis turned the robofabs into radios because this didnt start as FALSE.
+	RegisterSignal(src, COMSIG_MOVABLE_MOVED, PROC_REF(on_moved_refresh_perspective))
 
 /obj/item/brain_processor/Destroy(force)
 	QDEL_NULL(brainmob)
@@ -56,6 +57,25 @@
 		ADD_TRAIT(new_brainmob, TRAIT_SILICON_EMOTES_ALLOWED, MMI_ASSISTED)
 
 	SEND_SIGNAL(src, COMSIG_MMI_SET_BRAINMOB, old_brainmob)
+
+/// The brainmob's client eye is the processor, which stays the same atom when whoever carries it drops it, so the
+/// client keeps looking at the old carrier. Look through the carrier while it is held, and back at the processor
+/// (changing the eye) once it is no longer in someone's hands.
+/obj/item/brain_processor/proc/on_moved_refresh_perspective(datum/source, atom/old_loc, ...)
+	SIGNAL_HANDLER
+	if(!brainmob?.client)
+		return
+	// Not right away: the parallax tracking the old eye is still reacting to this very move
+	addtimer(CALLBACK(src, PROC_REF(refresh_brainmob_perspective)), 0, TIMER_UNIQUE)
+
+/obj/item/brain_processor/proc/refresh_brainmob_perspective()
+	var/client/brain_client = brainmob?.client
+	if(!brain_client || brainmob.loc != src)
+		return
+	if(ismob(loc))
+		brainmob.reset_perspective(loc)
+	else if(ismob(brain_client.eye))
+		brainmob.reset_perspective()
 
 GAME_VERB_SRC_DESC(/obj/item/brain_processor, Toggle_Listening, usr.loc, "Toggle Listening", "Toggle listening channel on or off.", "MMI")
 	if(IS_UNCONSCIOUS_OR_CRIT(brainmob))
