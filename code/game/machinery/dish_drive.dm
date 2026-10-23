@@ -107,15 +107,13 @@
 	suck_distance = 0
 	for(var/datum/stock_part/servo/servo in component_parts)
 		suck_distance = servo.tier
-	// Lowers power use for total tier
+	// Lowers power use for total tier: 10% less per tier above the base parts, for both idle and active use
 	var/total_rating = 0
 	for(var/datum/stock_part/stock_part in component_parts)
 		total_rating += stock_part.tier
-	if(total_rating >= 9)
-		update_mode_power_usage(ACTIVE_POWER_USE, 0)
-	else
-		update_mode_power_usage(IDLE_POWER_USE, max(0, initial(idle_power_usage) - total_rating))
-		update_mode_power_usage(ACTIVE_POWER_USE, max(0, initial(active_power_usage) - total_rating))
+	var/usage_multiplier = max(0.1, 1 - 0.1 * (total_rating - 3))
+	update_mode_power_usage(IDLE_POWER_USE, initial(idle_power_usage) * usage_multiplier)
+	update_mode_power_usage(ACTIVE_POWER_USE, initial(active_power_usage) * usage_multiplier)
 	// Board options
 	var/obj/item/circuitboard/machine/dish_drive/board = locate() in component_parts
 	if(board)
