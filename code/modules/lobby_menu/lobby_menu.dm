@@ -322,6 +322,12 @@ ADMIN_VERB(toggle_lobby_transparency, R_ADMIN, "Toggle Lobby Transparency", "Tog
 
 	switch(action)
 		if("ready_toggle")
+			// Antagonists and jobs are picked from the readied players while the round sets up (and that can take a while),
+			// so changing your mind now would leave you picked for a role in a round you aren't joining.
+			if(SSticker.current_state == GAME_STATE_SETTING_UP)
+				to_chat(player, span_warning("The round is starting, you can't change your ready status now."))
+				send_update(list("isReady" = player.ready == PLAYER_READY_TO_PLAY))
+				return TRUE
 			if(player.ready == PLAYER_NOT_READY)
 				player.auto_deadmin_on_ready_or_latejoin()
 				player.ready = PLAYER_READY_TO_PLAY

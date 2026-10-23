@@ -14,6 +14,19 @@
 			return FALSE
 	return ..()
 
+/datum/dynamic_ruleset/roundstart/execute()
+	// Candidates are picked before job assignment, from the players readied up at the time.
+	// Someone picked then may never have made it into the round (they unreadied or disconnected while the round was setting up,
+	// or failed to spawn), leaving their mind in the lobby (or deleted). Don't hand antag datums to minds without a body in the round.
+	for(var/datum/mind/candidate as anything in selected_minds.Copy())
+		var/mob/candidate_mob = candidate?.current
+		if(!QDELETED(candidate) && !QDELETED(candidate_mob) && isliving(candidate_mob))
+			continue
+		selected_minds -= candidate
+		log_dynamic("Roundstart: [key_name(candidate)] was selected for [config_tag] but never joined the round, skipping them.")
+		message_admins("Dynamic: [key_name_admin(candidate)] was selected for [config_tag] but never joined the round, so they were not given the role.")
+	return ..()
+
 /// Helpful proc - to use if your ruleset forces a job - which ensures a candidate can play the passed job typepath
 /datum/dynamic_ruleset/roundstart/proc/ruleset_forced_job_check(mob/candidate, client/candidate_client, datum/job/job_typepath)
 	// Malf AI can only go to people who want to be AI
