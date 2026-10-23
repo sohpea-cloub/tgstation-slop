@@ -173,7 +173,9 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen) // I hate this place
 	mouse_over_pointer = MOUSE_HAND_POINTER
 
 /atom/movable/screen/language_menu/Click()
-	usr.get_language_holder().open_language_menu(usr)
+	// When observing, this button belongs to the observed mob's HUD, so open that mob's menu, not ours
+	var/mob/menu_owner = get_mob() || usr
+	menu_owner.get_language_holder().open_language_menu(usr)
 
 /atom/movable/screen/memories
 	name = "Memories"
