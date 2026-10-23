@@ -678,7 +678,7 @@ GLOBAL_LIST_EMPTY(conveyors_by_id)
 
 /obj/item/stack/conveyor/item_interaction(mob/living/user, obj/item/tool, list/modifiers)
 	if(!istype(tool, /obj/item/conveyor_switch_construct))
-		return NONE
+		return ..() // lets other conveyor belt assemblies merge into this stack
 	to_chat(user, span_notice("You link the switch to the conveyor belt assembly."))
 	var/obj/item/conveyor_switch_construct/switch_construct = tool
 	id = switch_construct.id
