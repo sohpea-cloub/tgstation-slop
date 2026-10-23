@@ -9,6 +9,7 @@
 	icon = 'icons/obj/clothing/under/syndicate.dmi'
 	worn_icon = 'icons/mob/clothing/under/syndicate.dmi'
 	bodyshapes_with_variations = BODYSHAPE_CERULEAN
+	dying_key = DYE_REGISTRY_UNDER
 
 /datum/armor/clothing_under/syndicate
 	melee = 10
