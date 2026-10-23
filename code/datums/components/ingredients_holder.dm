@@ -203,6 +203,8 @@
 
 	if (replacement)
 		var/atom/replacement_parent = new replacement(atom_parent.drop_location())
+		if(isitem(replacement_parent) && ismovable(atom_parent))
+			put_made_item_near(replacement_parent, atom_parent, replace_origin = TRUE)
 		ingredient.forceMove(replacement_parent)
 		replacement = null
 		replacement_parent.TakeComponent(src)

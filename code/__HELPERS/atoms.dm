@@ -429,3 +429,32 @@ rough example of the "cone" made by the 3 dirs checked
 
 /// Helper for easily adding blood from INSIDE a mob to an atom (NOT blood ON the mob)
 #define add_mob_blood(from_who) add_blood_DNA(from_who.get_blood_dna_list(), from_who.get_static_viruses())
+
+/**
+ * Moves an item that was just made (from a chemical reaction in a container, by processing a food, by customizing one...) to where
+ * whatever it was made in or from is, instead of leaving it on the floor under it:
+ * if the origin is held by a mob, into a free hand of that mob (or on their tile if they have none free),
+ * if the origin is inside a storage (a serving tray, for example), into that storage if it fits.
+ * Otherwise nothing is done and the item stays where it was created. Returns TRUE if the item was moved.
+ *
+ * Arguments:
+ * * new_item - the item that was just made
+ * * origin - the atom that the item was made in or from
+ * * replace_origin - if the origin is held, the new item goes into the very hand that holds the origin, as the origin is about to be deleted
+ */
+/proc/put_made_item_near(obj/item/new_item, atom/movable/origin, replace_origin = FALSE)
+	if(QDELETED(new_item) || QDELETED(origin) || !isitem(new_item))
+		return FALSE
+	var/atom/origin_loc = origin.loc
+	if(ismob(origin_loc))
+		var/mob/holder = origin_loc
+		if(!holder.is_holding(origin))
+			return FALSE
+		if(replace_origin)
+			var/hand_index = holder.get_held_index_of_item(origin)
+			if(hand_index && holder.temporarilyRemoveItemFromInventory(origin, force = TRUE) && holder.put_in_hand(new_item, hand_index))
+				return TRUE
+		return holder.put_in_hands(new_item)
+	if(origin_loc?.atom_storage)
+		return origin_loc.atom_storage.attempt_insert(new_item, messages = FALSE)
+	return FALSE

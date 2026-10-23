@@ -99,6 +99,7 @@
 			var/obj/item/food/result = new resulting_food_path(location)
 			if(ispath(resulting_food_path, /obj/item/food) && !isnull(resulting_reagent_purity))
 				result.reagents?.set_all_reagents_purity(resulting_reagent_purity)
+			put_made_item_near(result, holder.my_atom)
 
 /datum/chemical_reaction/food/tofu
 	required_reagents = list(/datum/reagent/consumable/soymilk = 10)
