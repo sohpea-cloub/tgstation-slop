@@ -476,6 +476,9 @@ GAME_VERB_SRC(/obj/item/pipe, flip, view(1), "Invert Pipe", null)
 	if(!pipe)
 		to_chat(user, span_warning("You need to fasten it to a pipe!"))
 		return TRUE
+	if(meter_exists_on_layer())
+		to_chat(user, span_warning("There is already a meter on this pipe layer!"))
+		return TRUE
 	new /obj/machinery/meter(loc, piping_layer)
 	W.play_tool_sound(src)
 	to_chat(user, span_notice("You fasten the meter to the pipe."))
@@ -489,11 +492,21 @@ GAME_VERB_SRC(/obj/item/pipe, flip, view(1), "Invert Pipe", null)
 	if(!isturf(loc))
 		to_chat(user, span_warning("You need to fasten it to the floor!"))
 		return TRUE
+	if(meter_exists_on_layer())
+		to_chat(user, span_warning("There is already a meter on this pipe layer!"))
+		return TRUE
 
 	new /obj/machinery/meter/turf(loc, piping_layer)
 	S.play_tool_sound(src)
 	to_chat(user, span_notice("You fasten the meter to \the [loc]."))
 	qdel(src)
+
+/// Whether a meter is already fastened on our tile at our piping layer
+/obj/item/pipe_meter/proc/meter_exists_on_layer()
+	for(var/obj/machinery/meter/existing in loc)
+		if(existing.target_layer == piping_layer)
+			return TRUE
+	return FALSE
 
 /obj/item/pipe_meter/dropped()
 	. = ..()
