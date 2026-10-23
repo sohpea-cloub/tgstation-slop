@@ -104,11 +104,6 @@
 	if(connected_component?.parent)
 		SStgui.update_uis(connected_component.parent)
 
-/datum/port/input/set_datatype(new_type)
-	for(var/datum/port/output/output as anything in connected_ports)
-		check_type(output)
-	..()
-
 /**
  * Returns the data from the datatype
  */
@@ -194,8 +189,14 @@
 
 /datum/port/input/set_datatype(new_type)
 	. = ..()
-	for(var/datum/port/output/port as anything in connected_ports)
+	for(var/datum/port/output/port as anything in connected_ports?.Copy())
 		check_type(port)
+	// Changing the datatype clears the value. Outputs only send their value when it is set, so take it back
+	// from the ports we are still wired to; otherwise it stays null (e.g. a getter for a list variable that
+	// is modified in place never sends again).
+	if(!(datatype_handler.datatype_flags & DATATYPE_FLAG_AVOID_VALUE_UPDATE))
+		for(var/datum/port/output/port as anything in connected_ports)
+			set_value(port.value)
 
 /**
  * Determines if a datatype is compatible with another port of a different type.
