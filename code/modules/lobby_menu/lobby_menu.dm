@@ -118,12 +118,15 @@ ADMIN_VERB(toggle_lobby_transparency, R_ADMIN, "Toggle Lobby Transparency", "Tog
 		to_chat(client, span_notice("An admin has made the lobby background transparent. You can now see the map behind the lobby menu. You can disable this in your game preferences."))
 
 /datum/lobby_menu/process(seconds_per_tick)
+	// Admin status can change while in the lobby (deadmin / readmin), so it is sent every update too
+	var/is_admin = !isnull(client?.holder)
 	send_update(list(
+		"isAdmin" = is_admin,
 		"countdown" = get_countdown_text(),
 		"playerCount" = length(GLOB.clients),
-		"readyCount" = SSticker.totalPlayersReady,
-		"adminReadyCount" = SSticker.total_admins_ready,
-		"adminCount" = length(GLOB.admins),
+		"readyCount" = is_admin ? SSticker.totalPlayersReady : 0,
+		"adminReadyCount" = is_admin ? SSticker.total_admins_ready : 0,
+		"adminCount" = is_admin ? length(GLOB.admins) : 0,
 		"shiftTime" = (SSticker.round_start_time == 0) ? "Pre-Game" : round_timestamp(),
 	))
 
@@ -235,9 +238,9 @@ ADMIN_VERB(toggle_lobby_transparency, R_ADMIN, "Toggle Lobby Transparency", "Tog
 		"assetsReady" = (SSearly_assets.initialized == INITIALIZATION_INNEW_REGULAR) || (SSatoms.initialized == INITIALIZATION_INNEW_REGULAR),
 		"countdown" = get_countdown_text(),
 		"playerCount" = length(GLOB.clients),
-		"readyCount" = SSticker.totalPlayersReady,
-		"adminReadyCount" = SSticker.total_admins_ready,
-		"adminCount" = length(GLOB.admins),
+		"readyCount" = !isnull(client?.holder) ? SSticker.totalPlayersReady : 0,
+		"adminReadyCount" = !isnull(client?.holder) ? SSticker.total_admins_ready : 0,
+		"adminCount" = !isnull(client?.holder) ? length(GLOB.admins) : 0,
 		"mapName" = SSmapping.current_map?.map_name || "Loading...",
 		"shiftTime" = (SSticker.round_start_time == 0) ? "Pre-Game" : round_timestamp(),
 		"isAdmin" = !isnull(client?.holder),
