@@ -50,7 +50,7 @@
 		to_chat(user, span_warning("You start mashing keys at random!"))
 		return
 
-	var/message = tgui_input_text(user, "Input your text", "Keyboard", max_length = MAX_MESSAGE_LEN)
+	var/message = tgui_input_text(user, "Input your text", "Keyboard", max_length = MAX_MESSAGE_LEN, encode = FALSE)
 	entity.set_output(user)
 	output.set_output(message)
 	signal.set_output(COMPONENT_SIGNAL)

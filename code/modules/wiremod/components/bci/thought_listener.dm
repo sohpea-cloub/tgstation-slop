@@ -56,7 +56,7 @@
 	ready = FALSE
 
 /obj/item/circuit_component/thought_listener/proc/thought_listen(mob/living/owner)
-	var/message = tgui_input_text(owner, input_desc.value ? input_desc.value : "", input_name.value ? input_name.value : "Thought Listener", "", max_length = MAX_MESSAGE_LEN)
+	var/message = tgui_input_text(owner, input_desc.value ? input_desc.value : "", input_name.value ? input_name.value : "Thought Listener", "", max_length = MAX_MESSAGE_LEN, encode = FALSE)
 	if(QDELETED(owner) || IS_UNCONSCIOUS_OR_CRIT(owner))
 		return
 	output.set_output(message)

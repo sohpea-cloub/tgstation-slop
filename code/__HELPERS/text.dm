@@ -23,6 +23,9 @@
 
 ///returns nothing with an alert instead of the message if it contains something in the ic filter, and sanitizes normally if the name is fine. It returns nothing so it backs out of the input the same way as if you had entered nothing.
 /proc/sanitize_name(target, allow_numbers = FALSE, cap_after_symbols = TRUE)
+	// Many callers hand us the result of tgui_input_text(), which is already html_encode()d.
+	// We encode again at the end, so decode first or "'" ends up as "&amp;#39" (the ";" gets stripped).
+	target = html_decode(target)
 	if(is_ic_filtered(target) || is_soft_ic_filtered(target))
 		tgui_alert(usr, "You cannot set a name that contains a word prohibited in IC chat!")
 		return ""
