@@ -536,7 +536,7 @@
 
 ///Get all items in our possession that should affect our movespeed
 /mob/proc/get_equipped_speed_mod_items()
-	. = get_equipped_items(INCLUDE_ABSTRACT|INCLUDE_PROSTHETICS)
+	. = get_equipped_items(INCLUDE_ABSTRACT|INCLUDE_PROSTHETICS|INCLUDE_POCKETS)
 	for(var/obj/item/thing in held_items)
 		if(thing.item_flags & SLOWS_WHILE_IN_HAND)
 			. += thing
