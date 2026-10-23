@@ -30,7 +30,6 @@
 		var/datum/antagonist/wizard/apprentice/imposter/imposter = new()
 		imposter.master = M
 		imposter.wiz_team = master.wiz_team
-		master.wiz_team.add_member(imposter)
 		I.mind.add_antag_datum(imposter)
 		I.log_message("is an imposter!", LOG_ATTACK, color="red") //?
 		SEND_SOUND(I, sound('sound/effects/magic.ogg'))
