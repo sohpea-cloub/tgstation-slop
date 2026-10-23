@@ -118,6 +118,7 @@
 	RegisterSignal(src, COMSIG_MOVABLE_PRE_MOVE, PROC_REF(on_move))
 	RegisterSignal(src, COMSIG_LIVING_LIFE, PROC_REF(on_life))
 	RegisterSignal(src, COMSIG_REFLECTION_UPDATED, PROC_REF(on_reflect))
+	RegisterSignal(src, COMSIG_LIVING_TRY_PULL, PROC_REF(on_try_pull))
 	RegisterSignals(src, list(
 		SIGNAL_ADDTRAIT(TRAIT_REVENANT_REVEALED),
 		SIGNAL_REMOVETRAIT(TRAIT_REVENANT_REVEALED),
@@ -154,6 +155,15 @@
 	mind.add_antag_datum(/datum/antagonist/revenant)
 	return TRUE
 
+/// Invisible and intangible revenants can't physically grab things, only revealed ones can.
+/mob/living/basic/revenant/proc/on_try_pull(datum/source, atom/movable/target, force)
+	SIGNAL_HANDLER
+
+	if(HAS_TRAIT(src, TRAIT_REVENANT_REVEALED))
+		return NONE
+	to_chat(src, span_revenwarning("You are too intangible to grab [target]!"))
+	return COMSIG_LIVING_CANCEL_PULL
+
 /// Signal Handler Injection to handle Life() stuff for revenants
 /mob/living/basic/revenant/proc/on_life(seconds_per_tick = SSMOBS_DT)
 	SIGNAL_HANDLER
@@ -176,6 +186,8 @@
 	SIGNAL_HANDLER
 	update_appearance(UPDATE_ICON)
 	update_ability_status()
+	if(!HAS_TRAIT(src, TRAIT_REVENANT_REVEALED))
+		stop_pulling() // we lose our grip when we turn invisible and intangible again
 
 /mob/living/basic/revenant/AltClickOn(atom/target)
 	if(CAN_I_SEE(target))
