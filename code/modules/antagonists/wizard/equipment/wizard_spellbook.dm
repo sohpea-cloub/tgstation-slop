@@ -120,7 +120,15 @@
 		possible_entry.set_spell_info() //loads up things for the entry that require checking spell instance.
 		entries |= possible_entry
 
+/obj/item/spellbook/ui_state(mob/user)
+	return GLOB.book_state
+
 /obj/item/spellbook/ui_interact(mob/user, datum/tgui/ui)
+	if(user.is_blind())
+		to_chat(user, span_warning("You are blind and can't read anything!"))
+		return
+	if(!user.can_read(src))
+		return
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "Spellbook")

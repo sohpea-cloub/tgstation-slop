@@ -195,8 +195,16 @@
 	identity[VISIBLE_NAME_FACE] = ""
 	identity[VISIBLE_NAME_ID] = ""
 
+/obj/item/newspaper/ui_state(mob/user)
+	return GLOB.book_state
+
 /obj/item/newspaper/ui_interact(mob/user, datum/tgui/ui)
 	if(resistance_flags & ON_FIRE)
+		return
+	if(user.is_blind())
+		to_chat(user, span_warning("You are blind and can't read anything!"))
+		return
+	if(!user.can_read(src))
 		return
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(ui)
