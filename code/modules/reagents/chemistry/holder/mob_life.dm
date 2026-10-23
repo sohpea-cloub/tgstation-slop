@@ -16,7 +16,10 @@
 /datum/reagents/proc/metabolize(mob/living/carbon/owner, seconds_per_tick, can_overdose = FALSE, liverless = FALSE, dead = FALSE)
 	var/list/cached_reagents = reagent_list
 	if(owner)
-		expose_temperature(owner.bodytemperature, 0.25)
+		// The reagents and the body exchange heat: the body pulls the reagents toward its temperature, and the reagents warm or chill the body by the energy they give up.
+		if(!(flags & NO_REACT) && length(cached_reagents))
+			owner.adjust_bodytemperature(heat_capacity() * (chem_temp - owner.bodytemperature) * BODY_REAGENT_EXCHANGE_COEFF / BODY_HEAT_CAPACITY, min_temp = 0)
+		expose_temperature(owner.bodytemperature, BODY_REAGENT_EXCHANGE_COEFF)
 
 	var/need_mob_update = FALSE
 	var/obj/item/organ/stomach/belly = owner.get_organ_slot(ORGAN_SLOT_STOMACH)
