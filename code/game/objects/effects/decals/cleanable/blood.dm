@@ -849,7 +849,8 @@
 
 /obj/effect/decal/cleanable/blood/hitsplatter/proc/post_move(datum/move_loop/source)
 	SIGNAL_HANDLER
-	if(loc == prev_loc || !isturf(loc))
+	// Once we've hit a wall or window we're only waiting for the move loop to time out, don't keep painting what's inside
+	if(hit_endpoint || loc == prev_loc || !isturf(loc))
 		return
 
 	for(var/atom/movable/iter_atom in loc)
@@ -889,6 +890,10 @@
 		expire()
 
 /obj/effect/decal/cleanable/blood/hitsplatter/Bump(atom/bumped_atom)
+	// We already landed somewhere. Without this we keep moving through the wall we hit and leave more splatters
+	// inside of (and drawn past) the walls behind it, which can't be cleaned from where they appear to be.
+	if(hit_endpoint)
+		return
 	if(!iswallturf(bumped_atom) && !istype(bumped_atom, /obj/structure/window))
 		expire()
 		return
