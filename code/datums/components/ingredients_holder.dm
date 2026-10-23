@@ -57,7 +57,9 @@
 
 	ingredient_names = processed_holder.ingredient_names
 	custom_name = processed_holder.custom_name
-	atom_parent.name = "[custom_adjective()] [custom_name] [atom_parent.name]"
+	// Edible results of processing (slices) already inherited the name of the original, custom prefix included
+	if(atom_parent.name == initial(atom_parent.name))
+		atom_parent.name = "[custom_adjective()] [custom_name] [atom_parent.name]"
 	for(var/fillcol in processed_holder.filling_colors)
 		apply_fill(fillcol)
 
