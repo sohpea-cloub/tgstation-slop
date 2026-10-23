@@ -30,20 +30,25 @@
 				cook_result = /obj/item/food/pancakes,\
 				required_cook_time = rand(30 SECONDS, 40 SECONDS),\
 				positive_result = TRUE,\
-				use_large_steam_sprite = TRUE)
+				use_large_steam_sprite = TRUE,\
+				added_reagents = list(/datum/reagent/consumable/nutriment = 3, /datum/reagent/consumable/nutriment/vitamin = 1))
 
 /obj/item/food/pancakes/raw/item_interaction(mob/living/user, obj/item/tool, list/modifiers)
 	if(name != initial(name))// we already have additives
 		return ..()
 
 	var/newresult
+	// grilling replaces the cooked result's reagents with the raw ones, so top up what the cooked pancake has over the raw one
+	var/list/newreagents
 	if(istype(tool, /obj/item/food/grown/berries))
 		newresult = /obj/item/food/pancakes/blueberry
+		newreagents = list(/datum/reagent/consumable/nutriment = 5, /datum/reagent/consumable/nutriment/vitamin = 4)
 		name = "raw blueberry pancake"
 		icon_state = "rawbbpancakes_1"
 		stack_name = "rawbbpancakes"
 	else if(istype(tool, /obj/item/food/chocolatebar))
 		newresult = /obj/item/food/pancakes/chocolatechip
+		newreagents = list(/datum/reagent/consumable/nutriment = 5, /datum/reagent/consumable/nutriment/vitamin = 4)
 		name = "raw chocolate chip pancake"
 		icon_state = "rawccpancakes_1"
 		stack_name = "rawccpancakes"
@@ -52,7 +57,7 @@
 
 	qdel(tool)
 	to_chat(user, span_notice("You add [tool] to [src]."))
-	AddComponent(/datum/component/grillable, cook_result = newresult)
+	AddComponent(/datum/component/grillable, cook_result = newresult, positive_result = TRUE, use_large_steam_sprite = TRUE, added_reagents = newreagents)
 	return ITEM_INTERACT_SUCCESS
 
 /obj/item/food/pancakes/raw/examine(mob/user)

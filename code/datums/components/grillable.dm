@@ -67,7 +67,7 @@
 	))
 
 // Inherit the new values passed to the component
-/datum/component/grillable/InheritComponent(datum/component/grillable/new_comp, original, cook_result, required_cook_time, positive_result, use_large_steam_sprite)
+/datum/component/grillable/InheritComponent(datum/component/grillable/new_comp, original, cook_result, required_cook_time, positive_result, use_large_steam_sprite, list/added_reagents)
 	if(!original)
 		return
 	if(cook_result)
@@ -80,6 +80,8 @@
 		REMOVE_TRAIT(parent, TRAIT_GRILLABLE, REF(src))
 	if(use_large_steam_sprite)
 		src.use_large_steam_sprite = use_large_steam_sprite
+	if(added_reagents)
+		src.added_reagents = added_reagents
 
 /datum/component/grillable/Destroy(force)
 	. = ..()
