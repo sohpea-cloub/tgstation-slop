@@ -34,6 +34,15 @@
 
 /// Living Mob use event based gravity
 /// We check here to ensure we haven't dropped any gravity changes
+/**
+ * Steps in a direction without a client's input (twitching, spasms, drug effects), like walking would:
+ * if there is no gravity and nothing to push off of (see Process_Spacemove), there is no step.
+ */
+/mob/living/proc/involuntary_step(direction)
+	if(!Process_Spacemove(direction))
+		return FALSE
+	return step(src, direction)
+
 /mob/living/proc/gravity_setup()
 	on_negate_gravity(src)
 	refresh_gravity()
