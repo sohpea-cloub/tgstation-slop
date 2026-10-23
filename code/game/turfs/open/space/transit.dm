@@ -36,8 +36,12 @@
 /turf/open/space/transit/proc/initialize_drifting(atom/entered, atom/movable/enterer)
 	SIGNAL_HANDLER
 
-	if(enterer && !HAS_TRAIT(enterer, TRAIT_HYPERSPACED) && !HAS_TRAIT(src, TRAIT_HYPERSPACE_STOPPED))
-		enterer.AddComponent(/datum/component/shuttle_cling, REVERSE_DIR(dir))
+	if(!enterer || HAS_TRAIT(enterer, TRAIT_HYPERSPACED) || HAS_TRAIT(src, TRAIT_HYPERSPACE_STOPPED))
+		return
+	// Jaunt holders are incorporeal and never drift: dragging one along would take its jaunter with it
+	if(istype(enterer, /obj/effect/dummy/phased_mob))
+		return
+	enterer.AddComponent(/datum/component/shuttle_cling, REVERSE_DIR(dir))
 
 /turf/open/space/transit/proc/initialize_drifting_but_from_initialize(atom/movable/location, atom/movable/enterer, mapload)
 	SIGNAL_HANDLER
