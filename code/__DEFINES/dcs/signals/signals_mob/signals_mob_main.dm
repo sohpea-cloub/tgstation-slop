@@ -133,6 +133,8 @@
 #define COMSIG_MOB_UPDATE_SIGHT "mob_update_sight"
 ///from base of /mob/living/restore_initial_sight(): ()
 #define COMSIG_LIVING_RESTORE_INITIAL_SIGHT "mob_restore_init_sight"
+///from /mob/living/say(), sent right before COMSIG_MOB_SAY with the same argslist, so handlers that must see the message before accents and other speech modifiers do (see COMSIG_MOB_SAY for the arguments): ()
+#define COMSIG_MOB_PRE_SAY "mob_pre_say"
 ////from /mob/living/say(): ()
 #define COMSIG_MOB_SAY "mob_say"
 	#define COMPONENT_UPPERCASE_SPEECH (1<<0)

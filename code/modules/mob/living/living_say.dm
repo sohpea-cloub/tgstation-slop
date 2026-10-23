@@ -192,6 +192,7 @@ GLOBAL_LIST_INIT(message_modes_stat_limits, list(
 #endif
 
 	// Make sure the arglist is passed exactly - don't pass a copy of it. Say signal handlers will modify some of the parameters.
+	SEND_SIGNAL(src, COMSIG_MOB_PRE_SAY, args)
 	var/sigreturn = SEND_SIGNAL(src, COMSIG_MOB_SAY, args)
 	if(sigreturn & COMPONENT_UPPERCASE_SPEECH)
 		message = uppertext(message)

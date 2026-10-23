@@ -210,7 +210,19 @@
 	gain_text = span_warning("You lose your grasp on complex words.")
 	lose_text = span_notice("You feel your vocabulary returning to normal again.")
 
+/datum/brain_trauma/mild/expressive_aphasia/on_gain()
+	. = ..()
+	// Listen before accents and other speech modifiers (which use COMSIG_MOB_SAY), so we only ever see the original words.
+	UnregisterSignal(owner, COMSIG_MOB_SAY)
+	RegisterSignal(owner, COMSIG_MOB_PRE_SAY, PROC_REF(handle_speech))
+
+/datum/brain_trauma/mild/expressive_aphasia/on_lose(silent)
+	UnregisterSignal(owner, COMSIG_MOB_PRE_SAY)
+	return ..()
+
 /datum/brain_trauma/mild/expressive_aphasia/handle_speech(datum/source, list/speech_args)
+	SIGNAL_HANDLER
+
 	var/message = speech_args[SPEECH_MESSAGE]
 	if(message)
 		var/list/message_split = splittext(message, " ")
