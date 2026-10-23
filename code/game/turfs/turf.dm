@@ -437,6 +437,7 @@ GLOBAL_LIST_EMPTY(station_turfs)
 	// By default byond will call Bump() on the first dense object in contents
 	// Here's hoping it doesn't stay like this for years before we finish conversion to step_
 	var/atom/first_bump
+	var/atom/starting_loc = mover.loc
 	var/can_pass_self = CanPass(mover, get_dir(src, mover))
 
 	if(can_pass_self)
@@ -452,6 +453,8 @@ GLOBAL_LIST_EMPTY(station_turfs)
 					mover.Bump(thing)
 					if(QDELETED(mover)) //deleted from Bump()
 						return FALSE
+					if(mover.loc != starting_loc) //Bump() moved the mover somewhere else (a portal teleported it), the move is over
+						return FALSE
 					continue
 				else
 					if(!first_bump || ((thing.layer > first_bump.layer || thing.flags_1 & ON_BORDER_1) && !(first_bump.flags_1 & ON_BORDER_1)))
@@ -462,6 +465,8 @@ GLOBAL_LIST_EMPTY(station_turfs)
 		first_bump = src
 	if(first_bump)
 		mover.Bump(first_bump)
+		if(QDELETED(mover) || mover.loc != starting_loc) //Bump() moved the mover somewhere else (a portal teleported it), don't drag it back here
+			return FALSE
 		return (mover.movement_type & PHASING)
 	return TRUE
 
