@@ -21,6 +21,16 @@ ADMIN_VERB(manipulate_organs, R_DEBUG, "Manipulate Organs", "Manipulate the orga
 				return
 			organ_to_grant = organs[organ_to_grant]
 			organ_to_grant = new organ_to_grant
+			// Organs that fit in several zones (arm implants) need to be told which one to go in
+			if(length(organ_to_grant.valid_zones) > 1)
+				var/list/zone_choices = list()
+				for(var/valid_zone in organ_to_grant.valid_zones)
+					zone_choices[parse_zone(valid_zone)] = valid_zone
+				var/chosen_zone = tgui_input_list(user, "Select body zone", "Organ Manipulation", zone_choices)
+				if(isnull(chosen_zone) || isnull(zone_choices[chosen_zone]))
+					qdel(organ_to_grant)
+					return
+				organ_to_grant.swap_zone(zone_choices[chosen_zone])
 			// NO_ID_TRANSFER: swapping out a brain must not eject the owner's mind into the old brain
 			organ_to_grant.Insert(carbon_victim, movement_flags = NO_ID_TRANSFER)
 			log_admin("[key_name(user)] has added organ [organ_to_grant.type] to [key_name(carbon_victim)]")
