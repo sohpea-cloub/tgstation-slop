@@ -306,7 +306,7 @@ GAME_VERB_PROC(/mob, Cell, "Cell", "Admin")
 		if(hearing_mob.see_invisible < invisibility)//if src is invisible to M
 			msg = blind_message
 			msg_type = MSG_AUDIBLE
-		else if(T != loc && T != src) //if src is inside something and not a turf.
+		else if(T != loc && T != src && !(ismob(loc) && loc:is_holding(src))) //if src is inside something and not a turf. Items held in someone's hands are visible to everyone who can see the holder.
 			if(hearing_mob != loc) // Only give the blind message to hearers that aren't the location
 				msg = blind_message
 				msg_type = MSG_AUDIBLE
