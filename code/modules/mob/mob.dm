@@ -1014,6 +1014,9 @@ GAME_VERB_NATIVE(/mob, DisDblClick, ".dblclick", null, argu = null as anything, 
 
 ///Force get the ghost from the mind
 /mob/proc/grab_ghost(force)
+	// Admin ghosts (fake key) chose to leave the body, don't drag them back unless forced (same as defibs)
+	if(!force && IS_FAKE_KEY(key))
+		return
 	if(mind)
 		return mind.grab_ghost(force = force)
 
