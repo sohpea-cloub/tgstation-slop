@@ -38,7 +38,6 @@
 "aw" = (
 /obj/structure/table/glass,
 /obj/machinery/coffeemaker/impressa{
-	pixel_y = 13;
 	pixel_x = -1
 	},
 /obj/item/reagent_containers/cup/glass/mug{
@@ -330,9 +329,7 @@
 /area/awaymission/beach)
 "eE" = (
 /obj/structure/table/glass,
-/obj/machinery/microwave{
-	pixel_y = 15
-	},
+/obj/machinery/microwave,
 /obj/item/cigbutt{
 	pixel_y = 2;
 	pixel_x = -12
@@ -1158,7 +1155,6 @@
 /area/awaymission/beach)
 "ow" = (
 /obj/machinery/reagentgrinder{
-	pixel_y = 15;
 	pixel_x = -1
 	},
 /obj/structure/table/bronze,
@@ -3199,7 +3195,6 @@
 "Nh" = (
 /obj/effect/turf_decal/sand,
 /obj/structure/bedsheetbin{
-	pixel_y = 3;
 	pixel_x = -1
 	},
 /obj/structure/table,
@@ -3342,7 +3337,6 @@
 /obj/machinery/fax{
 	fax_name = "Beach Hotel Fax";
 	name = "Beach Hotel's Fax Machine";
-	pixel_y = 8;
 	visible_to_network = 0
 	},
 /turf/open/floor/iron/dark/diagonal,

@@ -137,8 +137,7 @@
 /obj/effect/turf_decal/trimline/purple/filled/end,
 /obj/structure/table,
 /obj/machinery/reagentgrinder{
-	pixel_x = -1;
-	pixel_y = 8
+	pixel_x = -1
 	},
 /obj/item/reagent_containers/cup/beaker/large{
 	pixel_x = -3;

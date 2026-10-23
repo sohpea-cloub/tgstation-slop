@@ -7165,9 +7165,7 @@
 /area/station/maintenance/solars/starboard/fore)
 "bvH" = (
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 6
-	},
+/obj/machinery/microwave,
 /obj/effect/turf_decal/tile/bar/opposingcorners,
 /turf/open/floor/iron,
 /area/station/cargo/miningdock/cafeteria)
@@ -14435,8 +14433,7 @@
 "dOq" = (
 /obj/structure/table/glass,
 /obj/machinery/reagentgrinder{
-	pixel_x = -1;
-	pixel_y = 8
+	pixel_x = -1
 	},
 /obj/item/stack/sheet/mineral/plasma{
 	pixel_y = 10
@@ -17544,8 +17541,7 @@
 "eTP" = (
 /obj/structure/table/wood,
 /obj/machinery/reagentgrinder{
-	pixel_x = 6;
-	pixel_y = 6
+	pixel_x = 6
 	},
 /obj/item/rag{
 	pixel_x = -5;
@@ -19127,8 +19123,7 @@
 "fwk" = (
 /obj/structure/table,
 /obj/machinery/microwave{
-	pixel_x = -2;
-	pixel_y = 5
+	pixel_x = -2
 	},
 /obj/effect/turf_decal/trimline/neutral/filled/line{
 	dir = 4
@@ -19402,9 +19397,7 @@
 "fBJ" = (
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 6
-	},
+/obj/machinery/microwave,
 /obj/effect/turf_decal/trimline/neutral/filled/line{
 	dir = 1
 	},
@@ -26577,9 +26570,7 @@
 	},
 /obj/structure/table/glass,
 /obj/structure/reagent_dispensers/wall/virusfood/directional/east,
-/obj/machinery/reagentgrinder{
-	pixel_y = 8
-	},
+/obj/machinery/reagentgrinder,
 /obj/item/stack/sheet/mineral/plasma{
 	amount = 3
 	},
@@ -45849,8 +45840,7 @@
 	},
 /obj/structure/table,
 /obj/machinery/microwave{
-	pixel_x = -3;
-	pixel_y = 6
+	pixel_x = -3
 	},
 /turf/open/floor/iron/dark,
 /area/station/medical/virology)
@@ -63839,8 +63829,7 @@
 	pixel_y = 12
 	},
 /obj/machinery/reagentgrinder{
-	pixel_x = -1;
-	pixel_y = 8
+	pixel_x = -1
 	},
 /turf/open/floor/glass/reinforced,
 /area/station/science/xenobiology)
@@ -67877,9 +67866,7 @@
 /area/station/science/xenobiology)
 "whs" = (
 /obj/structure/table,
-/obj/machinery/processor{
-	pixel_y = 12
-	},
+/obj/machinery/processor,
 /turf/open/floor/iron/white/side{
 	dir = 8
 	},
@@ -68031,8 +68018,7 @@
 /obj/effect/mapping_helpers/requests_console/supplies,
 /obj/effect/mapping_helpers/requests_console/assistance,
 /obj/machinery/reagentgrinder{
-	pixel_x = -5;
-	pixel_y = 8
+	pixel_x = -5
 	},
 /obj/item/rag{
 	pixel_x = 6;

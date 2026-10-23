@@ -7814,9 +7814,7 @@
 /turf/open/floor/iron/white,
 /area/station/medical/pharmacy)
 "cJx" = (
-/obj/machinery/microwave{
-	pixel_y = 4
-	},
+/obj/machinery/microwave,
 /obj/structure/table/wood,
 /turf/open/floor/iron/grimy,
 /area/station/tcommsat/computer)
@@ -9489,8 +9487,7 @@
 /obj/effect/turf_decal/tile/yellow/anticorner/contrasted,
 /obj/structure/table,
 /obj/machinery/reagentgrinder{
-	pixel_x = 2;
-	pixel_y = 9
+	pixel_x = 2
 	},
 /obj/item/stack/sheet/mineral/plasma{
 	pixel_y = 3
@@ -14516,8 +14513,7 @@
 	},
 /obj/effect/turf_decal/caution/red,
 /obj/machinery/reagentgrinder{
-	pixel_x = -1;
-	pixel_y = 8
+	pixel_x = -1
 	},
 /obj/machinery/power/apc/auto_name/directional/north,
 /obj/structure/cable,
@@ -22944,8 +22940,7 @@
 /area/station/science/xenobiology)
 "hYd" = (
 /obj/machinery/microwave{
-	pixel_x = -3;
-	pixel_y = 6
+	pixel_x = -3
 	},
 /obj/structure/table,
 /obj/effect/turf_decal/tile/red/half/contrasted,
@@ -25257,9 +25252,7 @@
 	},
 /obj/structure/table,
 /obj/effect/decal/cleanable/cobweb/cobweb2,
-/obj/machinery/reagentgrinder{
-	pixel_y = 4
-	},
+/obj/machinery/reagentgrinder,
 /obj/item/reagent_containers/applicator/pill/morphine{
 	name = "Exponential Entrophy";
 	pixel_x = -9;
@@ -25517,9 +25510,7 @@
 /area/station/security/prison/garden)
 "iOt" = (
 /obj/structure/table/glass,
-/obj/machinery/reagentgrinder{
-	pixel_y = 8
-	},
+/obj/machinery/reagentgrinder,
 /obj/effect/turf_decal/tile/green/half/contrasted,
 /obj/machinery/light/small/directional/south,
 /turf/open/floor/iron/white,
@@ -33988,9 +33979,7 @@
 /turf/open/floor/iron,
 /area/station/hallway/primary/aft)
 "lHe" = (
-/obj/machinery/reagentgrinder{
-	pixel_y = 4
-	},
+/obj/machinery/reagentgrinder,
 /obj/structure/table/glass,
 /obj/effect/turf_decal/stripes/line{
 	dir = 6
@@ -41140,8 +41129,7 @@
 "ocB" = (
 /obj/structure/table/wood,
 /obj/machinery/microwave{
-	pixel_x = 1;
-	pixel_y = 6
+	pixel_x = 1
 	},
 /obj/machinery/light/small/directional/north,
 /turf/open/floor/iron/dark,
@@ -47631,9 +47619,7 @@
 /area/station/engineering/gravity_generator)
 "qno" = (
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 6
-	},
+/obj/machinery/microwave,
 /turf/open/floor/plating,
 /area/station/maintenance/port/aft)
 "qnq" = (
@@ -54485,9 +54471,7 @@
 	req_access = list("kitchen")
 	},
 /obj/structure/table,
-/obj/machinery/processor{
-	pixel_y = 12
-	},
+/obj/machinery/processor,
 /obj/effect/turf_decal/tile/bar/opposingcorners,
 /turf/open/floor/iron/cafeteria,
 /area/station/service/kitchen)
@@ -62872,8 +62856,7 @@
 /area/station/service/janitor)
 "vtK" = (
 /obj/machinery/reagentgrinder{
-	pixel_x = 6;
-	pixel_y = 6
+	pixel_x = 6
 	},
 /obj/item/reagent_containers/cup/glass/shaker{
 	pixel_x = -6
@@ -63412,8 +63395,7 @@
 	},
 /obj/structure/table/glass,
 /obj/machinery/reagentgrinder{
-	pixel_x = -1;
-	pixel_y = 8
+	pixel_x = -1
 	},
 /obj/effect/turf_decal/tile/purple/fourcorners,
 /turf/open/floor/iron/white,
@@ -70461,8 +70443,7 @@
 	},
 /obj/structure/table,
 /obj/machinery/reagentgrinder{
-	pixel_x = 6;
-	pixel_y = 6
+	pixel_x = 6
 	},
 /obj/item/reagent_containers/condiment/enzyme{
 	pixel_x = -6;

@@ -839,7 +839,6 @@
 /area/virtual_domain)
 "jK" = (
 /obj/machinery/reagentgrinder{
-	pixel_y = 15;
 	pixel_x = -1
 	},
 /obj/structure/table/bronze,
@@ -2415,7 +2414,6 @@
 "Er" = (
 /obj/effect/turf_decal/sand,
 /obj/structure/bedsheetbin{
-	pixel_y = 3;
 	pixel_x = -1
 	},
 /obj/structure/table,
@@ -2801,7 +2799,6 @@
 "Jb" = (
 /obj/structure/table/glass,
 /obj/machinery/coffeemaker/impressa{
-	pixel_y = 13;
 	pixel_x = -1
 	},
 /obj/item/reagent_containers/cup/glass/mug{
@@ -2905,9 +2902,7 @@
 /area/virtual_domain/fullbright)
 "Ks" = (
 /obj/structure/table/glass,
-/obj/machinery/microwave{
-	pixel_y = 15
-	},
+/obj/machinery/microwave,
 /obj/item/cigbutt{
 	pixel_y = 2;
 	pixel_x = -12

@@ -1920,8 +1920,7 @@
 /obj/machinery/camera/autoname/directional/west,
 /obj/structure/cable,
 /obj/machinery/microwave/engineering/cell_included{
-	pixel_x = 0;
-	pixel_y = 8
+	pixel_x = 0
 	},
 /obj/structure/table/reinforced,
 /obj/effect/spawner/random/food_or_drink/donkpockets,

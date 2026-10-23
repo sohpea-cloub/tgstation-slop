@@ -456,8 +456,7 @@
 "vz" = (
 /obj/structure/table/glass,
 /obj/machinery/reagentgrinder{
-	pixel_x = 0;
-	pixel_y = 9
+	pixel_x = 0
 	},
 /obj/effect/turf_decal/tile/yellow/anticorner,
 /obj/item/stack/sheet/mineral/plasma,
@@ -640,8 +639,7 @@
 	},
 /obj/structure/reagent_dispensers/wall/virusfood/directional/west,
 /obj/machinery/reagentgrinder{
-	pixel_x = 0;
-	pixel_y = 9
+	pixel_x = 0
 	},
 /turf/open/floor/mineral/titanium/white,
 /area/shuttle/escape)

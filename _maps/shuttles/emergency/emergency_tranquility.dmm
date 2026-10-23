@@ -98,8 +98,7 @@
 "cD" = (
 /obj/structure/table/reinforced,
 /obj/machinery/chem_dispenser/drinks/beer/fullupgrade{
-	dir = 4;
-	pixel_y = 4
+	dir = 4
 	},
 /obj/structure/sign/picture_frame/portrait/bar{
 	pixel_y = 32
@@ -356,9 +355,7 @@
 	dir = 2
 	},
 /obj/structure/table/wood,
-/obj/machinery/reagentgrinder{
-	pixel_y = 5
-	},
+/obj/machinery/reagentgrinder,
 /turf/open/floor/stone,
 /area/shuttle/escape)
 "hx" = (
@@ -1508,8 +1505,7 @@
 "CV" = (
 /obj/structure/table/reinforced,
 /obj/machinery/chem_dispenser/drinks/fullupgrade{
-	dir = 4;
-	pixel_y = 4
+	dir = 4
 	},
 /obj/structure/sign/poster/official/midtown_slice/directional/west,
 /turf/open/floor/stone,

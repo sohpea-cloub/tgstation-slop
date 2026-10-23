@@ -11567,9 +11567,7 @@
 /area/station/maintenance/starboard/aft)
 "dOL" = (
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 5
-	},
+/obj/machinery/microwave,
 /obj/structure/extinguisher_cabinet/directional/west,
 /obj/machinery/airalarm/directional/north,
 /obj/effect/turf_decal/tile/neutral/half/contrasted{
@@ -12017,8 +12015,7 @@
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
 /obj/structure/table/glass,
 /obj/machinery/reagentgrinder{
-	desc = "Used to grind things up into raw materials and liquids.";
-	pixel_y = 5
+	desc = "Used to grind things up into raw materials and liquids."
 	},
 /obj/machinery/light_switch/directional/west{
 	pixel_y = -4
@@ -13978,9 +13975,7 @@
 /area/station/science/auxlab)
 "eDr" = (
 /obj/structure/table/glass,
-/obj/machinery/reagentgrinder{
-	pixel_y = 5
-	},
+/obj/machinery/reagentgrinder,
 /obj/machinery/light_switch/directional/south,
 /obj/effect/turf_decal/tile/neutral/anticorner/contrasted{
 	dir = 8
@@ -15167,9 +15162,7 @@
 /turf/open/floor/iron,
 /area/station/hallway/primary/starboard)
 "eZx" = (
-/obj/machinery/microwave{
-	pixel_y = 5
-	},
+/obj/machinery/microwave,
 /obj/structure/table,
 /obj/machinery/firealarm/directional/east,
 /obj/effect/turf_decal/tile/neutral/fourcorners,
@@ -15832,9 +15825,7 @@
 "flM" = (
 /obj/structure/cable,
 /obj/structure/table,
-/obj/machinery/reagentgrinder{
-	pixel_y = 5
-	},
+/obj/machinery/reagentgrinder,
 /obj/machinery/power/apc/auto_name/directional/west,
 /obj/effect/turf_decal/bot,
 /obj/effect/turf_decal/tile/neutral/half/contrasted{
@@ -23549,9 +23540,7 @@
 	dir = 8
 	},
 /obj/structure/table/glass,
-/obj/machinery/microwave{
-	pixel_y = 5
-	},
+/obj/machinery/microwave,
 /obj/effect/turf_decal/tile/blue/anticorner/contrasted,
 /obj/machinery/light/small/directional/south,
 /turf/open/floor/iron/showroomfloor,
@@ -24088,9 +24077,7 @@
 /area/station/medical/storage)
 "hLI" = (
 /obj/structure/table/wood,
-/obj/machinery/reagentgrinder{
-	pixel_y = 5
-	},
+/obj/machinery/reagentgrinder,
 /obj/item/toy/figure/bartender{
 	pixel_x = -7
 	},
@@ -34052,9 +34039,7 @@
 "kJM" = (
 /obj/structure/cable,
 /obj/structure/table/wood,
-/obj/machinery/computer/libraryconsole/bookmanagement{
-	pixel_y = 5
-	},
+/obj/machinery/computer/libraryconsole/bookmanagement,
 /obj/effect/turf_decal/siding/wood{
 	dir = 8
 	},
@@ -42201,9 +42186,7 @@
 /area/station/service/hydroponics)
 "noq" = (
 /obj/structure/table,
-/obj/machinery/processor{
-	pixel_y = 6
-	},
+/obj/machinery/processor,
 /obj/effect/turf_decal/delivery,
 /obj/effect/turf_decal/tile/neutral/anticorner/contrasted{
 	dir = 1
@@ -50753,8 +50736,7 @@
 "qbV" = (
 /obj/structure/table,
 /obj/machinery/reagentgrinder{
-	pixel_x = -4;
-	pixel_y = 5
+	pixel_x = -4
 	},
 /obj/machinery/camera/directional/west{
 	c_tag = "Kitchen";
@@ -57211,9 +57193,7 @@
 /area/station/security/courtroom)
 "sdm" = (
 /obj/structure/table/wood,
-/obj/machinery/computer/libraryconsole/bookmanagement{
-	pixel_y = 5
-	},
+/obj/machinery/computer/libraryconsole/bookmanagement,
 /obj/effect/decal/cleanable/dirt,
 /obj/effect/decal/cleanable/cobweb,
 /obj/structure/noticeboard/directional/west,
@@ -59878,9 +59858,7 @@
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/cable,
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 5
-	},
+/obj/machinery/microwave,
 /obj/effect/turf_decal/tile/neutral{
 	dir = 8
 	},
@@ -67487,9 +67465,7 @@
 "vna" = (
 /obj/structure/table,
 /obj/machinery/light/directional/south,
-/obj/machinery/reagentgrinder{
-	pixel_y = 5
-	},
+/obj/machinery/reagentgrinder,
 /obj/machinery/firealarm/directional/south,
 /obj/machinery/newscaster/directional/south{
 	pixel_x = 28
@@ -68336,9 +68312,7 @@
 /area/station/maintenance/starboard/aft)
 "vBS" = (
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 5
-	},
+/obj/machinery/microwave,
 /obj/effect/turf_decal/tile/neutral/half/contrasted,
 /turf/open/floor/iron/dark,
 /area/station/security/office)

@@ -370,9 +370,7 @@
 /area/lavaland/surface/outdoors)
 "dI" = (
 /obj/structure/table/glass,
-/obj/machinery/reagentgrinder{
-	pixel_y = 5
-	},
+/obj/machinery/reagentgrinder,
 /obj/item/reagent_containers/cup/beaker/large,
 /turf/open/floor/iron/white/side{
 	dir = 5

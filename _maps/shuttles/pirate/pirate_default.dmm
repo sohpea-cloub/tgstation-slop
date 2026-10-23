@@ -555,9 +555,7 @@
 "bF" = (
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 5
-	},
+/obj/machinery/microwave,
 /obj/item/book/manual/wiki/barman_recipes{
 	pixel_x = -8
 	},

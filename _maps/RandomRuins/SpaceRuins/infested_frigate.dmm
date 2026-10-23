@@ -426,9 +426,7 @@
 	},
 /obj/effect/turf_decal/tile/bar,
 /obj/structure/table/reinforced,
-/obj/structure/closet/mini_fridge/grimy{
-	pixel_y = 6
-	},
+/obj/structure/closet/mini_fridge/grimy,
 /obj/effect/spawner/random/food_or_drink/refreshing_beverage,
 /obj/effect/spawner/random/food_or_drink/booze{
 	pixel_x = 4;
@@ -442,9 +440,7 @@
 /obj/effect/spawner/random/food_or_drink/booze,
 /obj/effect/spawner/random/food_or_drink/booze,
 /obj/item/bodypart/head,
-/obj/machinery/chem_dispenser/drinks/beer{
-	pixel_y = 32
-	},
+/obj/machinery/chem_dispenser/drinks/beer,
 /turf/open/floor/mineral/titanium/tiled/white,
 /area/ruin/space/has_grav/infested_frigate)
 "fM" = (
@@ -2878,9 +2874,7 @@
 	pixel_y = 7
 	},
 /obj/structure/cable,
-/obj/machinery/chem_dispenser/drinks/fullupgrade{
-	pixel_y = 32
-	},
+/obj/machinery/chem_dispenser/drinks/fullupgrade,
 /turf/open/floor/mineral/titanium/tiled/white,
 /area/ruin/space/has_grav/infested_frigate)
 "UV" = (

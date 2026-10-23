@@ -193,8 +193,7 @@
 "aW" = (
 /obj/structure/table/reinforced,
 /obj/machinery/reagentgrinder{
-	pixel_x = 6;
-	pixel_y = 6
+	pixel_x = 6
 	},
 /obj/item/reagent_containers/cup/glass/shaker{
 	pixel_x = -6

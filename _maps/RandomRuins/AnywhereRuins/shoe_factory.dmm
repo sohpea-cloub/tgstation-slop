@@ -758,9 +758,7 @@
 /area/ruin/shoe_factory)
 "OR" = (
 /obj/structure/table,
-/obj/machinery/coffeemaker{
-	pixel_y = 5
-	},
+/obj/machinery/coffeemaker,
 /obj/effect/decal/cleanable/cobweb,
 /turf/open/floor/wood,
 /area/ruin/shoe_factory)

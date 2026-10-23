@@ -4679,8 +4679,7 @@
 "GH" = (
 /obj/structure/table,
 /obj/machinery/microwave{
-	pixel_x = -3;
-	pixel_y = 6
+	pixel_x = -3
 	},
 /turf/open/floor/iron/cafeteria,
 /area/awaymission/moonoutpost19/arrivals)
@@ -7018,8 +7017,7 @@
 "Yd" = (
 /obj/structure/table,
 /obj/machinery/microwave{
-	pixel_x = -3;
-	pixel_y = 6
+	pixel_x = -3
 	},
 /obj/machinery/light/small/directional/east,
 /obj/effect/turf_decal/tile/bar,

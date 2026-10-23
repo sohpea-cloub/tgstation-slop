@@ -37434,8 +37434,7 @@
 /obj/effect/turf_decal/tile/dark/diagonal_centre,
 /obj/structure/table/reinforced/rglass,
 /obj/machinery/reagentgrinder{
-	pixel_x = 0;
-	pixel_y = 4
+	pixel_x = 0
 	},
 /turf/open/floor/iron/white/diagonal,
 /area/station/service/kitchen)
@@ -39151,9 +39150,7 @@
 "fOs" = (
 /obj/effect/turf_decal/tile/dark/opposingcorners,
 /obj/structure/table/reinforced/rglass,
-/obj/machinery/chem_dispenser/drinks/beer{
-	pixel_y = 7
-	},
+/obj/machinery/chem_dispenser/drinks/beer,
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /obj/structure/disposalpipe/segment{
@@ -61619,9 +61616,7 @@
 "jdQ" = (
 /obj/effect/turf_decal/tile/dark/opposingcorners,
 /obj/structure/table/reinforced/rglass,
-/obj/machinery/chem_dispenser/drinks{
-	pixel_y = 7
-	},
+/obj/machinery/chem_dispenser/drinks,
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /obj/structure/disposalpipe/segment{
@@ -61760,8 +61755,7 @@
 	},
 /obj/structure/table/wood,
 /obj/machinery/computer/libraryconsole{
-	dir = 1;
-	pixel_y = 7
+	dir = 1
 	},
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
@@ -66007,8 +66001,7 @@
 "jLI" = (
 /obj/structure/table/wood,
 /obj/machinery/reagentgrinder{
-	pixel_x = -6;
-	pixel_y = 0
+	pixel_x = -6
 	},
 /obj/effect/spawner/random/entertainment/drugs,
 /turf/open/floor/wood,
@@ -75008,8 +75001,7 @@
 	},
 /obj/structure/table/wood,
 /obj/machinery/computer/libraryconsole/bookmanagement{
-	dir = 8;
-	pixel_y = 6
+	dir = 8
 	},
 /obj/item/toy/figure/curator{
 	pixel_y = 21;
@@ -111107,9 +111099,7 @@
 "quU" = (
 /obj/structure/sign/poster/random/directional/north,
 /obj/structure/table/wood,
-/obj/machinery/computer/libraryconsole{
-	pixel_y = 5
-	},
+/obj/machinery/computer/libraryconsole,
 /turf/open/floor/wood/large,
 /area/station/service/library)
 "quV" = (
@@ -138439,9 +138429,7 @@
 /obj/effect/turf_decal/siding/thinplating_new/dark{
 	dir = 8
 	},
-/obj/structure/closet/mini_fridge{
-	pixel_y = 4
-	},
+/obj/structure/closet/mini_fridge,
 /obj/machinery/camera/autoname/directional/east,
 /turf/open/floor/iron/dark,
 /area/station/cargo/bitrunning/den)
@@ -138871,8 +138859,7 @@
 	pixel_y = 6
 	},
 /obj/machinery/reagentgrinder{
-	pixel_x = 6;
-	pixel_y = 0
+	pixel_x = 6
 	},
 /obj/structure/window/spawner/directional/west,
 /obj/structure/window/spawner/directional/north,

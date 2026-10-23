@@ -796,8 +796,7 @@
 /obj/structure/table/wood,
 /obj/machinery/chem_dispenser/drinks/beer{
 	dir = 4;
-	pixel_x = -8;
-	pixel_y = 1
+	pixel_x = -8
 	},
 /obj/item/reagent_containers/cup/beaker{
 	pixel_x = 7;
@@ -1013,9 +1012,7 @@
 /area/centcom/central_command_areas/holding)
 "zc" = (
 /obj/structure/table/wood,
-/obj/machinery/microwave{
-	pixel_y = 6
-	},
+/obj/machinery/microwave,
 /turf/open/floor/carpet/black,
 /area/centcom/central_command_areas/holding)
 "zh" = (
@@ -1443,8 +1440,7 @@
 	pixel_y = 13
 	},
 /obj/machinery/reagentgrinder{
-	desc = "Used to grind things up into raw materials and liquids.";
-	pixel_y = 5
+	desc = "Used to grind things up into raw materials and liquids."
 	},
 /turf/open/floor/iron/cafeteria,
 /area/centcom/central_command_areas/holding)
@@ -1636,9 +1632,7 @@
 /area/centcom/central_command_areas/holding)
 "Mh" = (
 /obj/structure/table/reinforced,
-/obj/machinery/microwave{
-	pixel_y = 6
-	},
+/obj/machinery/microwave,
 /turf/open/floor/iron/cafeteria,
 /area/centcom/central_command_areas/holding)
 "My" = (
@@ -1687,8 +1681,7 @@
 /obj/structure/table/wood,
 /obj/machinery/chem_dispenser/drinks{
 	dir = 4;
-	pixel_x = -8;
-	pixel_y = 4
+	pixel_x = -8
 	},
 /obj/item/reagent_containers/condiment/enzyme{
 	pixel_x = 10;

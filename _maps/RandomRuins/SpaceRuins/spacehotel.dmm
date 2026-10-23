@@ -838,8 +838,7 @@
 "iy" = (
 /obj/structure/table/reinforced,
 /obj/machinery/reagentgrinder{
-	pixel_x = 6;
-	pixel_y = 6
+	pixel_x = 6
 	},
 /obj/item/reagent_containers/condiment/enzyme,
 /obj/structure/cable,
@@ -1685,9 +1684,7 @@
 /area/ruin/space/has_grav/hotel/guestroom/room_1)
 "qO" = (
 /obj/structure/table/reinforced,
-/obj/machinery/processor{
-	pixel_y = 12
-	},
+/obj/machinery/processor,
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
@@ -1838,9 +1835,7 @@
 /area/ruin/space/has_grav/hotel)
 "sL" = (
 /obj/structure/table/reinforced,
-/obj/machinery/microwave{
-	pixel_y = 7
-	},
+/obj/machinery/microwave,
 /obj/structure/window/reinforced/survival_pod/spawner/directional/west,
 /turf/open/floor/iron/cafeteria,
 /area/ruin/space/has_grav/hotel/bar)
@@ -2328,8 +2323,7 @@
 /obj/structure/table/reinforced,
 /obj/machinery/chem_dispenser/drinks{
 	dir = 4;
-	pixel_x = -4;
-	pixel_y = 2
+	pixel_x = -4
 	},
 /obj/item/reagent_containers/cup/glass/shaker{
 	pixel_x = 6;
@@ -2494,8 +2488,7 @@
 /obj/structure/table/reinforced,
 /obj/machinery/chem_dispenser/drinks/beer{
 	dir = 4;
-	pixel_x = -4;
-	pixel_y = 0
+	pixel_x = -4
 	},
 /obj/item/rag{
 	pixel_x = 10;

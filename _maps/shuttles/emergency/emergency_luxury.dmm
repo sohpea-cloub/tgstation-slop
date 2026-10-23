@@ -1059,8 +1059,7 @@
 "QQ" = (
 /obj/structure/table/wood/fancy/black,
 /obj/machinery/chem_dispenser/drinks/fullupgrade{
-	dir = 4;
-	pixel_y = 0
+	dir = 4
 	},
 /turf/open/floor/carpet/green,
 /area/shuttle/escape/luxury)
@@ -1204,8 +1203,7 @@
 "YF" = (
 /obj/structure/table/wood/fancy/black,
 /obj/machinery/chem_dispenser/drinks/beer/fullupgrade{
-	dir = 4;
-	pixel_y = 0
+	dir = 4
 	},
 /turf/open/floor/carpet/green,
 /area/shuttle/escape/luxury)

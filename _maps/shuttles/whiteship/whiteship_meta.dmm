@@ -1346,9 +1346,7 @@
 /obj/machinery/firealarm/directional/west,
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/table,
-/obj/machinery/reagentgrinder{
-	pixel_y = 6
-	},
+/obj/machinery/reagentgrinder,
 /obj/item/kitchen/rollingpin{
 	pixel_x = 8
 	},
@@ -1371,8 +1369,7 @@
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/table,
 /obj/machinery/microwave{
-	pixel_x = -3;
-	pixel_y = 6
+	pixel_x = -3
 	},
 /obj/machinery/light/small/empty/directional/east,
 /turf/open/floor/iron,

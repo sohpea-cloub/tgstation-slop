@@ -91,9 +91,7 @@
 /area/space/nearstation)
 "W" = (
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 8
-	},
+/obj/machinery/microwave,
 /obj/effect/turf_decal/tile/bar/opposingcorners,
 /turf/open/floor/iron,
 /area/ruin/space/djstation)

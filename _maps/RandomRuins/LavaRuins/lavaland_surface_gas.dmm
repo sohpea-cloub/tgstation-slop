@@ -269,9 +269,7 @@
 /area/ruin/thelizardsgas_lavaland)
 "mz" = (
 /obj/structure/table/reinforced,
-/obj/structure/closet/mini_fridge{
-	pixel_y = 5
-	},
+/obj/structure/closet/mini_fridge,
 /obj/effect/spawner/random/food_or_drink/refreshing_beverage,
 /obj/effect/spawner/random/food_or_drink/refreshing_beverage,
 /obj/effect/spawner/random/food_or_drink/refreshing_beverage,
@@ -1102,9 +1100,7 @@
 /area/ruin/thelizardsgas_lavaland)
 "Ux" = (
 /obj/structure/table,
-/obj/machinery/coffeemaker{
-	pixel_y = 5
-	},
+/obj/machinery/coffeemaker,
 /obj/machinery/computer/security/telescreen/entertainment/directional/north,
 /obj/machinery/airalarm/directional/west,
 /turf/open/floor/iron/smooth{

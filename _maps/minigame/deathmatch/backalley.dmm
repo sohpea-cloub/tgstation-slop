@@ -204,7 +204,6 @@
 "tQ" = (
 /obj/structure/table,
 /obj/machinery/microwave{
-	pixel_y = 5;
 	pixel_x = -1
 	},
 /turf/open/indestructible/stone,

@@ -375,9 +375,7 @@
 	},
 /obj/effect/turf_decal/siding/white,
 /obj/structure/table/reinforced,
-/obj/machinery/microwave{
-	pixel_y = 5
-	},
+/obj/machinery/microwave,
 /turf/open/floor/iron/dark/textured,
 /area/template_noop)
 "z" = (
@@ -593,9 +591,7 @@
 	dir = 1
 	},
 /obj/structure/table/reinforced,
-/obj/machinery/processor{
-	pixel_y = 7
-	},
+/obj/machinery/processor,
 /turf/open/floor/iron/dark/textured,
 /area/template_noop)
 "O" = (
@@ -638,8 +634,7 @@
 	},
 /obj/structure/table/reinforced,
 /obj/machinery/reagentgrinder{
-	pixel_x = -10;
-	pixel_y = 4
+	pixel_x = -10
 	},
 /obj/item/book/manual/chef_recipes{
 	pixel_x = 5

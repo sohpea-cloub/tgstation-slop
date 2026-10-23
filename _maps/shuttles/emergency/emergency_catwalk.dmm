@@ -1,8 +1,6 @@
 //MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
 "am" = (
-/obj/machinery/chem_dispenser/drinks/beer/fullupgrade{
-	pixel_y = 8
-	},
+/obj/machinery/chem_dispenser/drinks/beer/fullupgrade,
 /obj/structure/table/reinforced,
 /obj/effect/turf_decal/siding/thinplating_new{
 	dir = 10
@@ -1006,9 +1004,7 @@
 /turf/open/floor/iron,
 /area/shuttle/escape)
 "Xk" = (
-/obj/machinery/chem_dispenser/drinks/fullupgrade{
-	pixel_y = 8
-	},
+/obj/machinery/chem_dispenser/drinks/fullupgrade,
 /obj/structure/table/reinforced,
 /obj/effect/turf_decal/siding/thinplating_new{
 	dir = 6

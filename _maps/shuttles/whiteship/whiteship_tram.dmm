@@ -916,9 +916,7 @@
 /area/shuttle/abandoned/crew)
 "nV" = (
 /obj/structure/table/reinforced/plastitaniumglass,
-/obj/machinery/microwave{
-	pixel_y = 6
-	},
+/obj/machinery/microwave,
 /obj/machinery/firealarm/directional/west,
 /turf/open/floor/iron/smooth_large,
 /area/shuttle/abandoned/bridge)

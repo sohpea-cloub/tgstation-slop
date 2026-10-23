@@ -1809,9 +1809,7 @@
 	pixel_x = -7;
 	pixel_y = 3
 	},
-/obj/machinery/reagentgrinder{
-	pixel_y = 5
-	},
+/obj/machinery/reagentgrinder,
 /obj/item/stack/sheet/mineral/plasma/five{
 	pixel_x = 0;
 	pixel_y = 0

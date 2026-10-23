@@ -34,9 +34,7 @@
 	},
 /obj/effect/decal/cleanable/dirt,
 /obj/effect/decal/cleanable/dirt,
-/obj/machinery/microwave{
-	pixel_y = 6
-	},
+/obj/machinery/microwave,
 /obj/structure/table,
 /obj/item/food/ready_donk/donkhiladas{
 	pixel_y = 19

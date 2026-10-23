@@ -104,7 +104,6 @@
 "gX" = (
 /obj/structure/table,
 /obj/structure/bedsheetbin{
-	pixel_y = 4;
 	pixel_x = 3
 	},
 /turf/open/floor/plastic,

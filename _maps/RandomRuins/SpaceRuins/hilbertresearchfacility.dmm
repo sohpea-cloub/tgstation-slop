@@ -25,8 +25,7 @@
 	dir = 4
 	},
 /obj/machinery/reagentgrinder{
-	pixel_x = -1;
-	pixel_y = 8
+	pixel_x = -1
 	},
 /obj/structure/table/reinforced/rglass,
 /obj/machinery/light/small/directional/west,
@@ -1108,8 +1107,7 @@
 "AZ" = (
 /obj/structure/table/reinforced/rglass,
 /obj/machinery/reagentgrinder{
-	pixel_x = -1;
-	pixel_y = 8
+	pixel_x = -1
 	},
 /turf/open/floor/mineral/titanium/tiled/blue,
 /area/ruin/space/has_grav/powered/hilbertresearchfacility)

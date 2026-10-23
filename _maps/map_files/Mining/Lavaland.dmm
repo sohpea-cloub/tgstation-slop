@@ -759,9 +759,7 @@
 /area/mine/living_quarters)
 "eD" = (
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 6
-	},
+/obj/machinery/microwave,
 /obj/effect/turf_decal/siding/wood{
 	dir = 1
 	},
@@ -7737,9 +7735,7 @@
 /area/mine/production)
 "RZ" = (
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 6
-	},
+/obj/machinery/microwave,
 /turf/open/floor/iron/smooth_edge{
 	dir = 8
 	},

@@ -885,9 +885,7 @@
 "eg" = (
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 6
-	},
+/obj/machinery/microwave,
 /turf/open/floor/iron/cafeteria,
 /area/ruin/space/ancientstation/charlie/kitchen)
 "ei" = (
@@ -1162,9 +1160,7 @@
 "fi" = (
 /obj/structure/table,
 /obj/effect/decal/cleanable/dirt,
-/obj/machinery/reagentgrinder{
-	pixel_y = 6
-	},
+/obj/machinery/reagentgrinder,
 /turf/open/floor/iron/cafeteria,
 /area/ruin/space/ancientstation/charlie/kitchen)
 "fn" = (
@@ -7804,7 +7800,6 @@
 "Tr" = (
 /obj/structure/table/glass,
 /obj/structure/closet/mini_fridge/grimy{
-	pixel_y = 8;
 	pixel_x = 2
 	},
 /obj/item/petri_dish/oldstation,
@@ -8445,9 +8440,7 @@
 "Ya" = (
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/table,
-/obj/machinery/processor{
-	pixel_y = 8
-	},
+/obj/machinery/processor,
 /turf/open/floor/iron/cafeteria,
 /area/ruin/space/ancientstation/charlie/kitchen)
 "Yf" = (

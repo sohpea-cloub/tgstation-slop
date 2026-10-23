@@ -904,9 +904,7 @@
 /area/ruin/pizzeria)
 "My" = (
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 6
-	},
+/obj/machinery/microwave,
 /obj/effect/turf_decal/tile/blue/opposingcorners{
 	dir = 1
 	},

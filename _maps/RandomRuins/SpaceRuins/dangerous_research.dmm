@@ -316,9 +316,7 @@
 "ey" = (
 /obj/effect/turf_decal/tile/neutral/diagonal_edge,
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 6
-	},
+/obj/machinery/microwave,
 /turf/open/floor/iron/dark/diagonal,
 /area/ruin/space/has_grav/dangerous_research)
 "eQ" = (

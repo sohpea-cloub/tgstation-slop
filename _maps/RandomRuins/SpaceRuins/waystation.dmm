@@ -657,9 +657,7 @@
 /area/ruin/space/has_grav/waystation/cargooffice)
 "ma" = (
 /obj/structure/table,
-/obj/machinery/reagentgrinder{
-	pixel_y = 6
-	},
+/obj/machinery/reagentgrinder,
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor/iron/cafeteria,
 /area/ruin/space/has_grav/waystation/kitchen)

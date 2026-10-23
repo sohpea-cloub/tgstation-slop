@@ -12,8 +12,7 @@
 	syndicate_network = 1;
 	allow_exotic_faxes = 1;
 	fax_name = "Listening Post";
-	desc = "Bluespace technologies on the application of bureaucracy. This one is send-only";
-	pixel_y = 5
+	desc = "Bluespace technologies on the application of bureaucracy. This one is send-only"
 	},
 /turf/open/floor/wood/tile,
 /area/ruin/comms_agent)

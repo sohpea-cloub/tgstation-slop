@@ -113,8 +113,7 @@
 	dir = 8
 	},
 /obj/machinery/chem_dispenser/drinks/beer{
-	dir = 4;
-	pixel_y = 0
+	dir = 4
 	},
 /obj/item/rag{
 	pixel_x = 6;
@@ -303,8 +302,7 @@
 	dir = 10
 	},
 /obj/machinery/chem_dispenser/drinks{
-	dir = 4;
-	pixel_y = 0
+	dir = 4
 	},
 /turf/open/floor/iron,
 /area/ruin/space/has_grav/travelers_rest)
@@ -342,7 +340,6 @@
 	dir = 6
 	},
 /obj/machinery/reagentgrinder{
-	pixel_y = 8;
 	pixel_x = -6
 	},
 /turf/open/floor/iron,

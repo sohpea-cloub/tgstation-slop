@@ -5322,8 +5322,7 @@
 "bvw" = (
 /obj/structure/table,
 /obj/machinery/reagentgrinder{
-	pixel_x = -1;
-	pixel_y = 8
+	pixel_x = -1
 	},
 /obj/item/reagent_containers/syringe{
 	pixel_x = -5;
@@ -17717,9 +17716,7 @@
 /area/station/security/execution/education)
 "eUI" = (
 /obj/structure/table/reinforced,
-/obj/machinery/reagentgrinder{
-	pixel_y = 8
-	},
+/obj/machinery/reagentgrinder,
 /turf/open/floor/plating,
 /area/station/medical/chem_storage)
 "eUL" = (
@@ -22361,9 +22358,7 @@
 /area/mine/laborcamp)
 "gmf" = (
 /obj/structure/table/glass,
-/obj/machinery/reagentgrinder{
-	pixel_y = 8
-	},
+/obj/machinery/reagentgrinder,
 /obj/effect/turf_decal/trimline/green/filled/line{
 	dir = 6
 	},
@@ -40602,8 +40597,7 @@
 	},
 /obj/structure/table/glass,
 /obj/machinery/reagentgrinder{
-	pixel_x = 6;
-	pixel_y = 8
+	pixel_x = 6
 	},
 /obj/item/storage/box/syringes{
 	pixel_x = -5;
@@ -44575,9 +44569,7 @@
 	},
 /obj/machinery/requests_console/auto_name/directional/east,
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 5
-	},
+/obj/machinery/microwave,
 /obj/effect/mapping_helpers/requests_console/supplies,
 /turf/open/floor/iron/white/smooth_large,
 /area/station/service/kitchen)
@@ -46872,8 +46864,7 @@
 	dir = 6
 	},
 /obj/machinery/reagentgrinder{
-	pixel_x = 4;
-	pixel_y = 9
+	pixel_x = 4
 	},
 /turf/open/floor/iron/white/smooth_large,
 /area/station/service/kitchen)
@@ -51271,9 +51262,7 @@
 /turf/open/openspace/icemoon,
 /area/icemoon/underground/explored)
 "opI" = (
-/obj/machinery/microwave{
-	pixel_y = 7
-	},
+/obj/machinery/microwave,
 /obj/structure/table,
 /turf/open/floor/iron/cafeteria,
 /area/station/security/prison/mess)
@@ -52435,8 +52424,7 @@
 	},
 /obj/structure/table/reinforced,
 /obj/machinery/reagentgrinder{
-	pixel_x = -1;
-	pixel_y = 4
+	pixel_x = -1
 	},
 /obj/item/reagent_containers/cup/beaker/large{
 	pixel_x = 3;
@@ -57721,9 +57709,7 @@
 "qbo" = (
 /obj/structure/table,
 /obj/effect/decal/cleanable/dirt,
-/obj/machinery/microwave{
-	pixel_y = 6
-	},
+/obj/machinery/microwave,
 /obj/structure/cable,
 /turf/open/floor/iron,
 /area/mine/laborcamp)
@@ -68670,8 +68656,7 @@
 "tfl" = (
 /obj/structure/table/glass,
 /obj/machinery/reagentgrinder{
-	desc = "Used to grind things up into raw materials and liquids.";
-	pixel_y = 5
+	desc = "Used to grind things up into raw materials and liquids."
 	},
 /obj/structure/window/reinforced/spawner/directional/west,
 /turf/open/floor/iron,
@@ -73762,9 +73747,7 @@
 /area/station/medical/virology)
 "uCg" = (
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 4
-	},
+/obj/machinery/microwave,
 /obj/machinery/firealarm/directional/west,
 /obj/effect/turf_decal/tile/neutral/fourcorners,
 /turf/open/floor/iron/dark,
@@ -75121,8 +75104,7 @@
 "uWy" = (
 /obj/structure/table/wood,
 /obj/machinery/reagentgrinder{
-	pixel_x = 6;
-	pixel_y = 6
+	pixel_x = 6
 	},
 /obj/item/reagent_containers/cup/glass/shaker{
 	pixel_x = -6
@@ -75856,9 +75838,7 @@
 	},
 /obj/machinery/airalarm/directional/east,
 /obj/structure/table,
-/obj/machinery/processor{
-	pixel_y = 6
-	},
+/obj/machinery/processor,
 /obj/effect/mapping_helpers/airalarm/tlv_kitchen,
 /turf/open/floor/iron/white/smooth_large,
 /area/station/service/kitchen)
@@ -79046,7 +79026,6 @@
 /obj/machinery/light_switch/directional/west,
 /obj/machinery/microwave{
 	anchored_tabletop_offset = 0;
-	pixel_y = 5;
 	pixel_x = -1
 	},
 /obj/machinery/light/small/directional/west,

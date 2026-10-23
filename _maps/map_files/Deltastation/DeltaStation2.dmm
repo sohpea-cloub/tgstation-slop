@@ -12777,8 +12777,7 @@
 /obj/structure/table,
 /obj/machinery/microwave{
 	desc = "Cooks and boils stuff, somehow.";
-	pixel_x = -3;
-	pixel_y = 5
+	pixel_x = -3
 	},
 /obj/machinery/airalarm/directional/south,
 /obj/effect/turf_decal/siding/green{
@@ -20128,9 +20127,7 @@
 /area/station/security/prison/safe)
 "eWh" = (
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 7
-	},
+/obj/machinery/microwave,
 /turf/open/floor/plating,
 /area/station/security/prison/mess)
 "eWi" = (
@@ -21549,9 +21546,7 @@
 /area/station/hallway/primary/port)
 "fpt" = (
 /obj/structure/table/reinforced,
-/obj/machinery/reagentgrinder{
-	pixel_y = 5
-	},
+/obj/machinery/reagentgrinder,
 /obj/item/stack/sheet/mineral/plasma{
 	amount = 5
 	},
@@ -22825,9 +22820,7 @@
 /obj/effect/spawner/random/entertainment/drugs{
 	pixel_y = 1
 	},
-/obj/machinery/reagentgrinder{
-	pixel_y = 4
-	},
+/obj/machinery/reagentgrinder,
 /obj/machinery/light/small/directional/west,
 /turf/open/floor/iron/grimy,
 /area/station/maintenance/port/fore)
@@ -35508,8 +35501,7 @@
 "iJi" = (
 /obj/structure/table,
 /obj/machinery/reagentgrinder{
-	pixel_x = 6;
-	pixel_y = 6
+	pixel_x = 6
 	},
 /obj/item/reagent_containers/cup/glass/shaker{
 	pixel_x = -6
@@ -44537,9 +44529,7 @@
 "kWM" = (
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
-/obj/machinery/processor{
-	pixel_y = 8
-	},
+/obj/machinery/processor,
 /obj/structure/table/reinforced,
 /obj/machinery/duct,
 /obj/item/food/dough{
@@ -45093,9 +45083,7 @@
 /area/station/service/abandoned_gambling_den)
 "ldN" = (
 /obj/structure/table,
-/obj/machinery/reagentgrinder{
-	pixel_y = 5
-	},
+/obj/machinery/reagentgrinder,
 /obj/item/stack/sheet/mineral/plasma,
 /obj/machinery/status_display/ai/directional/west,
 /obj/effect/turf_decal/tile/yellow{
@@ -52548,8 +52536,7 @@
 "mVI" = (
 /obj/structure/table,
 /obj/machinery/microwave{
-	desc = "Cooks and boils stuff, somehow.";
-	pixel_y = 5
+	desc = "Cooks and boils stuff, somehow."
 	},
 /obj/effect/turf_decal/bot,
 /obj/machinery/light/small/directional/south,
@@ -53830,9 +53817,7 @@
 	dir = 10
 	},
 /obj/structure/table/reinforced,
-/obj/machinery/reagentgrinder{
-	pixel_y = 7
-	},
+/obj/machinery/reagentgrinder,
 /obj/item/stack/sheet/mineral/plasma{
 	amount = 5;
 	pixel_y = 6
@@ -53870,8 +53855,7 @@
 "noK" = (
 /obj/structure/table/reinforced,
 /obj/machinery/reagentgrinder{
-	pixel_x = -6;
-	pixel_y = 6
+	pixel_x = -6
 	},
 /turf/open/floor/iron/cafeteria,
 /area/station/service/kitchen)
@@ -56042,8 +56026,7 @@
 /obj/structure/table/wood,
 /obj/machinery/microwave{
 	desc = "Cooks and boils stuff, somehow.";
-	pixel_x = -3;
-	pixel_y = 5
+	pixel_x = -3
 	},
 /obj/machinery/light/small/directional/west,
 /obj/machinery/computer/security/telescreen/entertainment/directional/north,
@@ -61727,8 +61710,7 @@
 "pok" = (
 /obj/structure/table/reinforced,
 /obj/machinery/microwave{
-	desc = "Cooks and boils stuff, somehow.";
-	pixel_y = 5
+	desc = "Cooks and boils stuff, somehow."
 	},
 /obj/effect/turf_decal/tile/brown/anticorner/contrasted,
 /turf/open/floor/iron,
@@ -81251,8 +81233,7 @@
 /obj/structure/table,
 /obj/machinery/microwave{
 	desc = "Cooks and boils stuff, somehow.";
-	pixel_x = -3;
-	pixel_y = 5
+	pixel_x = -3
 	},
 /obj/machinery/firealarm/directional/west,
 /turf/open/floor/iron,
@@ -83312,8 +83293,7 @@
 	dir = 5
 	},
 /obj/machinery/reagentgrinder{
-	desc = "Used to grind things up into raw materials and liquids.";
-	pixel_y = 5
+	desc = "Used to grind things up into raw materials and liquids."
 	},
 /obj/item/stack/sheet/mineral/plasma{
 	amount = 5
@@ -88445,8 +88425,7 @@
 /obj/structure/table,
 /obj/machinery/status_display/ai/directional/west,
 /obj/machinery/microwave{
-	pixel_x = -2;
-	pixel_y = 5
+	pixel_x = -2
 	},
 /obj/effect/turf_decal/tile/neutral/fourcorners,
 /obj/machinery/light/directional/west,
@@ -97952,8 +97931,7 @@
 /obj/structure/table/wood,
 /obj/machinery/microwave{
 	desc = "Cooks and boils stuff, somehow.";
-	pixel_x = -1;
-	pixel_y = 5
+	pixel_x = -1
 	},
 /obj/structure/sign/poster/official/random/directional/west,
 /obj/structure/sign/calendar/directional/south,
@@ -98101,8 +98079,7 @@
 /obj/structure/table/wood,
 /obj/machinery/microwave{
 	desc = "Cooks and boils stuff, somehow.";
-	pixel_x = -3;
-	pixel_y = 5
+	pixel_x = -3
 	},
 /obj/effect/turf_decal/tile/neutral/fourcorners,
 /turf/open/floor/iron/dark,

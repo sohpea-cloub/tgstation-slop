@@ -23,9 +23,7 @@
 	dir = 4
 	},
 /obj/structure/table,
-/obj/machinery/microwave{
-	pixel_y = 6
-	},
+/obj/machinery/microwave,
 /turf/open/floor/iron/kitchen,
 /area/template_noop)
 "m" = (
