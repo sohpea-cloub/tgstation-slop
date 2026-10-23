@@ -140,7 +140,7 @@
 	if(!home.requires_power)
 		return INFINITY
 
-	var/obj/machinery/power/apc/local_apc = home.apc
+	var/obj/machinery/power/apc/local_apc = home.get_power_apc()
 	if(isnull(local_apc))
 		return FALSE
 
@@ -166,7 +166,7 @@
 	if(!home.requires_power)
 		return amount //Shuttles get free power, don't ask why
 
-	var/obj/machinery/power/apc/local_apc = home.apc
+	var/obj/machinery/power/apc/local_apc = home.get_power_apc()
 	if(isnull(local_apc) || !local_apc.operating)
 		return FALSE
 
@@ -201,7 +201,7 @@
 	if(!my_area.requires_power)
 		return amount
 
-	var/obj/machinery/power/apc/my_apc = my_area.apc
+	var/obj/machinery/power/apc/my_apc = my_area.get_power_apc()
 	if(isnull(my_apc) || !my_apc.operating || QDELETED(my_apc.cell))
 		return FALSE
 	return my_apc.cell.use(amount, force = force)
@@ -227,7 +227,7 @@
 	if(!home.requires_power)
 		return amount //Shuttles get free power, don't ask why
 
-	var/obj/machinery/power/apc/local_apc = home.apc
+	var/obj/machinery/power/apc/local_apc = home.get_power_apc()
 	if(isnull(local_apc) || !local_apc.operating)
 		return FALSE
 

@@ -495,6 +495,13 @@ GLOBAL_LIST_EMPTY(teleportlocs)
 
 
 /**
+ * Returns the APC that supplies this area's machines with energy, if any.
+ * Areas that borrow another area's power (like holodecks) override this.
+ */
+/area/proc/get_power_apc()
+	return apc
+
+/**
  * Returns int 1 or 0 if the area has power for the given channel
  *
  * evaluates a mixture of variables mappers can set, requires_power, always_unpowered and then

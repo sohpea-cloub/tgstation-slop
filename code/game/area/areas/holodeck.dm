@@ -26,6 +26,13 @@
 	ASSERT(!istype(A, /area/station/holodeck))
 	return A.powered(chan)
 
+/area/station/holodeck/get_power_apc()
+	if(!linked)
+		return null
+	var/area/A = get_area(linked)
+	ASSERT(!istype(A, /area/station/holodeck))
+	return A.apc
+
 /area/station/holodeck/addStaticPower(value, powerchannel)
 	if(!linked)
 		return
