@@ -70,7 +70,12 @@ GLOBAL_PROTECT(AdminProcCallHandler)
 	handler.add_caller(user)
 	var/lastusr = usr
 	usr = handler
-	. = WrapAdminProcCall(target, procname, arguments)
+	try
+		. = WrapAdminProcCall(target, procname, arguments)
+	catch(var/exception/proc_call_exception)
+		usr = lastusr
+		handler.remove_caller(user)
+		throw proc_call_exception
 	usr = lastusr
 	handler.remove_caller(user)
 
@@ -205,12 +210,21 @@ GLOBAL_PROTECT(LastAdminCalledProc)
 		GLOB.LastAdminCalledTargetRef = REF(target)
 
 	if(!is_remote_handler)
-		GLOB.AdminProcCaller = user_identifier //if this runtimes, too bad for you
+		GLOB.AdminProcCaller = user_identifier
 		++GLOB.AdminProcCallCount
-		. = world.WrapAdminProcCall(target, procname, arguments)
+		// A runtime in the called proc must not leave AdminProcCaller set: IsAdminAdvancedProcCall()
+		// would stay TRUE for this admin for the rest of the round, and every admin verb they use
+		// afterwards would be refused as a permission elevation attempt.
+		var/exception/proc_call_exception
+		try
+			. = world.WrapAdminProcCall(target, procname, arguments)
+		catch(var/exception/caught)
+			proc_call_exception = caught
 		GLOB.AdminProcCallCount--
 		if(GLOB.AdminProcCallCount == 0)
 			GLOB.AdminProcCaller = null
+		if(proc_call_exception)
+			throw proc_call_exception
 	else
 		. = world.WrapAdminProcCall(target, procname, arguments)
 
