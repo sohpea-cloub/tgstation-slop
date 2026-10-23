@@ -334,7 +334,7 @@
 		invisibility = INVISIBILITY_ABSTRACT
 
 /atom/movable/screen/button_palette/proc/update_state()
-	if (length(our_hud.floating_actions))
+	if (length(our_hud.floating_actions) || length(our_hud.palette_actions?.actions))
 		activate_landing()
 	else
 		disable_landing()

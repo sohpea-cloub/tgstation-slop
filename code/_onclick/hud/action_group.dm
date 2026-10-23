@@ -158,6 +158,7 @@
 	. = ..()
 	var/atom/movable/screen/button_palette/palette = owner.screen_objects[HUD_MOB_TOGGLE_PALETTE]
 	palette.play_item_added()
+	palette.update_state()
 
 /datum/action_group/palette/remove_action(atom/movable/screen/action)
 	. = ..()
@@ -165,6 +166,7 @@
 	palette.play_item_removed()
 	if(!length(actions))
 		palette.set_expanded(FALSE)
+	palette.update_state()
 
 /datum/action_group/palette/refresh_actions()
 	var/atom/movable/screen/button_palette/palette = owner.screen_objects[HUD_MOB_TOGGLE_PALETTE]
