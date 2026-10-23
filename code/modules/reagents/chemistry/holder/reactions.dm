@@ -143,6 +143,9 @@
 
 	if(!LAZYLEN(reaction_list))
 		finish_reacting()
+		// Reagents added while we were reacting didn't trigger handle_reactions() (see add_reagent), so check them now
+		if(length(reagent_list) && !QDELING(src))
+			handle_reactions()
 	else
 		handle_reactions()
 

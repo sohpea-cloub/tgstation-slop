@@ -241,6 +241,11 @@
 	mix_message = "The rice absorbs the water."
 	reaction_flags = REACTION_INSTANT
 
+/datum/chemical_reaction/food/uncooked_rice/pre_reaction_other_checks(datum/reagents/holder)
+	// Rice and flour react into rice flour, and rice flour and water make rice dough: the rice must not
+	// be soaked into uncooked rice first, or what order the ingredients are added in decides the outcome.
+	return !holder.has_reagent(/datum/reagent/consumable/flour)
+
 /datum/chemical_reaction/food/uncooked_rice/on_reaction(datum/reagents/holder, datum/equilibrium/reaction, created_volume)
 	var/location = get_turf(holder.my_atom)
 	for(var/i in 1 to created_volume)
