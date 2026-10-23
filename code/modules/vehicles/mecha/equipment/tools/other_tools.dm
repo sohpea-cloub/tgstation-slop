@@ -103,11 +103,11 @@
 					var/turf/targ = get_turf(target)
 					var/turf/orig = get_turf(movable_target)
 					movable_target.throw_at(target, 14, 1.5)
-					movable_target = null
 					source.log_message("used a Gravitational Catapult to throw [movable_target] (From [AREACOORD(orig)]) at [target] ([AREACOORD(targ)]).", LOG_GAME)
+					movable_target = null
 					return ..()
-				movable_target = null
 				to_chat(source, "[icon2html(src, source)][span_notice("Lock on [movable_target] disengaged.")]")
+				movable_target = null
 
 		if(GRAVPUSH_MODE)
 			var/list/atomstothrow = list()
@@ -130,7 +130,7 @@
 /obj/item/mecha_parts/mecha_equipment/gravcatapult/proc/do_scatter(atom/movable/scatter, atom/movable/target)
 	var/dist = 5 - get_dist(scatter, target)
 	var/delay = 2
-	GLOB.move_manager.move_away(scatter, target, delay = delay, timeout = delay * dist, flags = MOVEMENT_LOOP_START_INSTANT, priority = MOVEMENT_ABOVE_SPACE_PRIORITY)
+	GLOB.move_manager.move_away(scatter, target, max_dist = 5, delay = delay, timeout = delay * dist, flags = MOVEMENT_LOOP_START_INSTANT, priority = MOVEMENT_ABOVE_SPACE_PRIORITY)
 
 /obj/item/mecha_parts/mecha_equipment/gravcatapult/get_snowflake_data()
 	return list(
