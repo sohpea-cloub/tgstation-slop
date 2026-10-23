@@ -10,6 +10,18 @@
 	var/atom/jump_to_me
 	/// Never For This Round category
 	var/ignoring_category
+	/// The antag role preference required to be polled (as passed to poll_candidates)
+	var/check_role
+	/// The jobban flag(s) checked when polling
+	var/check_jobban
+	/// The atom, image or path displayed on the alert
+	var/alert_pic
+	/// Object or path used to decorate the chat announcement
+	var/chat_text_border_icon
+	/// Whether candidates start signed up
+	var/start_signed_up = FALSE
+	/// Ckeys of the players this poll was offered to (so it can be offered again if they change mobs)
+	var/list/polled_ckeys = list()
 	/// The players who signed up to this poll
 	var/list/mob/signed_up
 	/// the linked alert buttons
@@ -57,6 +69,8 @@
 		SSpolling.polling_finished(src)
 		return QDEL_HINT_IWILLGC // the above proc will call QDEL_IN(src, 0.5 SECONDS)
 	jump_to_me = null
+	alert_pic = null
+	chat_text_border_icon = null
 	signed_up = null
 	return ..()
 

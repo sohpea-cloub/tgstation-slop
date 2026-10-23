@@ -78,113 +78,14 @@ SUBSYSTEM_DEF(polling)
 	var/datum/candidate_poll/new_poll = new(role_name_text, question, poll_time, ignore_category, jump_target, custom_response_messages)
 	LAZYADD(currently_polling, new_poll)
 
-	var/category = "[new_poll.poll_key]_poll_alert"
+	new_poll.check_role = role
+	new_poll.check_jobban = check_jobban
+	new_poll.alert_pic = alert_pic
+	new_poll.chat_text_border_icon = chat_text_border_icon
+	new_poll.start_signed_up = start_signed_up
 
 	for(var/mob/candidate_mob as anything in group)
-		if(!candidate_mob.client)
-			continue
-		// Universal opt-out for all players.
-		if(!candidate_mob.client.prefs.read_preference(/datum/preference/toggle/ghost_roles))
-			continue
-		// Opt-out for admins whom are currently adminned.
-		if((!candidate_mob.client.prefs.read_preference(/datum/preference/toggle/ghost_roles_as_admin)) && candidate_mob.client.holder)
-			continue
-		if(!is_eligible(candidate_mob, role, check_jobban, ignore_category))
-			continue
-
-		if(start_signed_up)
-			new_poll.sign_up(candidate_mob, TRUE)
-		if(flash_window)
-			window_flash(candidate_mob.client)
-
-		// If we somehow send two polls for the same mob type, but with a duration on the second one shorter than the time left on the first one,
-		// we need to keep the first one's timeout rather than use the shorter one
-		var/atom/movable/screen/alert/poll_alert/current_alert = LAZYACCESS(candidate_mob.alerts, category)
-		var/alert_time = poll_time
-		var/datum/candidate_poll/alert_poll = new_poll
-		if(current_alert && current_alert.timeout > (world.time + poll_time - world.tick_lag))
-			alert_time = current_alert.timeout - world.time + world.tick_lag
-			alert_poll = current_alert.poll
-
-		// Send them an on-screen alert
-		var/atom/movable/screen/alert/poll_alert/poll_alert_button = candidate_mob.throw_alert(category, /atom/movable/screen/alert/poll_alert, timeout_override = alert_time, no_anim = TRUE)
-		if(!poll_alert_button)
-			continue
-
-		new_poll.alert_buttons += poll_alert_button
-		new_poll.RegisterSignal(poll_alert_button, COMSIG_QDELETING, TYPE_PROC_REF(/datum/candidate_poll, clear_alert_ref))
-
-		poll_alert_button.icon = ui_style2icon(candidate_mob.client?.prefs?.read_preference(/datum/preference/choiced/ui_style))
-		poll_alert_button.desc = "[question]"
-		poll_alert_button.show_time_left = TRUE
-		poll_alert_button.poll = alert_poll
-		poll_alert_button.set_role_overlay()
-		poll_alert_button.update_stacks_overlay()
-		poll_alert_button.update_candidates_number_overlay()
-		poll_alert_button.update_signed_up_overlay()
-
-
-		// Sign up inheritance and stacking
-		for(var/datum/candidate_poll/other_poll as anything in currently_polling)
-			if(new_poll == other_poll || new_poll.poll_key != other_poll.poll_key)
-				continue
-			// If there's already a poll for an identical mob type ongoing and the client is signed up for it, sign them up for this one
-			if((candidate_mob in other_poll.signed_up) && new_poll.sign_up(candidate_mob, TRUE))
-				break
-
-		// Image to display
-		var/image/poll_image
-		if(ispath(alert_pic, /atom) || isatom(alert_pic))
-			poll_image = new /mutable_appearance(alert_pic)
-			poll_image.pixel_z = 0
-		else if(!isnull(alert_pic))
-			poll_image = alert_pic
-		else
-			poll_image = image('icons/effects/effects.dmi', icon_state = "static")
-
-		if(poll_image)
-			poll_image.layer = FLOAT_LAYER
-			poll_image.plane = poll_alert_button.plane
-			poll_alert_button.add_overlay(poll_image)
-
-		// Chat message
-		var/act_jump = ""
-		var/custom_link_style_start = "<style>a:visited{color:Crimson !important}</style>"
-		var/custom_link_style_end = "style='color:DodgerBlue;font-weight:bold;-dm-text-outline: 1px black'"
-		if(isatom(alert_pic) && isobserver(candidate_mob))
-			act_jump = "[custom_link_style_start]<a href='byond://?src=[REF(poll_alert_button)];jump=1'[custom_link_style_end]>\[Teleport\]</a>"
-		var/act_signup = "[custom_link_style_start]<a href='byond://?src=[REF(poll_alert_button)];signup=1'[custom_link_style_end]>\[[start_signed_up ? "Opt out" : "Sign Up"]\]</a>"
-		var/act_never = ""
-		if(ignore_category)
-			act_never = "[custom_link_style_start]<a href='byond://?src=[REF(poll_alert_button)];never=1'[custom_link_style_end]>\[Never For This Round\]</a>"
-
-		if(!duplicate_message_check(alert_poll)) //Only notify people once. They'll notice if there are multiple and we don't want to spam people.
-
-			// ghost poll prompt sound handling
-			var/polling_sound_pref = candidate_mob.client?.prefs.read_preference(/datum/preference/choiced/sound_ghost_poll_prompt)
-			var/polling_sound_volume = candidate_mob.client?.prefs.read_preference(/datum/preference/numeric/sound_ghost_poll_prompt_volume)
-			if(polling_sound_pref != GHOST_POLL_PROMPT_DISABLED && polling_sound_volume)
-				var/polling_sound
-				if(polling_sound_pref == GHOST_POLL_PROMPT_1)
-					polling_sound = 'sound/misc/prompt1.ogg'
-				else
-					polling_sound = 'sound/misc/prompt2.ogg'
-				SEND_SOUND(candidate_mob, sound(polling_sound, volume = polling_sound_volume))
-
-			var/surrounding_icon
-			if(chat_text_border_icon)
-				var/image/surrounding_image
-				if(!ispath(chat_text_border_icon))
-					var/mutable_appearance/border_image = chat_text_border_icon
-					surrounding_image = border_image
-				else
-					surrounding_image = image(chat_text_border_icon)
-				surrounding_icon = icon2html(surrounding_image, candidate_mob, extra_classes = "bigicon")
-			var/final_message =  boxed_message("<span style='text-align:center;display:block'>[surrounding_icon] <span style='font-size:1.2em'>[span_ooc(question)]</span> [surrounding_icon]\n[act_jump]      [act_signup]      [act_never]</span>")
-			to_chat(candidate_mob, final_message)
-
-		// Start processing it so it updates visually the timer
-		START_PROCESSING(SSprocessing, poll_alert_button)
+		offer_poll(candidate_mob, new_poll, flash_window)
 
 	// Sleep until the time is up
 	UNTIL(new_poll.finished)
@@ -204,6 +105,143 @@ SUBSYSTEM_DEF(polling)
 		var/chosen_one = pick(new_poll.chosen_candidates)
 		return chosen_one
 	return new_poll.chosen_candidates
+
+/**
+ * Gives a poll's alert (and chat message) to one candidate, if they are eligible.
+ *
+ * Arguments
+ * * candidate_mob: The mob to offer the poll to.
+ * * new_poll: The poll to offer.
+ * * flash_window: If TRUE, the candidate's window will flash.
+ * * restored: TRUE when re-offering a running poll to a player who changed mobs (no flash or sound).
+ */
+/datum/controller/subsystem/polling/proc/offer_poll(mob/candidate_mob, datum/candidate_poll/new_poll, flash_window = TRUE, restored = FALSE)
+	var/role = new_poll.check_role
+	var/check_jobban = new_poll.check_jobban
+	var/ignore_category = new_poll.ignoring_category
+	var/question = new_poll.question
+	var/alert_pic = new_poll.alert_pic
+	var/chat_text_border_icon = new_poll.chat_text_border_icon
+	var/start_signed_up = new_poll.start_signed_up
+	var/category = "[new_poll.poll_key]_poll_alert"
+	var/poll_time = new_poll.time_left()
+	if(poll_time <= 0)
+		return
+	if(!candidate_mob.client)
+		return
+	// Universal opt-out for all players.
+	if(!candidate_mob.client.prefs.read_preference(/datum/preference/toggle/ghost_roles))
+		return
+	// Opt-out for admins whom are currently adminned.
+	if((!candidate_mob.client.prefs.read_preference(/datum/preference/toggle/ghost_roles_as_admin)) && candidate_mob.client.holder)
+		return
+	if(!is_eligible(candidate_mob, role, check_jobban, ignore_category))
+		return
+	new_poll.polled_ckeys[candidate_mob.ckey] = TRUE
+
+	if(start_signed_up)
+		new_poll.sign_up(candidate_mob, TRUE)
+	if(flash_window && !restored)
+		window_flash(candidate_mob.client)
+
+	// If we somehow send two polls for the same mob type, but with a duration on the second one shorter than the time left on the first one,
+	// we need to keep the first one's timeout rather than use the shorter one
+	var/atom/movable/screen/alert/poll_alert/current_alert = LAZYACCESS(candidate_mob.alerts, category)
+	if(restored && current_alert)
+		return
+	var/alert_time = poll_time
+	var/datum/candidate_poll/alert_poll = new_poll
+	if(current_alert && current_alert.timeout > (world.time + poll_time - world.tick_lag))
+		alert_time = current_alert.timeout - world.time + world.tick_lag
+		alert_poll = current_alert.poll
+
+	// Send them an on-screen alert
+	var/atom/movable/screen/alert/poll_alert/poll_alert_button = candidate_mob.throw_alert(category, /atom/movable/screen/alert/poll_alert, timeout_override = alert_time, no_anim = TRUE)
+	if(!poll_alert_button)
+		return
+
+	new_poll.alert_buttons += poll_alert_button
+	new_poll.RegisterSignal(poll_alert_button, COMSIG_QDELETING, TYPE_PROC_REF(/datum/candidate_poll, clear_alert_ref))
+
+	poll_alert_button.icon = ui_style2icon(candidate_mob.client?.prefs?.read_preference(/datum/preference/choiced/ui_style))
+	poll_alert_button.desc = "[question]"
+	poll_alert_button.show_time_left = TRUE
+	poll_alert_button.poll = alert_poll
+	poll_alert_button.set_role_overlay()
+	poll_alert_button.update_stacks_overlay()
+	poll_alert_button.update_candidates_number_overlay()
+	poll_alert_button.update_signed_up_overlay()
+
+
+	// Sign up inheritance and stacking
+	for(var/datum/candidate_poll/other_poll as anything in currently_polling)
+		if(new_poll == other_poll || new_poll.poll_key != other_poll.poll_key)
+			return
+		// If there's already a poll for an identical mob type ongoing and the client is signed up for it, sign them up for this one
+		if((candidate_mob in other_poll.signed_up) && new_poll.sign_up(candidate_mob, TRUE))
+			break
+
+	// Image to display
+	var/image/poll_image
+	if(ispath(alert_pic, /atom) || isatom(alert_pic))
+		poll_image = new /mutable_appearance(alert_pic)
+		poll_image.pixel_z = 0
+	else if(!isnull(alert_pic))
+		poll_image = alert_pic
+	else
+		poll_image = image('icons/effects/effects.dmi', icon_state = "static")
+
+	if(poll_image)
+		poll_image.layer = FLOAT_LAYER
+		poll_image.plane = poll_alert_button.plane
+		poll_alert_button.add_overlay(poll_image)
+
+	// Chat message
+	var/act_jump = ""
+	var/custom_link_style_start = "<style>a:visited{color:Crimson !important}</style>"
+	var/custom_link_style_end = "style='color:DodgerBlue;font-weight:bold;-dm-text-outline: 1px black'"
+	if(isatom(alert_pic) && isobserver(candidate_mob))
+		act_jump = "[custom_link_style_start]<a href='byond://?src=[REF(poll_alert_button)];jump=1'[custom_link_style_end]>\[Teleport\]</a>"
+	var/act_signup = "[custom_link_style_start]<a href='byond://?src=[REF(poll_alert_button)];signup=1'[custom_link_style_end]>\[[start_signed_up ? "Opt out" : "Sign Up"]\]</a>"
+	var/act_never = ""
+	if(ignore_category)
+		act_never = "[custom_link_style_start]<a href='byond://?src=[REF(poll_alert_button)];never=1'[custom_link_style_end]>\[Never For This Round\]</a>"
+
+	if(!duplicate_message_check(alert_poll)) //Only notify people once. They'll notice if there are multiple and we don't want to spam people.
+
+		// ghost poll prompt sound handling
+		var/polling_sound_pref = candidate_mob.client?.prefs.read_preference(/datum/preference/choiced/sound_ghost_poll_prompt)
+		var/polling_sound_volume = candidate_mob.client?.prefs.read_preference(/datum/preference/numeric/sound_ghost_poll_prompt_volume)
+		if(!restored && polling_sound_pref != GHOST_POLL_PROMPT_DISABLED && polling_sound_volume)
+			var/polling_sound
+			if(polling_sound_pref == GHOST_POLL_PROMPT_1)
+				polling_sound = 'sound/misc/prompt1.ogg'
+			else
+				polling_sound = 'sound/misc/prompt2.ogg'
+			SEND_SOUND(candidate_mob, sound(polling_sound, volume = polling_sound_volume))
+
+		var/surrounding_icon
+		if(chat_text_border_icon)
+			var/image/surrounding_image
+			if(!ispath(chat_text_border_icon))
+				var/mutable_appearance/border_image = chat_text_border_icon
+				surrounding_image = border_image
+			else
+				surrounding_image = image(chat_text_border_icon)
+			surrounding_icon = icon2html(surrounding_image, candidate_mob, extra_classes = "bigicon")
+		var/final_message =  boxed_message("<span style='text-align:center;display:block'>[surrounding_icon] <span style='font-size:1.2em'>[span_ooc(question)]</span> [surrounding_icon]\n[act_jump]      [act_signup]      [act_never]</span>")
+		to_chat(candidate_mob, final_message)
+
+	// Start processing it so it updates visually the timer
+	START_PROCESSING(SSprocessing, poll_alert_button)
+
+/// Re-offers the running polls a player was already offered to their new mob, when they come back as a ghost (eg. they re-entered their body and ghosted again).
+/datum/controller/subsystem/polling/proc/restore_poll_alerts(mob/dead/observer/ghost)
+	if(!ghost.ckey)
+		return
+	for(var/datum/candidate_poll/running_poll as anything in currently_polling)
+		if(running_poll.polled_ckeys[ghost.ckey])
+			offer_poll(ghost, running_poll, restored = TRUE)
 
 /datum/controller/subsystem/polling/proc/poll_ghost_candidates(
 	question,
