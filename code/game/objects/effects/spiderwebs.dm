@@ -145,7 +145,7 @@
 
 /obj/structure/spider/stickyweb/very_sticky/update_overlays()
 	. = ..()
-	var/mutable_appearance/web_overlay = mutable_appearance(icon = 'icons/effects/web.dmi', icon_state = "sticky_overlay", layer = layer + 1)
+	var/mutable_appearance/web_overlay = mutable_appearance(icon = 'icons/effects/web.dmi', icon_state = "sticky_overlay", layer = layer + 1, offset_spokesman = src, plane = FLOOR_PLANE)
 	web_overlay.pixel_w -= pixel_x
 	web_overlay.pixel_z -= pixel_y
 	. += web_overlay
