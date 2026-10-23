@@ -222,7 +222,7 @@
 
 /obj/item/reagent_containers/throw_impact(atom/hit_atom, datum/thrownthing/throwingdatum, do_splash = TRUE)
 	. = ..()
-	if(do_splash)
+	if(do_splash && !.) // caught items don't splash their catcher
 		splash_reagents(hit_atom, throwingdatum?.get_thrower(), was_thrown = TRUE, allow_closed_splash = FALSE)
 
 /obj/item/reagent_containers/proc/bartender_check(atom/target, mob/thrown_by)
