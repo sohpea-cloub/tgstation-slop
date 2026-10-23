@@ -449,6 +449,13 @@
 	snap_back()
 	return ..()
 
+/obj/item/shockpaddles/on_thrown(mob/living/carbon/user, atom/target)
+	if(!req_defib)
+		return ..()
+	// Tethered paddles snap back into the unit the moment they leave your hands, so a "throw" would only give you free momentum
+	to_chat(user, span_warning("[src] are tethered to [defib]; you can't throw them!"))
+	return null
+
 /obj/item/shockpaddles/proc/snap_back()
 	if(!defib)
 		return
