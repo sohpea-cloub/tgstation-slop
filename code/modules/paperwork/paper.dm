@@ -391,6 +391,9 @@ GAME_VERB_SRC(/obj/item/paper, rename, usr, "Rename paper", null)
 	return ..()
 
 /obj/item/paper/click_alt(mob/living/user)
+	// Already folded into a plane (a lagging or repeated click can still target the paper inside it): folding again would delete the plane and the paper with it
+	if(istype(loc, /obj/item/paperplane))
+		return CLICK_ACTION_BLOCKING
 	if(HAS_TRAIT(user, TRAIT_PAPER_MASTER))
 		make_plane(user, /obj/item/paperplane/syndicate)
 		return CLICK_ACTION_SUCCESS
@@ -408,6 +411,8 @@ GAME_VERB_SRC(/obj/item/paper, rename, usr, "Rename paper", null)
  * * plane_type - what it will be folded into (path)
  */
 /obj/item/paper/proc/make_plane(mob/living/user, plane_type = /obj/item/paperplane)
+	if(istype(loc, /obj/item/paperplane))
+		return null
 	loc.balloon_alert(user, "folded into a plane")
 	user.temporarilyRemoveItemFromInventory(src)
 	var/obj/item/paperplane/new_plane = new plane_type(loc, src)
