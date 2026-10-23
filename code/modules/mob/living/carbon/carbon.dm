@@ -383,8 +383,12 @@
  * * amount: int The amount of reagent
  */
 /mob/living/carbon/proc/expel_ingested(atom/bite, amount)
-	visible_message(span_danger("[src] throws up all over [p_them()]self!"), \
-					span_userdanger("You are unable to keep the [bite] down without a stomach!"))
+	if(stat == DEAD)
+		// Corpses can't throw up, the food just spills out of them
+		visible_message(span_warning("[bite] spills right out of [src], with no stomach to hold it."))
+	else
+		visible_message(span_danger("[src] throws up all over [p_them()]self!"), \
+						span_userdanger("You are unable to keep the [bite] down without a stomach!"))
 
 	var/turf/floor = get_turf(src)
 	var/obj/effect/decal/cleanable/vomit/spew = new(floor, get_static_viruses())
