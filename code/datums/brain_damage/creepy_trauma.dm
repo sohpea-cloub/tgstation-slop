@@ -24,6 +24,8 @@
 	VAR_FINAL/time_spend_creeping = 0 SECONDS
 	/// If we've seen our obsession be dead
 	VAR_FINAL/witnessed_death = FALSE
+	/// Antag datum carried over from another body (see [proc/transfer_to_new_body]), used instead of making a new one on gain
+	VAR_FINAL/datum/antagonist/obsessed/carried_antagonist
 
 /datum/brain_trauma/special/obsessed/on_gain()
 	//setup, linking, etc//
@@ -34,15 +36,21 @@
 			return FALSE
 
 	gain_text = span_warning("You hear a sickening, raspy voice in your head. It wants one small task of you...")
-	antagonist = owner.mind.add_antag_datum(/datum/antagonist/obsessed)
+	var/carried_over = !isnull(carried_antagonist)
+	if(carried_over)
+		antagonist = owner.mind.add_antag_datum(carried_antagonist)
+		carried_antagonist = null
+	else
+		antagonist = owner.mind.add_antag_datum(/datum/antagonist/obsessed)
 	antagonist.trauma = src
 	RegisterSignal(obsession, COMSIG_MOB_EYECONTACT, PROC_REF(stare))
 	RegisterSignal(obsession, COMSIG_QDELETING, PROC_REF(obession_deleted))
 	. = ..()
 	//antag stuff//
-	antagonist.forge_objectives(obsession.mind)
-	antagonist.greet()
-	log_game("[key_name(antagonist)] has developed an obsession with [key_name(obsession)].")
+	if(!carried_over) // a carried over antag datum keeps the objectives it already had
+		antagonist.forge_objectives(obsession.mind)
+		antagonist.greet()
+		log_game("[key_name(antagonist)] has developed an obsession with [key_name(obsession)].")
 	RegisterSignal(owner, COMSIG_CARBON_HELPED, PROC_REF(on_hug))
 	RegisterSignal(owner, COMSIG_MOVABLE_GRABBED_RESISTING, PROC_REF(grab_resisting))
 	RegisterSignal(owner, COMSIG_MOB_APPLY_DAMAGE_MODIFIERS, PROC_REF(on_damage_mod))
@@ -88,7 +96,7 @@
 	. = ..()
 	antagonist?.trauma = null
 	antagonist = null
-	if (owner.mind.remove_antag_datum(/datum/antagonist/obsessed))
+	if (owner.mind?.remove_antag_datum(/datum/antagonist/obsessed))
 		owner.mind.add_antag_datum(/datum/antagonist/former_obsessed)
 	owner.clear_mood_event("creeping")
 	if(!isnull(obsession))
@@ -108,6 +116,26 @@
 	))
 	owner.remove_status_effect(/datum/status_effect/desensitized, REF(src))
 	owner.remove_status_effect(/datum/status_effect/speech/stutter/obsession)
+
+/// Moves this obsession (the trauma, and the antag datum with its objectives) to another body, for when our mind was put in a new body
+/// rather than swapped with another one (such as being revived as a podperson). Our old body is cured.
+/datum/brain_trauma/special/obsessed/proc/transfer_to_new_body(mob/living/carbon/new_body)
+	if(isnull(obsession) || isnull(antagonist) || !iscarbon(new_body) || !new_body.mind || QDELETED(new_body))
+		return FALSE
+	if(new_body.has_trauma_type(/datum/brain_trauma/special/obsessed))
+		return FALSE
+
+	var/datum/brain_trauma/special/obsessed/new_trauma = new()
+	new_trauma.obsession = obsession
+	new_trauma.carried_antagonist = antagonist
+	new_trauma.total_time_creeping = total_time_creeping
+	new_trauma.witnessed_death = witnessed_death
+	// stop the antag datum being cleaned up or touched with the old trauma
+	antagonist.trauma = null
+	antagonist = null
+	lose_text = ""
+	qdel(src)
+	return !isnull(new_body.gain_trauma(new_trauma))
 
 /datum/brain_trauma/special/obsessed/proc/obession_deleted(datum/source)
 	SIGNAL_HANDLER

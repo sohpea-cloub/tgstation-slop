@@ -190,6 +190,11 @@
 	else
 		podman.real_name = "Pod Person ([rand(1,999)])"
 
+	// An obsession is a brain trauma stuck to the old body: it doesn't follow the mind, so carry it over to the new body ourselves
+	var/datum/brain_trauma/special/obsessed/old_obsession
+	if(iscarbon(mind.current))
+		var/mob/living/carbon/old_body = mind.current
+		old_obsession = locate() in old_body.get_traumas()
 	mind.transfer_to(podman)
 	if(ckey)
 		podman.PossessByPlayer(ckey)
@@ -205,6 +210,7 @@
 		new V(podman)
 	podman.hardset_dna(null, null, null, podman.real_name, blood_type, new /datum/species/pod, features) // Discard SE's and UI's, podman cloning is inaccurate, and always make them a podman
 	podman.set_cloned_appearance()
+	old_obsession?.transfer_to_new_body(podman)
 
 	//Get the most plentiful reagent, if there's none: get water
 	var/list/most_plentiful_reagent = list(/datum/reagent/water = 0)
