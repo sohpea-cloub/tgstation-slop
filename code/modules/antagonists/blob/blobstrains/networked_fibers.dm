@@ -27,6 +27,10 @@
 	overmind.add_points(4)
 	qdel(new_blob)
 
+/// Automatic expansion is turned into resources, so a pulse that has nowhere to expand to (the area is already full of blob) must still pay out, or the strain only gives its base income once it has grown
+/datum/blobstrain/reagent/networked_fibers/expand_failed_reaction(obj/structure/blob/special/pulser)
+	overmind.add_points(1)
+
 //does massive brute and burn damage, but can only expand manually
 /datum/reagent/blob/networked_fibers
 	name = "Networked Fibers"

@@ -158,6 +158,10 @@ GLOBAL_LIST_INIT(valid_blobstrains, subtypesof(/datum/blobstrain) - list(/datum/
 /datum/blobstrain/proc/expand_reaction(obj/structure/blob/B, obj/structure/blob/newB, turf/T, mob/eye/blob/O, coefficient = 1) //when the blob expands, do this
 	return
 
+/// When a core or node pulses and nothing around it could expand (every neighbouring tile is already blob or blocked), do this
+/datum/blobstrain/proc/expand_failed_reaction(obj/structure/blob/special/pulser)
+	return
+
 /datum/blobstrain/proc/tesla_reaction(obj/structure/blob/B, power, coefficient = 1) //when the blob is hit by a tesla bolt, do this
 	return TRUE //return 0 to ignore damage
 

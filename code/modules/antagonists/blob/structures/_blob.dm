@@ -434,8 +434,12 @@
 		pulsing_overmind = overmind
 	Be_Pulsed()
 	var/expanded = FALSE
-	if(prob(70*(1/BLOB_EXPAND_CHANCE_MULTIPLIER)) && expand())
-		expanded = TRUE
+	var/expand_failed = FALSE
+	if(prob(70*(1/BLOB_EXPAND_CHANCE_MULTIPLIER)))
+		if(expand())
+			expanded = TRUE
+		else
+			expand_failed = TRUE
 	var/list/blobs_to_affect = list()
 	for(var/obj/structure/blob/B in urange(claim_range, src, 1))
 		blobs_to_affect += B
@@ -460,3 +464,5 @@
 						expanded = TRUE
 		if(distance <= pulse_range)
 			B.Be_Pulsed()
+	if(expand_failed && !expanded && overmind)
+		overmind.blobstrain.expand_failed_reaction(src)
