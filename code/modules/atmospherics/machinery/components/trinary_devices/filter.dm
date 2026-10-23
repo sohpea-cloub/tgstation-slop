@@ -98,6 +98,8 @@
 	// If no filter is set, we just try to forward everything to air3 to avoid gas being outright lost.
 	if(filtering)
 		var/datum/gas_mixture/filtered_out = new
+		// Gas mixtures default to TCMB; without this, merge() ignores small temperature deltas and gas near TCMB gets rounded to it.
+		filtered_out.temperature = removed.temperature
 
 		for(var/gas in removed.moles & filter_type)
 			var/datum/gas_mixture/removing = removed.remove_specific_ratio(gas, 1)
