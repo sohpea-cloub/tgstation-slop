@@ -97,27 +97,12 @@ GLOBAL_VAR_INIT(observer_default_invisibility, INVISIBILITY_OBSERVER)
 	if(ismob(body))
 		T = get_turf(body) //Where is the body located?
 
-		gender = body.gender
-		if(body.mind && body.mind.name)
-			name = body.mind.ghostname || body.mind.name
-		else
-			name = body.real_name || generate_random_mob_name(gender)
-
+		copy_appearance_from_body(body)
 
 		mind = body.mind //we don't transfer the mind but we keep a reference to it.
 
 		if(HAS_TRAIT_FROM_ONLY(body, TRAIT_SUICIDED, REF(body))) // transfer if the body was killed due to suicide
 			ADD_TRAIT(src, TRAIT_SUICIDED, REF(body))
-
-		if(ishuman(body))
-			var/mob/living/carbon/human/body_human = body
-			var/datum/species/human_species = body_human.dna.species
-			if(human_species.check_head_flags(HEAD_HAIR))
-				hairstyle = body_human.hairstyle
-				hair_color = ghostify_color(body_human.hair_color)
-			if(human_species.check_head_flags(HEAD_FACIAL_HAIR))
-				facial_hairstyle = body_human.facial_hairstyle
-				facial_hair_color = ghostify_color(body_human.facial_hair_color)
 
 	update_appearance()
 
@@ -149,6 +134,29 @@ GLOBAL_VAR_INIT(observer_default_invisibility, INVISIBILITY_OBSERVER)
 
 	SSpoints_of_interest.make_point_of_interest(src)
 	add_traits(list(TRAIT_HEAR_THROUGH_DARKNESS, TRAIT_GOOD_HEARING, TRAIT_DETECT_STORM, TRAIT_GHOSTLY_MOB), INNATE_TRAIT)
+
+/// Copies the gender, name and hair of a body onto this ghost, as if the ghost had been created from it.
+/mob/dead/observer/proc/copy_appearance_from_body(mob/body)
+	gender = body.gender
+	if(body.mind && body.mind.name)
+		name = body.mind.ghostname || body.mind.name
+	else
+		name = body.real_name || generate_random_mob_name(gender)
+	real_name = name
+
+	hairstyle = initial(hairstyle)
+	hair_color = initial(hair_color)
+	facial_hairstyle = initial(facial_hairstyle)
+	facial_hair_color = initial(facial_hair_color)
+	if(ishuman(body))
+		var/mob/living/carbon/human/body_human = body
+		var/datum/species/human_species = body_human.dna.species
+		if(human_species.check_head_flags(HEAD_HAIR))
+			hairstyle = body_human.hairstyle
+			hair_color = ghostify_color(body_human.hair_color)
+		if(human_species.check_head_flags(HEAD_FACIAL_HAIR))
+			facial_hairstyle = body_human.facial_hairstyle
+			facial_hair_color = ghostify_color(body_human.facial_hair_color)
 
 /mob/dead/observer/get_photo_description(obj/item/camera/camera)
 	if(!invisibility || camera.see_ghosts)

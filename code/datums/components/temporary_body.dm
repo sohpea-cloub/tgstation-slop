@@ -86,6 +86,14 @@
 		return
 
 	ghost.mind = old_mind
+	// The ghost came from the temporary body, so it looks like it (name, hair): make it look like the old body's ghost instead.
+	if(old_body)
+		ghost.copy_appearance_from_body(old_body)
+	else
+		ghost.name = old_mind.ghostname || old_mind.name || ghost.name
+		ghost.real_name = ghost.name
+	ghost.update_appearance()
+
 	if(old_body)
 		if(old_mind.current != old_body)
 			stack_trace("Temporary body returning mind to old body, but the mind's current body doesn't match the old body!")
