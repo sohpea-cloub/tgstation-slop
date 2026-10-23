@@ -636,13 +636,8 @@
 		return FALSE
 	if(HAS_TRAIT(target, TRAIT_UNHITTABLE_BY_LASERS) && (armor_flag & LASER))
 		return FALSE
-	if(!ignore_source_check && firer && !direct_target)
-		if(target == firer || (target == firer.loc && ismecha(firer.loc)) || (target in firer.buckled_mobs))
-			return FALSE
-		if(ismob(firer))
-			var/mob/firer_mob = firer
-			if (firer_mob.buckled == target)
-				return FALSE
+	if(!direct_target && is_immune_firer_part(target))
+		return FALSE
 	if(LAZYLEN(faction) && ismob(target) && !direct_target)
 		var/mob/target_mob = target
 		if(FAST_FACTION_CHECK(faction, target_mob.get_faction(), allies, target_mob.allies, FALSE))
@@ -712,7 +707,22 @@
  * Used to not even attempt to Bump() or fail to Cross() anything we already hit.
  */
 /obj/projectile/CanPassThrough(atom/blocker, movement_dir, blocker_opinion)
+	// Things we cannot hit because they are our firer (or what carries them) must not block us either,
+	// otherwise a fast mover (like a mech) gets in front of its own slow projectiles and keeps them from moving
+	if(blocker != original && is_immune_firer_part(blocker))
+		return TRUE
 	return impacted[blocker.weak_reference] || ..()
+
+/// Returns TRUE if target is our firer, or something the firer is riding in or on, and the firer is not meant to be hittable by us.
+/obj/projectile/proc/is_immune_firer_part(atom/target)
+	if(ignore_source_check || !firer)
+		return FALSE
+	if(target == firer || (target == firer.loc && ismecha(firer.loc)) || (target in firer.buckled_mobs))
+		return TRUE
+	if(ismob(firer))
+		var/mob/firer_mob = firer
+		return firer_mob.buckled == target
+	return FALSE
 
 /**
  * Projectile moved:
