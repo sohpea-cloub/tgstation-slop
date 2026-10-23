@@ -38,6 +38,7 @@
 		hitsound = parent_deck.hitsound
 		force = parent_deck.force
 		throwforce = parent_deck.throwforce
+		damtype = parent_deck.damtype // holodeck decks are nerfed to stamina damage, and their lazily created cards must be too
 		throw_speed = parent_deck.throw_speed
 		throw_range = parent_deck.throw_range
 		attack_verb_continuous = parent_deck.attack_verb_continuous
