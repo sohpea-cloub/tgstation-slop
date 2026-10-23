@@ -653,9 +653,12 @@
 	return TRUE // the base "door" can always be forced shut
 
 /obj/machinery/door/proc/CheckForMobs()
-	if(locate(/mob/living) in get_turf(src))
+	for(var/mob/living/blocker in get_turf(src))
+		if(blocker.incorporeal_move) // intangible things (hidden revenants) don't hold doors open
+			continue
 		sleep(0.1 SECONDS)
 		open()
+		return
 
 /obj/machinery/door/proc/crush()
 	for(var/turf/checked_turf in locs)
