@@ -3,7 +3,7 @@
 	desc = "Retracts stuff."
 	icon = 'icons/obj/medical/surgery_tools.dmi'
 	icon_state = "retractor"
-	worn_icon = "retractor"
+	worn_icon_state = "retractor"
 	inhand_icon_state = "retractor"
 	icon_angle = 45
 	lefthand_file = 'icons/mob/inhands/equipment/medical_lefthand.dmi'
@@ -34,7 +34,7 @@
 	desc = "You think you have seen this before."
 	icon = 'icons/obj/medical/surgery_tools.dmi'
 	icon_state = "hemostat"
-	worn_icon = "hemostat"
+	worn_icon_state = "hemostat"
 	inhand_icon_state = "hemostat"
 	icon_angle = 135
 	lefthand_file = 'icons/mob/inhands/equipment/medical_lefthand.dmi'
@@ -67,7 +67,7 @@
 	desc = "This stops bleeding."
 	icon = 'icons/obj/medical/surgery_tools.dmi'
 	icon_state = "cautery"
-	worn_icon = "cautery"
+	worn_icon_state = "cautery"
 	inhand_icon_state = "cautery"
 	icon_angle = 135
 	lefthand_file = 'icons/mob/inhands/equipment/medical_lefthand.dmi'
@@ -210,7 +210,7 @@
 	desc = "Cut, cut, and once more cut."
 	icon = 'icons/obj/medical/surgery_tools.dmi'
 	icon_state = "scalpel"
-	worn_icon = "scalpel"
+	worn_icon_state = "scalpel"
 	inhand_icon_state = "scalpel"
 	icon_angle = 180
 	lefthand_file = 'icons/mob/inhands/equipment/medical_lefthand.dmi'
@@ -329,7 +329,7 @@
 	desc = "Nanotrasen brand surgical drapes provide optimal safety and infection control."
 	icon = 'icons/obj/medical/surgery_tools.dmi'
 	icon_state = "surgical_drapes"
-	worn_icon = "drapes"
+	worn_icon_state = "drapes"
 	lefthand_file = 'icons/mob/inhands/equipment/medical_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/medical_righthand.dmi'
 	inhand_icon_state = "drapes"
