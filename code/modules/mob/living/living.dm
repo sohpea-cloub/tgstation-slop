@@ -1066,12 +1066,6 @@ GAME_VERB_PROC(/mob/living, mob_sleep, "Sleep", null)
 		var/mob/living/puller = pulledby
 		puller.set_pull_offsets(src, puller.grab_state)
 
-	if(active_storage)
-		var/storage_is_important_recurisve = (active_storage.parent in important_recursive_contents?[RECURSIVE_CONTENTS_ACTIVE_STORAGE])
-		var/can_reach_active_storage = active_storage.parent.IsReachableBy(src)
-		if(!storage_is_important_recurisve && !can_reach_active_storage)
-			active_storage.hide_contents(src)
-
 	if(!buckled && !moving_diagonally && loc != old_loc)
 		var/blood_flow = get_bleed_rate()
 		var/health_check = body_position == LYING_DOWN && prob(get_brute_loss() * 200 / maxHealth)
