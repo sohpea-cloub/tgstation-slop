@@ -166,6 +166,9 @@
 	/// Whether this offers a temporary body or not. Essentially, you'll be able to reenter your body after using this spawner.
 	var/temp_body = FALSE
 
+	/// How many ghosts are currently answering prompts for this spawner, each holding one of its uses until they decide.
+	var/pending_takers = 0
+
 
 /obj/effect/mob_spawn/ghost_role/Initialize(mapload)
 	. = ..()
@@ -189,12 +192,16 @@
 	if(LAZYFIND(ckeys_trying_to_spawn, user.ckey))
 		return
 	if(uses <= 0 && !infinite_use)
-		to_chat(user, span_warning("This spawner is out of charges!"))
+		if(pending_takers)
+			to_chat(user, span_warning("Someone else is deciding whether to take this spawner. Try again in a moment."))
+		else
+			to_chat(user, span_warning("This spawner is out of charges!"))
 		return FALSE
 	if(!can_ghost_take(user))
 		return FALSE
 
 	uses -= 1 // Remove a use EARLY to account for sleep / inputs
+	pending_takers += 1
 	var/user_ckey = user.ckey // Just in case shenanigans happen, we always want to remove it from the list.
 	LAZYADD(ckeys_trying_to_spawn, user_ckey)
 
@@ -206,18 +213,25 @@
 			prompt += " (Warning, You can no longer be revived!)"
 		prompt_fail = tgui_alert(user, prompt, buttons = list("Yes", "No"), timeout = 10 SECONDS) != "Yes"
 
-	var/species_pref = user.client.prefs.read_preference(/datum/preference/choiced/species) || /datum/species/human
+	// The prompt sleeps: the ghost may have disconnected, been revived or been deleted in the meantime.
+	if(QDELETED(user) || !user.client)
+		prompt_fail = TRUE
+
+	var/species_pref = /datum/species/human
+	if(!prompt_fail)
+		species_pref = user.client.prefs.read_preference(/datum/preference/choiced/species) || /datum/species/human
 	if(!prompt_fail && user.started_as_observer && allow_custom_character && (GLOB.species_prototypes[species_pref].get_breath_type() == GAS_O2))
 		var/static_prompt = "Because you haven't taken a role so far, you may spawn in as \
 			[((allow_custom_character & GHOSTROLE_TAKE_PREFS_SPECIES) || species_pref == /datum/species/human) ? "" : "a human version of"] \
 			your customized character with a random name. Would you like to?"
 		apply_prefs = tgui_alert(user, static_prompt, "Custom Character", list("Yes", "No"), 10 SECONDS) == "Yes"
 
-	if(!prompt_fail && !pre_ghost_take(user))
+	if(!prompt_fail && (QDELETED(user) || !user.client || !pre_ghost_take(user)))
 		prompt_fail = TRUE
 
-	if(prompt_fail || !can_ghost_take(user) || !create_from_ghost(user, apply_prefs, subtract_uses = FALSE))
+	if(prompt_fail || QDELETED(user) || !user.client || !can_ghost_take(user) || !create_from_ghost(user, apply_prefs, subtract_uses = FALSE))
 		uses += 1
+	pending_takers -= 1
 	LAZYREMOVE(ckeys_trying_to_spawn, user_ckey)
 
 /// Allows for modifications before the ghost is turned into a mob.
