@@ -59,6 +59,8 @@ RSF
 	var/cooldown = 0
 	///How long should the minimum period between this RSF's item dispensings be?
 	var/cooldowndelay = 0 SECONDS
+	///How much energy, in joules, a cyborg's power cell pays for one unit of matter cost.
+	var/cyborg_energy_per_unit = STANDARD_CELL_CHARGE * 0.005
 
 /obj/item/rsf/Initialize(mapload)
 	. = ..()
@@ -144,12 +146,11 @@ RSF
 /obj/item/rsf/proc/use_matter(charge, mob/user)
 	if(iscyborg(user))
 		var/mob/living/silicon/robot/R = user
-		var/end_charge = R.cell.charge - charge
-		if(end_charge < 0)
+		if(!R.cell?.use(charge * cyborg_energy_per_unit))
 			to_chat(user, span_warning("You do not have enough power to use [src]."))
 			icon_state = spent_icon_state
 			return FALSE
-		R.cell.charge = end_charge
+		R.diag_hud_set_borgcell()
 		return TRUE
 	else
 		if(matter - 1 < 0)
