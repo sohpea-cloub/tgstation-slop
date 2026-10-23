@@ -446,11 +446,15 @@
 			bonus_spread += src.dual_wield_spread // no scaling since it's technically the first shot
 			for(var/i in 1 to gun_count)
 				var/obj/item/gun/gun = valid_guns[i]
-				addtimer(CALLBACK(gun, TYPE_PROC_REF(/obj/item/gun, process_fire), target, user, TRUE, params, null, bonus_spread), i)
+				addtimer(CALLBACK(gun, TYPE_PROC_REF(/obj/item/gun, fire_akimbo), target, user, params, bonus_spread), i)
 
 	return process_fire(target, user, TRUE, params, null, bonus_spread)
 
 #undef AKIMBO_PENALTY_SCALING
+
+/// Fires this gun as the extra (offhand) gun of an akimbo shot
+/obj/item/gun/proc/fire_akimbo(atom/target, mob/living/user, params, bonus_spread)
+	return process_fire(target, user, TRUE, params, null, bonus_spread)
 
 /obj/item/gun/proc/check_botched(mob/living/user, atom/target)
 	if(clumsy_check)

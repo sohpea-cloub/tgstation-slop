@@ -694,6 +694,11 @@
 	. = ..() //The gun actually firing
 	postfire_empty_checks(.)
 
+/obj/item/gun/ballistic/fire_akimbo(atom/target, mob/living/user, params, bonus_spread)
+	prefire_empty_checks()
+	. = ..()
+	postfire_empty_checks(.)
+
 //ATTACK HAND IGNORING PARENT RETURN VALUE
 /obj/item/gun/ballistic/attack_hand(mob/user, list/modifiers)
 	if(!internal_magazine && loc == user && user.is_holding(src) && magazine)
