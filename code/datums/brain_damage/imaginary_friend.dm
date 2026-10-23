@@ -177,7 +177,7 @@
 			highest_pref = this_pref
 
 	if(!appearance_job)
-		appearance_job = SSjob.get_job(JOB_ASSISTANT)
+		appearance_job = SSjob.get_job_type(SSjob.overflow_role)
 
 	if(istype(appearance_job, /datum/job/ai))
 		human_icon = icon('icons/mob/silicon/ai.dmi', icon_state = resolve_ai_icon(appearance_from_prefs.read_preference(/datum/preference/choiced/ai_core_display)), dir = SOUTH)

@@ -137,8 +137,8 @@
 	if(!(job.job_flags & JOB_NEW_PLAYER_JOINABLE))
 		return JOB_UNAVAILABLE_GENERIC
 	if((job.current_positions >= job.total_positions) && job.total_positions != -1)
-		if(is_assistant_job(job))
-			if(isnum(client.player_age) && client.player_age <= 14) //Newbies can always be assistants
+		if(job.type == SSjob.overflow_role)
+			if(isnum(client.player_age) && client.player_age <= 14) //Newbies can always take the overflow role
 				return JOB_AVAILABLE
 			for(var/datum/job/other_job as anything in SSjob.joinable_occupations)
 				if(other_job.current_positions < other_job.total_positions && other_job != job)
