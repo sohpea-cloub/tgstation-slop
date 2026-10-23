@@ -108,7 +108,7 @@
 	. = ..()
 
 	if (worm_alert && linked_alert)
-		worm_alert.maptext = linked_alert.maptext
+		worm_alert.set_overlay_text(linked_alert.text_overlay?.maptext)
 
 /datum/status_effect/blood_worm_transfuse/proc/heal_damage(seconds_between_ticks)
 	var/healing_left = damage_regen_rate * seconds_between_ticks

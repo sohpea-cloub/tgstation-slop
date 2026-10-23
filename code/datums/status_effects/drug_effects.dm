@@ -132,7 +132,7 @@
 	. = ..()
 	if(!linked_alert)
 		return
-	linked_alert.maptext = MAPTEXT_TINY_UNICODE("<span style='text-align:center'>[round(100 - (stacks / max_stacks * 80), 1)]%</span>")
+	linked_alert.set_overlay_text(MAPTEXT_TINY_UNICODE("<span style='text-align:center'>[round(100 - (stacks / max_stacks * 80), 1)]%</span>"))
 
 /// returns a number 1 - 5 that represents how many units of blood one unit of saline is worth within the mob's bloodstream.
 /datum/status_effect/stacking/saline_glucose_dilution/proc/get_blood_multiplier()

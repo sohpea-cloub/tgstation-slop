@@ -92,7 +92,7 @@
 	if(!linked_alert || !show_duration)
 		return
 
-	linked_alert.maptext = MAPTEXT_TINY_UNICODE("<span style='text-align:center'>[round(duration / 10, 1)]s</span>")
+	linked_alert.set_overlay_text(MAPTEXT_TINY_UNICODE("<span style='text-align:center'>[round(duration / 10, 1)]s</span>"))
 
 // Status effect process. Handles adjusting its duration and ticks.
 // If you're adding processed effects, put them in [proc/tick]

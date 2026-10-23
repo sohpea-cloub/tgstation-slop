@@ -118,6 +118,8 @@
 	var/overlay_state
 	///The file to fetch the overlay from
 	var/overlay_icon = 'icons/hud/screen_alert.dmi'
+	/// Overlay holding text (like a buff's time left) drawn above the icon and every other overlay, which would otherwise cover the alert's own maptext
+	var/mutable_appearance/text_overlay
 
 /atom/movable/screen/alert/Initialize(mapload, datum/hud/hud_owner)
 	. = ..()
@@ -141,6 +143,23 @@
 	SIGNAL_HANDLER
 	update_appearance()
 
+/// Sets the text shown over the alert, above all its other overlays. Pass null to clear it.
+/atom/movable/screen/alert/proc/set_overlay_text(new_text)
+	if(isnull(new_text))
+		text_overlay = null
+	else
+		if(isnull(text_overlay))
+			text_overlay = new()
+			text_overlay.layer = layer + 0.1
+			text_overlay.plane = plane
+			text_overlay.appearance_flags = RESET_COLOR | RESET_TRANSFORM
+			text_overlay.maptext_width = maptext_width
+			text_overlay.maptext_height = maptext_height
+			text_overlay.maptext_x = maptext_x
+			text_overlay.maptext_y = maptext_y
+		text_overlay.maptext = new_text
+	update_appearance(UPDATE_OVERLAYS)
+
 /atom/movable/screen/alert/update_overlays()
 	. = ..()
 	var/atom/our_master = master_ref?.resolve()
@@ -148,6 +167,8 @@
 		. += add_atom_icon(our_master)
 	if(overlay_state)
 		. += mutable_appearance(overlay_icon, overlay_state)
+	if(text_overlay)
+		. += text_overlay
 
 ///Returns a copy of the appearance of the atom, with its base pixel coordinates. Useful for overlays
 /atom/movable/screen/alert/proc/add_atom_icon(atom/atom)
