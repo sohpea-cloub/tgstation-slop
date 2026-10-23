@@ -249,8 +249,8 @@
 /datum/component/riding/proc/restore_rider_layer_and_offsets(mob/living/buckled_mob)
 	buckled_mob.remove_offsets(RIDING_SOURCE)
 	buckled_mob.layer = initial(buckled_mob.layer)
-	var/atom/source = parent
-	SET_PLANE_EXPLICIT(buckled_mob, initial(buckled_mob.plane), source)
+	// the rider's own z: we may be on another level than them by now (a fall or a climb took one of us)
+	SET_PLANE_IMPLICIT(buckled_mob, initial(buckled_mob.plane))
 	buckled_mob.client?.view_size.resetToDefault()
 
 /datum/component/riding/proc/restore_parent_layer_and_offsets()
