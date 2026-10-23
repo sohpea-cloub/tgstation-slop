@@ -193,6 +193,12 @@
 	qdel(other)
 
 
+/// Anything riding in the holder can't step out of it by itself (walk(), step() and the like skip relaymove), only forceMove() gets it out.
+/obj/structure/disposalholder/Exit(atom/movable/leaving, direction)
+	if(leaving.loc == src)
+		return FALSE
+	return ..()
+
 // called when player tries to move while in a pipe
 /obj/structure/disposalholder/relaymove(mob/living/user, direction)
 	if(user.incapacitated)
