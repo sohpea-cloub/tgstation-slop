@@ -91,6 +91,10 @@
 		cards_to_add.Cut(card_limit - count_cards() + 1, length(cards_to_add) + 1)
 
 	for(var/obj/item/toy/singlecard/card in cards_to_add)
+		// A card held by or worn on a mob (a pocket, a hand...) must leave that slot properly, or the mob keeps a stale reference to it
+		if(ismob(card.loc))
+			var/mob/holder = card.loc
+			holder.temporarilyRemoveItemFromInventory(card, TRUE)
 		card.forceMove(src)
 		// reset the position and angle
 		card.pixel_x = 0
