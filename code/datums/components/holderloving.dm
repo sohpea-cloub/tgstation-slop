@@ -20,10 +20,11 @@
 	RegisterSignal(holder, COMSIG_QDELETING, PROC_REF(holder_deleting))
 	RegisterSignal(parent, COMSIG_ITEM_DROPPED, PROC_REF(check_my_loc))
 	RegisterSignal(parent, COMSIG_ITEM_PRE_UNEQUIP, PROC_REF(can_be_moved))
+	RegisterSignal(parent, COMSIG_MOVABLE_MOVED, PROC_REF(on_moved))
 
 /datum/component/holderloving/UnregisterFromParent()
 	UnregisterSignal(holder, list(COMSIG_QDELETING))
-	UnregisterSignal(parent, list(COMSIG_ITEM_DROPPED, COMSIG_ITEM_PRE_UNEQUIP))
+	UnregisterSignal(parent, list(COMSIG_ITEM_DROPPED, COMSIG_ITEM_PRE_UNEQUIP, COMSIG_MOVABLE_MOVED))
 
 /datum/component/holderloving/proc/holder_deleting(datum/source, force)
 	SIGNAL_HANDLER
@@ -42,6 +43,17 @@
 	SIGNAL_HANDLER
 
 	var/obj/item/item_parent = parent
+	if(!is_valid_location(item_parent.loc))
+		item_parent.forceMove(holder)
+
+/// Catches every other way out (a forceMove() after temporarilyRemoveItemFromInventory(), being wrapped in a parcel,
+/// moved from storage to storage, ...): anywhere that isn't the holder or the holder's mob sends us back to the holder.
+/datum/component/holderloving/proc/on_moved(datum/source, atom/old_loc, dir, forced, list/old_locs)
+	SIGNAL_HANDLER
+
+	var/obj/item/item_parent = parent
+	if(QDELETED(item_parent) || QDELETED(holder))
+		return
 	if(!is_valid_location(item_parent.loc))
 		item_parent.forceMove(holder)
 

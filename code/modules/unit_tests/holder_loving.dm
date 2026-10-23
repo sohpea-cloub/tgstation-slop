@@ -29,3 +29,13 @@
 
 	//Test 5: Should fail at the signal checks
 	TEST_ASSERT(!person.temporarilyRemoveItemFromInventory(tool, newloc = testbag), "Holder loving component failed to block temporarily removing wrench and moving it into another atom that isn't the holder!")
+
+	//Test 6: Moving the wrench anywhere else directly (storage to storage, wrapping it in a parcel...) should send it back into the bag
+	testbag.atom_storage.attempt_insert(tool, person, messages = FALSE)
+	TEST_ASSERT_EQUAL(tool.loc, bag, "Holder loving component let the wrench be moved from its holder straight into another storage!")
+
+	//Test 7: Same after removing it from the hand without a new location (temporarilyRemoveItemFromInventory, then forceMove)
+	person.putItemFromInventoryInHandIfPossible(tool, 1)
+	person.temporarilyRemoveItemFromInventory(tool)
+	tool.forceMove(testbag)
+	TEST_ASSERT_EQUAL(tool.loc, bag, "Holder loving component let the wrench be force moved into another atom after it was removed from the hand!")
