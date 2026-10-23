@@ -306,7 +306,11 @@
 
 /datum/action/item_action/chameleon/change/gun/initialize_blacklist()
 	. = ..()
-	chameleon_blacklist |= typecacheof(/obj/item/gun/energy/minigun)
+	chameleon_blacklist |= typecacheof(list(
+		/obj/item/gun/energy/minigun,
+		// An attachment that shares its parent gun's pin: the template made by set_chameleon_disguise() would delete ours
+		/obj/item/gun/ballistic/revolver/grenadelauncher/underbarrel,
+	))
 
 /datum/action/item_action/chameleon/change/gun/update_look(obj/item/picked_item)
 	var/obj/item/gun/energy/laser/chameleon/chameleon_gun = target
