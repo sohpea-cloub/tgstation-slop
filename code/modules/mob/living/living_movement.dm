@@ -66,6 +66,9 @@
 		return TRUE
 	if(ismob(mover) && (mover in buckled_mobs))
 		return TRUE
+	// Our puller's rider is still on the tile the puller just left (buckled mobs move after the pull step), so don't let it block what the puller drags.
+	if(mover.moving_from_pull && (src in mover.moving_from_pull.buckled_mobs))
+		return TRUE
 	return !mover.density || body_position == LYING_DOWN
 
 /mob/living/update_config_movespeed()
