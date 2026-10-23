@@ -88,6 +88,10 @@
 
 			brain_owner.set_suicide(HAS_TRAIT(brainmob, TRAIT_SUICIDED))
 
+			// A player's mind now lives here, so don't let an NPC AI (monkeys) run the body whenever the player isn't connected.
+			if(brain_owner.mind?.key && brain_owner.ai_controller)
+				QDEL_NULL(brain_owner.ai_controller)
+
 		QDEL_NULL(brainmob)
 	else
 		brain_owner.set_suicide(suicided)
