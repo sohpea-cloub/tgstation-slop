@@ -82,11 +82,39 @@ GLOBAL_LIST_INIT(stacked_metabolization_effect, init_chemical_side_effects())
 	return reagent_list
 
 /proc/check_recipe_for_conflicts(datum/chemical_reaction/reaction, list/reaction_lookup)
-	for(var/x in reaction.required_reagents)
+	//Reagents and catalysts both only need to be present in the holder to satisfy another recipe,
+	//so a competitor can be indexed under (and triggered by) either kind of ingredient of this reaction
+	var/list/ingredients = reaction.required_reagents | reaction.required_catalysts
+	for(var/x in ingredients)
 		for(var/datum/chemical_reaction/competitor in reaction_lookup[x])
-			if(chem_recipes_do_conflict(competitor, reaction))
+			if(competitor == reaction)
+				continue
+			if(chem_recipes_do_conflict(competitor, reaction) || chem_recipe_ingredients_trigger(competitor, reaction))
 				return TRUE
 	return FALSE
+
+/**
+ * Returns TRUE if the ingredients of the `reaction` recipe (reagents and catalysts alike) satisfy everything `competitor` needs,
+ * so competitor would start reacting in the same mix (e.g. our reagent is its catalyst).
+ * chem_recipes_do_conflict() only compares reagents with reagents and catalysts with catalysts, so it misses that.
+ */
+/proc/chem_recipe_ingredients_trigger(datum/chemical_reaction/competitor, datum/chemical_reaction/reaction)
+	if(competitor.reaction_flags & REACTION_COMPETITIVE)
+		return FALSE
+	//a container requirement only keeps them apart if it is not ours
+	if(competitor.required_container && competitor.required_container != reaction.required_container)
+		return FALSE
+	if(!length(competitor.required_reagents))
+		return FALSE
+	for(var/datum/reagent/requirement as anything in competitor.required_reagents)
+		var/our_amount = reaction.required_reagents[requirement] || reaction.required_catalysts[requirement]
+		if(our_amount < competitor.required_reagents[requirement])
+			return FALSE
+	for(var/datum/reagent/requirement as anything in competitor.required_catalysts)
+		var/our_amount = reaction.required_reagents[requirement] || reaction.required_catalysts[requirement]
+		if(our_amount < competitor.required_catalysts[requirement])
+			return FALSE
+	return TRUE
 
 /**
  * Chemical Reactions - Initialises all /datum/chemical_reaction into a list
