@@ -119,7 +119,12 @@
 
 /obj/item/stack/update_name(updates)
 	. = ..()
-	maptext = (ismob(loc) || loc?.atom_storage) ? MAPTEXT("<font color='white'>[get_amount()]</font>") : ""
+	var/datum/storage/loc_storage = loc?.atom_storage
+	maptext = (ismob(loc) || loc_storage) ? MAPTEXT("<font color='white'>[get_amount()]</font>") : ""
+	// Storages that stack numerically show the total of every matching stack on one of them, so changing a stack's
+	// amount in there (merging, using, adding) invalidates what is displayed, and our own maptext just overwrote it
+	if(loc_storage?.numerical_stacking && !loc_storage.block_insert_remove_updates)
+		loc_storage.refresh_views()
 
 /obj/item/stack/Moved(atom/old_loc, movement_dir, forced, list/old_locs, momentum_change)
 	. = ..()
