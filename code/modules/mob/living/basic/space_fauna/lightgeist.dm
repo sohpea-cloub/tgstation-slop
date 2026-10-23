@@ -62,8 +62,13 @@
 
 /mob/living/basic/lightgeist/melee_attack(atom/target, list/modifiers, ignore_cooldown = FALSE)
 	. = ..()
-	if (. && isliving(target))
+	if (!.)
+		return
+	if (isliving(target))
 		add_ally(target) // Anyone we heal will treat us as a friend
+	else if (!ignore_cooldown)
+		// Our long attack cooldown paces our healing, don't make a player wait for it just because they misclicked on a table or machine
+		changeNext_move(CLICK_CD_MELEE)
 
 /mob/living/basic/lightgeist/ghost()
 	. = ..()
