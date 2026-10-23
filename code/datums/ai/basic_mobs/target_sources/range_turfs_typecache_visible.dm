@@ -32,3 +32,10 @@
 /datum/target_source/range_turfs/typecache_visible/ice/New()
 	. = ..()
 	typecache = typecacheof(typecache)
+
+/datum/target_source/range_turfs/typecache_visible/lava
+	typecache = list(/turf/open/lava)
+
+/datum/target_source/range_turfs/typecache_visible/lava/New()
+	. = ..()
+	typecache = typecacheof(typecache)

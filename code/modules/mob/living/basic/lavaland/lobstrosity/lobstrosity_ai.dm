@@ -6,6 +6,8 @@
 )
 
 /datum/ai_controller/basic_controller/lobstrosity
+	//keep planning (digging, fishing) at low priority while no player is nearby
+	ai_traits = parent_type::ai_traits | RUN_WHILE_UNWATCHED
 	blackboard = list(
 		BB_TARGETING_STRATEGY = /datum/targeting_strategy/basic,
 		BB_TARGET_PRIORITY_STRATEGY = /datum/target_priority_strategy/mining,
