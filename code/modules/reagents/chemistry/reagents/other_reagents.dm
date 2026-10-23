@@ -1305,12 +1305,15 @@
 	if(QDELETED(glow))
 		return
 
-	glow.decal_reagent = type
 	var/rounded_volume = round(reac_volume, 1)
-	glow.reagent_amount = rounded_volume
-	if(glow.lazy_init_reagents()) // Decal already has reagents inited, add instead
+	if(glow.reagents) // Decal already has reagents inited, add instead
 		glow.reagents.maximum_volume = min(glow.reagents.maximum_volume + rounded_volume, 300) // Increase reagent holder volume up to a max of 300
 		glow.reagents.add_reagent(type, rounded_volume)
+		return
+	// No reagents yet, so lazy_init_reagents() creates them holding exactly this much (adding on top would double it)
+	glow.decal_reagent = type
+	glow.reagent_amount = rounded_volume
+	glow.lazy_init_reagents()
 
 //Mutagenic chem side-effects.
 /datum/reagent/uranium/on_hydroponics_apply(obj/machinery/hydroponics/mytray, mob/user)
@@ -3358,12 +3361,14 @@
 	if(QDELETED(pests))
 		return
 
-	pests.decal_reagent = type
 	var/rounded_volume = round(reac_volume, 1)
-	pests.reagent_amount = rounded_volume
-	if(pests.lazy_init_reagents()) // Decal already has reagents inited, add instead
+	if(pests.reagents) // Decal already has reagents inited, add instead
 		pests.reagents.maximum_volume = min(pests.reagents.maximum_volume + rounded_volume, 300) // Increase reagent holder volume up to a max of 300
 		pests.reagents.add_reagent(type, rounded_volume)
+	else // lazy_init_reagents() creates them holding exactly this much (adding on top would double it)
+		pests.decal_reagent = type
+		pests.reagent_amount = rounded_volume
+		pests.lazy_init_reagents()
 	pests.update_ant_damage()
 
 /datum/reagent/ants/fire
