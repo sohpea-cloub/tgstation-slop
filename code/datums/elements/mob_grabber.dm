@@ -27,5 +27,7 @@
 	var/atom/currently_pulled = target.pulledby
 	if (!isnull(currently_pulled) && (!steal_from_others || currently_pulled == source))
 		return NONE
+	// The grab replaces our attack, so it has to put us on cooldown too (grabbedby sleeps, and would leave us free to grab or attack again every tick)
+	source.changeNext_move(CLICK_CD_GRABBING)
 	INVOKE_ASYNC(target, TYPE_PROC_REF(/mob/living, grabbedby), source)
 	return COMPONENT_CANCEL_ATTACK_CHAIN

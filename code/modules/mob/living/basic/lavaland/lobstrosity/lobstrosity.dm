@@ -125,9 +125,13 @@
 		return
 	var/mob/living/basic/basic_source = source
 	var/mob/living/living_target = target
-	basic_source.melee_attack(living_target, ignore_cooldown = TRUE)
+	basic_source.melee_attack(living_target)
+	// The instant attack (or the grab which replaces it) must start the melee cooldown like any other attack, or the AI attacks again straight away
+	basic_source.changeNext_move(basic_source.melee_attack_cooldown)
 	basic_source.ai_controller?.set_blackboard_key(BB_BASIC_MOB_STOP_FLEEING, TRUE)
 	basic_source.start_pulling(living_target)
+	// Stop pushing against our victim, or every tick of the charge bumps them again and hits them again
+	GLOB.move_manager.stop_looping(basic_source)
 
 /datum/action/cooldown/mob_cooldown/charge/basic_charge/lobster/do_charge(atom/movable/charger, atom/target_atom, delay, past)
 	. = ..()

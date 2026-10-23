@@ -52,6 +52,7 @@
 
 	if (DOING_INTERACTION_WITH_TARGET(surgeon, victim))
 		surgeon.balloon_alert(surgeon, "already busy!")
+		surgeon.changeNext_move(CLICK_CD_MELEE)
 		return COMPONENT_CANCEL_ATTACK_CHAIN
 
 	if(pre_hit_callback && !pre_hit_callback.Invoke(victim))
