@@ -497,6 +497,9 @@
 	engine = new /obj/item/v8_engine(src)
 	set_engine_state(ENGINE_WELDED)
 
+/obj/vehicle/ridden/golfcart/show_in_buckled_alert()
+	return FALSE // our overlays make up a two tile long cart, which doesn't fit in the alert
+
 /obj/vehicle/ridden/golfcart/update_appearance(updates=ALL)
 	. = ..()
 	child.setDir(dir)

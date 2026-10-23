@@ -107,13 +107,7 @@
 	M.set_buckled(src)
 	buckled_mobs |= M
 
-	///If the icon is too big, don't add it to the screen alert
-	var/add_src_icon = TRUE
-	var/list/dim = get_icon_dimensions(icon)
-	if(dim["height"] > ICON_SIZE_Y || dim["width"] > ICON_SIZE_X)
-		add_src_icon = FALSE
-
-	M.throw_alert(ALERT_BUCKLED, /atom/movable/screen/alert/buckled, new_master = add_src_icon ? src : null)
+	M.throw_alert(ALERT_BUCKLED, /atom/movable/screen/alert/buckled, new_master = show_in_buckled_alert() ? src : null)
 	M.set_glide_size(glide_size)
 
 	M.Move(loc)
@@ -131,6 +125,11 @@
 	SEND_SIGNAL(src, COMSIG_MOVABLE_BUCKLE, M, force)
 	SEND_SIGNAL(M, COMSIG_MOB_BUCKLED, src)
 	return TRUE
+
+/// Whether our icon is drawn in the "Buckled" alert of the mobs buckled to us. Not if it's too big (or built from overlays that spill out of our tile) to fit in the alert.
+/atom/movable/proc/show_in_buckled_alert()
+	var/list/dim = get_icon_dimensions(icon)
+	return dim["height"] <= ICON_SIZE_Y && dim["width"] <= ICON_SIZE_X
 
 /obj/buckle_mob(mob/living/M, force = FALSE, check_loc = TRUE)
 	. = ..()
