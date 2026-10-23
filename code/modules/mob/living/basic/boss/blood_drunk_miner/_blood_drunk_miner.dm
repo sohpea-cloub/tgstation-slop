@@ -57,7 +57,7 @@ Difficulty: Medium
 	. = ..()
 	ADD_TRAIT(src, TRAIT_NO_FLOATING_ANIM, INNATE_TRAIT)
 	RegisterSignal(src, COMSIG_MOVABLE_PRE_MOVE, PROC_REF(on_premove))
-	AddElement(/datum/element/relay_attackers)
+	AddElement(/datum/element/ai_retaliate) // only fight those who attack us, like other megafauna
 	AddElement(/datum/element/footstep, footstep_type = FOOTSTEP_MOB_HEAVY)
 
 	RegisterSignal(src, COMSIG_HOSTILE_PRE_ATTACKINGTARGET, PROC_REF(attack_override))

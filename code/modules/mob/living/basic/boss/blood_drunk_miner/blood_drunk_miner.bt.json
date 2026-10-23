@@ -32,11 +32,12 @@
 				},
 				{
 					"type": "leaf",
-					"behavior": "/datum/bt_node/ai_behavior/acquire_target/update_combat_targets",
+					"behavior": "/datum/bt_node/ai_behavior/acquire_target/target_from_retaliate_list",
 					"vars": {
 						"target_key": "BB_CURRENT_TARGET",
 						"targeting_strategy": "BB_TARGETING_STRATEGY",
-						"hiding_location_key": "BB_CURRENT_TARGET_HIDING_LOCATION"
+						"hiding_location_key": "BB_CURRENT_TARGET_HIDING_LOCATION",
+						"vision_range": 18
 					}
 				}
 			]
