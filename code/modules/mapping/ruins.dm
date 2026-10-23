@@ -7,33 +7,70 @@
 		var/width_border = TRANSITIONEDGE + SPACERUIN_MAP_EDGE_PAD + round(width / 2)
 		var/height_border = TRANSITIONEDGE + SPACERUIN_MAP_EDGE_PAD + round(height / 2)
 		var/turf/central_turf = forced_turf ? forced_turf : locate(rand(width_border, world.maxx - width_border), rand(height_border, world.maxy - height_border), z)
-		var/valid = TRUE
-		var/list/affected_turfs = get_affected_turfs(central_turf,1)
-		var/list/affected_areas = list()
 
-		for(var/turf/check in affected_turfs)
-			// Use assoc lists to move this out, it's easier that way
-			if(check.turf_flags & NO_RUINS)
-				valid = FALSE // set to false before we check
-				break
-			var/area/new_area = get_area(check)
-			affected_areas[new_area] = TRUE
-
-		// This is faster yes. Only BARELY but it is faster
-		for(var/area/affct_area as anything in affected_areas)
-			if(!allowed_areas_typecache[affct_area.type])
-				valid = FALSE
-				break
-
-		if(!valid)
+		// Check this ruin and every part of it that goes below it (PLACE_BELOW) before reserving any of them,
+		// so a multi-z ruin is never placed without its lower parts
+		if(!can_place_with_parts_below(central_turf, allowed_areas_typecache))
 			continue
 
 		testing("Ruin \"[name]\" reserved at ([central_turf.x], [central_turf.y], [central_turf.z])")
 
-		for(var/turf/T in affected_turfs)
-			T.turf_flags |= NO_RUINS
-
+		reserve_with_parts_below(central_turf)
 		return central_turf
+
+/// Returns TRUE if this ruin, centered on central_turf, only covers turfs that allow ruins, in the allowed areas.
+/datum/map_template/ruin/proc/can_place_at(turf/central_turf, list/allowed_areas_typecache)
+	if(!central_turf)
+		return FALSE
+	var/list/affected_areas = list()
+	for(var/turf/check as anything in get_affected_turfs(central_turf, 1))
+		if(check.turf_flags & NO_RUINS)
+			return FALSE
+		// Use assoc lists to move this out, it's easier that way
+		affected_areas[check.loc] = TRUE
+
+	// This is faster yes. Only BARELY but it is faster
+	for(var/area/affct_area as anything in affected_areas)
+		if(!allowed_areas_typecache[affct_area.type])
+			return FALSE
+	return TRUE
+
+/// Returns the ruin templates that always spawn directly below this one (PLACE_BELOW in always_spawn_with).
+/datum/map_template/ruin/proc/get_ruins_below()
+	. = list()
+	for(var/linked_type in always_spawn_with)
+		if(always_spawn_with[linked_type] != PLACE_BELOW)
+			continue
+		for(var/ruin_name in SSmapping.ruins_templates)
+			var/datum/map_template/ruin/linked = SSmapping.ruins_templates[ruin_name]
+			if(istype(linked, linked_type))
+				. += linked
+
+/// Like can_place_at(), but also checks that every ruin that goes below this one (PLACE_BELOW) fits below central_turf.
+/datum/map_template/ruin/proc/can_place_with_parts_below(turf/central_turf, list/allowed_areas_typecache)
+	if(!can_place_at(central_turf, allowed_areas_typecache))
+		return FALSE
+	var/list/ruins_below = get_ruins_below()
+	if(!length(ruins_below))
+		return TRUE
+	var/turf/below_turf = GET_TURF_BELOW(central_turf)
+	if(!below_turf)
+		return FALSE
+	for(var/datum/map_template/ruin/below as anything in ruins_below)
+		if(!below.can_place_with_parts_below(below_turf, allowed_areas_typecache))
+			return FALSE
+	return TRUE
+
+/// Marks the turfs of this ruin centered on central_turf, and those of the ruins that go below it, as taken (NO_RUINS).
+/datum/map_template/ruin/proc/reserve_with_parts_below(turf/central_turf)
+	for(var/turf/T as anything in get_affected_turfs(central_turf, 1))
+		T.turf_flags |= NO_RUINS
+	var/list/ruins_below = get_ruins_below()
+	if(!length(ruins_below))
+		return
+	var/turf/below_turf = GET_TURF_BELOW(central_turf)
+	for(var/datum/map_template/ruin/below as anything in ruins_below)
+		below.reserve_with_parts_below(below_turf)
 
 /datum/map_template/ruin/proc/reserve_isolated_level(z)
 	var/datum/turf_reservation/reservation = SSmapping.request_turf_block_reservation(width, height, 1, z) //Make the new level creation work with different traits.
@@ -98,6 +135,7 @@
 	var/placed_ruins = 0 // our count of how many ruins have been placed
 	var/list/forced_ruins = list() //These go first on the z level associated (same random one by default) or if the assoc value is a turf to the specified turf.
 	var/list/ruins_available = list() //we can try these in the current pass
+	var/list/reserved_below = list() //Ruins placed below another ruin (PLACE_BELOW), already reserved with it: ruin = its central turf
 
 	if(PERFORM_ALL_TESTS(maptest_log_mapping))
 		log_mapping("All ruins being loaded for map testing.")
@@ -147,28 +185,29 @@
 		var/failed_to_place = TRUE
 		var/target_z = 0
 		var/turf/placed_turf //Where the ruin ended up if we succeeded
-		outer:
-			while(placement_tries > 0)
-				placement_tries--
-				target_z = pick(z_levels)
-				if(forced_z)
-					target_z = forced_z
-				if(current_pick.always_spawn_with) //If the ruin has part below, make sure that z exists.
-					for(var/v in current_pick.always_spawn_with)
-						if(current_pick.always_spawn_with[v] == PLACE_BELOW)
-							var/turf/T = locate(1,1,target_z)
-							if(!GET_TURF_BELOW(T))
-								if(forced_z)
-									continue outer
-								else
-									break outer
+		if(forced_turf && reserved_below[current_pick] == forced_turf)
+			// The part below a ruin we already placed: it was checked and reserved together with that ruin
+			reserved_below -= current_pick
+			placed_turf = forced_turf
+			target_z = placed_turf.z
+			failed_to_place = FALSE
+			placement_tries = 0
+		var/list/possible_z_levels = forced_z ? list(forced_z) : z_levels
+		if(placement_tries && length(current_pick.get_ruins_below())) //If the ruin has parts below, only pick z levels that have a level below them
+			possible_z_levels = possible_z_levels.Copy()
+			for(var/possible_z in possible_z_levels)
+				if(!GET_TURF_BELOW(locate(1, 1, possible_z)))
+					possible_z_levels -= possible_z
+		while(placement_tries > 0 && length(possible_z_levels))
+			placement_tries--
+			target_z = pick(possible_z_levels)
 
-				placed_turf = current_pick.try_to_place(target_z,whitelist_typecache,forced_turf,clear_below)
-				if(!placed_turf)
-					continue
-				else
-					failed_to_place = FALSE
-					break
+			placed_turf = current_pick.try_to_place(target_z,whitelist_typecache,forced_turf,clear_below)
+			if(!placed_turf)
+				continue
+			else
+				failed_to_place = FALSE
+				break
 
 		//That's done remove from priority even if it failed
 		if(forced)
@@ -208,8 +247,10 @@
 									forced_ruins[linked] = pick(SSmapping.levels_by_trait(ZTRAIT_SPACE_RUINS))
 								if(PLACE_DEFAULT)
 									forced_ruins[linked] = -1
-								if(PLACE_BELOW)
-									forced_ruins[linked] = GET_TURF_BELOW(placed_turf)
+								if(PLACE_BELOW) //Already checked and reserved by try_to_place(), with the ruin above it
+									var/turf/below_turf = GET_TURF_BELOW(placed_turf)
+									forced_ruins[linked] = below_turf
+									reserved_below[linked] = below_turf
 								if(PLACE_ISOLATED)
 									forced_ruins[linked] = SSmapping.get_isolated_ruin_z()
 
