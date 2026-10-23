@@ -300,6 +300,9 @@
 		if(source.get_blood_volume() <= BLOOD_VOLUME_LOSE_NUTRITION)
 			source.adjust_nutrition(-1.25 * seconds_per_tick)
 
+	// Blood volume changes constantly, so keep the split button's availability in sync
+	slime_split?.build_all_button_icons(UPDATE_BUTTON_STATUS)
+
 /datum/action/innate/split_body
 	name = "Split Body"
 	check_flags = AB_CHECK_CONSCIOUS
@@ -571,9 +574,17 @@
 	var/datum/action/innate/use_extract/major/extract_major = new(src)
 	extract_major.Grant(new_jellyperson)
 	luminescent_actions += extract_major
+	RegisterSignal(new_jellyperson, COMSIG_LIVING_LIFE, PROC_REF(update_extract_buttons))
+
+/// Keeps the extract buttons' availability in sync with the extract cooldown
+/datum/species/jelly/luminescent/proc/update_extract_buttons(mob/living/carbon/human/source, seconds_per_tick)
+	SIGNAL_HANDLER
+	for(var/datum/action/innate/use_extract/extract_action in luminescent_actions)
+		extract_action.build_all_button_icons(UPDATE_BUTTON_STATUS)
 
 /datum/species/jelly/luminescent/on_species_loss(mob/living/carbon/C)
 	. = ..()
+	UnregisterSignal(C, COMSIG_LIVING_LIFE)
 	if(current_extract)
 		current_extract.forceMove(C.drop_location())
 		current_extract = null
@@ -696,6 +707,8 @@
 	COOLDOWN_START(species, extract_cooldown, 10 SECONDS)
 	var/after_use_cooldown = species.current_extract.activate(human_owner, species, activation_type)
 	COOLDOWN_START(species, extract_cooldown, after_use_cooldown)
+	for(var/datum/action/innate/use_extract/extract_action in species.luminescent_actions)
+		extract_action.build_all_button_icons(UPDATE_BUTTON_STATUS)
 
 /datum/action/innate/use_extract/major
 	name = "Extract Major Activation"
