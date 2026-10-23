@@ -167,14 +167,20 @@ GLOBAL_VAR(antag_prototypes)
 			antag_header_parts += "<a href='byond://?src=[REF(src)];open_antag_vv=[REF(current_antag)]'>Open VV</a>"
 
 
-		//We aren't antag of this category, grab first prototype to check the prefs (This is pretty vague but really not sure how else to do this)
+		//Grab the antag to check the prefs with: the one we have if players can choose it in their preferences, otherwise the first of the category that they can choose
+		//(not every antag of a category has its own preference, e.g. there's Head Revolutionary but no Revolutionary)
 		var/datum/antagonist/pref_source = current_antag
-		if(!pref_source)
+		var/list/preference_flags = get_all_antag_flags()
+		if(!pref_source?.pref_flag || !(pref_source.pref_flag in preference_flags))
+			var/datum/antagonist/first_shown
 			for(var/datum/antagonist/prototype in GLOB.antag_prototypes[antag_category])
 				if(!prototype.show_in_antagpanel)
 					continue
-				pref_source = prototype
-				break
+				first_shown ||= prototype
+				if(prototype.pref_flag in preference_flags)
+					pref_source = prototype
+					break
+			pref_source ||= first_shown
 		if(pref_source.pref_flag)
 			antag_header_parts += pref_source.enabled_in_preferences(src) ? "Enabled in Prefs" : "Disabled in Prefs"
 
