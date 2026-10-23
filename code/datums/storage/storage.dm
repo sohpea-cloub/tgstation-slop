@@ -748,7 +748,12 @@ GLOBAL_LIST_EMPTY(cached_storage_typecaches)
 /datum/storage/proc/on_preattack(datum/source, obj/item/thing, mob/user, list/modifiers)
 	SIGNAL_HANDLER
 
-	if(!istype(thing) || thing == parent.loc || !allow_quick_gather || thing.atom_storage)
+	if(!istype(thing) || thing == parent.loc || !allow_quick_gather)
+		return
+
+	// Clicking on another storage item means putting this one into it, unless we can gather that item ourselves
+	// (it would be gathered along with everything else on the turf anyway)
+	if(thing.atom_storage && !can_insert(thing, user, messages = FALSE))
 		return
 
 	if(collection_mode == COLLECT_ONE)
@@ -904,6 +909,9 @@ GLOBAL_LIST_EMPTY(cached_storage_typecaches)
 /// Called directly from the attack chain if [insert_on_attack] is TRUE.
 /// Handles inserting an item into the storage when clicked.
 /datum/storage/proc/item_interact_insert(mob/living/user, obj/item/thing)
+	// A gathering bag clicked on a storage item lying on the floor gathers it (see on_preattack) instead of being put into it
+	if(thing.atom_storage?.allow_quick_gather && isitem(parent) && isturf(parent.loc) && thing.atom_storage.can_insert(parent, user, messages = FALSE))
+		return NONE
 	attempt_insert(thing, user)
 	return ITEM_INTERACT_SUCCESS
 
