@@ -183,6 +183,16 @@
 	force_hidden = FALSE
 	show_to(enfold)
 
+/// Hides this plane while our group views through the AI multicamera room (and we are a plane that would black out its windows), shows it again after
+/atom/movable/screen/plane_master/proc/update_multicam_hidden(applies)
+	var/mob/viewer = home?.our_hud?.mymob
+	if(applies && istype(home?.get_perspective(), /obj/effect/landmark/ai_multicam_room))
+		if(!force_hidden)
+			hide_plane(viewer)
+		return
+	if(force_hidden)
+		unhide_plane(viewer)
+
 /// Mirrors our force hidden state to the hidden state of the plane that came before, assuming it's valid
 /// This allows us to mirror any hidden sets from before we were created, no matter how low that chance is
 /atom/movable/screen/plane_master/proc/mirror_parent_hidden()

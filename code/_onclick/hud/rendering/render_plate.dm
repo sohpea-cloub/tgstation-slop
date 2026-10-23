@@ -299,7 +299,9 @@
 	. = ..()
 	if(home)
 		RegisterSignal(home, COMSIG_PLANE_GROUP_OFFSET_CHANGED, PROC_REF(on_offset_change))
+		RegisterSignal(home, COMSIG_PLANE_GROUP_PERSPECTIVE_CHANGED, PROC_REF(perspective_changed))
 		offset_change(home.active_offset || 0)
+		update_multicam_hidden(offset > 0)
 
 /atom/movable/screen/plane_master/rendering_plate/lighting/show_to(mob/mymob)
 	. = ..()
@@ -322,6 +324,12 @@
 	. = ..()
 	oldmob.clear_fullscreen("lighting_backdrop_lit_[home.key]#[offset]")
 	oldmob.clear_fullscreen("lighting_backdrop_unlit_[home.key]#[offset]")
+
+/// The lighting plates of lower z levels have a black backdrop that nothing in the AI multicamera room lights up,
+/// which blacks out the multicamera windows showing those levels: show them fullbright instead.
+/atom/movable/screen/plane_master/rendering_plate/lighting/proc/perspective_changed(datum/source, atom/old_perspective, atom/new_perspective)
+	SIGNAL_HANDLER
+	update_multicam_hidden(offset > 0)
 
 /atom/movable/screen/plane_master/rendering_plate/lighting/proc/on_offset_change(datum/source, old_offset, new_offset)
 	SIGNAL_HANDLER
@@ -377,10 +385,22 @@
 	RegisterSignal(mymob, COMSIG_MOB_SIGHT_CHANGE, PROC_REF(handle_sight), override = TRUE)
 	handle_sight(mymob, mymob.sight, NONE)
 
+/atom/movable/screen/plane_master/rendering_plate/light_mask/set_home(datum/plane_master_group/home)
+	. = ..()
+	if(home)
+		RegisterSignal(home, COMSIG_PLANE_GROUP_PERSPECTIVE_CHANGED, PROC_REF(perspective_changed))
+		update_multicam_hidden(TRUE)
+
+/// The AI multicamera room has nothing on any plane of the viewer's own z level, so every light mask would paint black over
+/// whatever the multicamera windows show from other z levels. That room is fullbright, so it doesn't need a light mask.
+/atom/movable/screen/plane_master/rendering_plate/light_mask/proc/perspective_changed(datum/source, atom/old_perspective, atom/new_perspective)
+	SIGNAL_HANDLER
+	update_multicam_hidden(TRUE)
+
 /atom/movable/screen/plane_master/rendering_plate/light_mask/hide_from(mob/oldmob)
 	. = ..()
 	var/atom/movable/screen/plane_master/emissive = home.get_plane(GET_NEW_PLANE(RENDER_PLANE_EMISSIVE, offset))
-	emissive.remove_filter("lighting_mask")
+	emissive?.remove_filter("lighting_mask")
 	remove_relay_from(GET_NEW_PLANE(RENDER_PLANE_GAME, offset))
 	UnregisterSignal(oldmob, COMSIG_MOB_SIGHT_CHANGE)
 
