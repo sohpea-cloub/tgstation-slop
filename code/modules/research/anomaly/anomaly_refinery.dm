@@ -83,13 +83,13 @@
 			to_chat(user, span_warning("There is already a core in [src]."))
 			return ITEM_INTERACT_BLOCKING
 
-		if(!user.transferItemToLoc(tool, src))
-			to_chat(user, span_warning("[tool] is stuck to your hand."))
-			return ITEM_INTERACT_BLOCKING
-
 		var/obj/item/raw_anomaly_core/raw_core = tool
 		if(!get_required_radius(raw_core.anomaly_type))
 			say("Unfortunately, due to diminishing supplies of condensed anomalous matter, [raw_core] and any cores of its type are no longer of a sufficient quality level to be compressed into a working core.")
+			return ITEM_INTERACT_BLOCKING
+
+		if(!user.transferItemToLoc(tool, src))
+			to_chat(user, span_warning("[tool] is stuck to your hand."))
 			return ITEM_INTERACT_BLOCKING
 
 		inserted_core = raw_core
