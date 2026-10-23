@@ -52,9 +52,18 @@
 	to_chat(user, span_notice("You start opening [src]'s trunk."))
 	if(!do_after(user, 30))
 		return
-	if(return_amount_of_controllers_with_flag(VEHICLE_CONTROL_KIDNAPPED))
+	var/list/to_dump = list()
+	for(var/mob/occupant as anything in occupants)
+		// the dead can't climb out or use the driver's controls, so they can only be pulled out from the outside
+		if((occupants[occupant] & VEHICLE_CONTROL_KIDNAPPED) || occupant.stat == DEAD)
+			to_dump += occupant
+	if(length(to_dump))
 		to_chat(user, span_notice("The people stuck in [src]'s trunk all come tumbling out."))
-		dump_specific_mobs(VEHICLE_CONTROL_KIDNAPPED)
+		for(var/mob/occupant as anything in to_dump)
+			mob_exit(occupant, randomstep = TRUE)
+			if(iscarbon(occupant))
+				var/mob/living/carbon/carbon_occupant = occupant
+				carbon_occupant.Paralyze(4 SECONDS)
 		return
 	to_chat(user, span_notice("It seems [src]'s trunk was empty."))
 
