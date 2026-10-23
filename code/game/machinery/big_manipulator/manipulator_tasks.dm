@@ -412,9 +412,43 @@
 		new /datum/manipulator_priority/drop/on_floor
 	)
 
+/// Can `container` take `target` into itself? Storage items, anything with a storage datum and smart fridges can.
+/datum/manipulator_task/cargo/dropoff_base/drop/proc/can_store_in(atom/movable/container, atom/movable/target)
+	if(container == target || !isitem(target))
+		return FALSE
+	var/obj/item/item = target
+	if(container.atom_storage)
+		return container.atom_storage.can_insert(item, messages = FALSE)
+	if(istype(container, /obj/machinery/smartfridge))
+		var/obj/machinery/smartfridge/fridge = container
+		return !fridge.machine_stat && fridge.visible_items() < fridge.max_n_of_items && fridge.can_load_item(item)
+	return FALSE
+
+/// Where `target` would end up if dropped now, following our active priorities: a container on the turf that accepts it,
+/// or the turf itself. Null if none of the active priorities has anything to offer.
+/datum/manipulator_task/cargo/dropoff_base/drop/proc/find_drop_endpoint(atom/movable/target)
+	if(!interaction_turf)
+		return null
+	for(var/datum/manipulator_priority/prio as anything in interaction_priorities)
+		if(!prio.active)
+			continue
+		if(prio.atom_typepath == /turf)
+			return interaction_turf
+		for(var/atom/movable/thing as anything in interaction_turf.contents)
+			if(can_store_in(thing, target))
+				return thing
+	return null
+
 /datum/manipulator_task/cargo/dropoff_base/drop/can_accept(atom/movable/target)
 	if(!..())
 		return FALSE
+
+	var/atom/endpoint = find_drop_endpoint(target)
+	if(isnull(endpoint))
+		return FALSE
+	// Overflow rules are about what piles up on the floor, not what goes into a container.
+	if(endpoint != interaction_turf)
+		return TRUE
 
 	var/list/atoms_on_the_turf = interaction_turf.contents
 	switch(overflow_status)

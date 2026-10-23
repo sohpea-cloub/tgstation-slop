@@ -100,19 +100,28 @@
 	addtimer(CALLBACK(src, PROC_REF(do_step_rotation), target_task, callback_object, callback, next_angle, target_angle, rotation_step), BASE_INTERACTION_TIME / speed_multiplier)
 
 /obj/machinery/big_manipulator/proc/try_drop_thing(datum/manipulator_task/cargo/dropoff_base/drop/destination_task)
-	var/drop_endpoint = destination_task.find_type_priority()
-	var/obj/actual_held_object = held_object?.resolve()
-
-	if(isnull(drop_endpoint))
+	var/obj/item/actual_held_object = held_object?.resolve()
+	if(isnull(actual_held_object))
+		finish_manipulation()
 		return FALSE
 
-	var/atom/drop_target = drop_endpoint
-	if(drop_target.atom_storage && actual_held_object && (!drop_target.atom_storage.attempt_insert(actual_held_object, override = TRUE, messages = FALSE)))
-		actual_held_object.forceMove(drop_target.drop_location())
-		finish_manipulation()
-		return TRUE
+	var/atom/drop_endpoint = destination_task.find_drop_endpoint(actual_held_object)
+	if(isnull(drop_endpoint))
+		// Nowhere to put it anymore (the container left or filled up): don't get stuck holding it.
+		drop_held_atom()
+		return FALSE
 
-	actual_held_object?.forceMove(drop_endpoint)
+	if(drop_endpoint == destination_task.interaction_turf)
+		actual_held_object.forceMove(drop_endpoint)
+	else if(istype(drop_endpoint, /obj/machinery/smartfridge))
+		var/obj/machinery/smartfridge/fridge = drop_endpoint
+		fridge.load(actual_held_object)
+		SStgui.update_uis(fridge)
+		if(fridge.visible_contents)
+			fridge.update_appearance()
+	else if(!drop_endpoint.atom_storage?.attempt_insert(actual_held_object, override = TRUE, messages = FALSE))
+		actual_held_object.forceMove(drop_endpoint.drop_location())
+
 	finish_manipulation()
 	return TRUE
 
