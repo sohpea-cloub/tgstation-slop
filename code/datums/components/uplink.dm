@@ -58,6 +58,8 @@
 		RegisterSignal(parent, COMSIG_IMPLANT_IMPLANTING, PROC_REF(implanting))
 		RegisterSignal(parent, COMSIG_IMPLANT_OTHER, PROC_REF(old_implant))
 		RegisterSignal(parent, COMSIG_IMPLANT_EXISTING_UPLINK, PROC_REF(new_implant))
+		RegisterSignal(parent, COMSIG_IMPLANT_IMPLANTED, PROC_REF(implant_implanted))
+		RegisterSignal(parent, COMSIG_IMPLANT_REMOVED, PROC_REF(implant_removed))
 	else if(istype(parent, /obj/item/modular_computer))
 		RegisterSignal(parent, COMSIG_TABLET_CHANGE_ID, PROC_REF(new_ringtone))
 		RegisterSignal(parent, COMSIG_TABLET_CHECK_DETONATE, PROC_REF(check_detonate))
@@ -290,6 +292,28 @@
 			purchase_log = GLOB.uplink_purchase_logs_by_key[owner]
 		else
 			purchase_log = new(owner, src)
+
+/// An implanted uplink can't be clicked on, so its host clicking themselves with an item counts as applying the item to the uplink (for refunds)
+/datum/component/uplink/proc/implant_implanted(datum/source, mob/living/target, mob/user, silent, force)
+	SIGNAL_HANDLER
+
+	if(target)
+		RegisterSignal(target, COMSIG_ATOM_ATTACKBY, PROC_REF(host_attackby))
+
+/datum/component/uplink/proc/implant_removed(datum/source, mob/living/source_mob, silent, special)
+	SIGNAL_HANDLER
+
+	if(source_mob)
+		UnregisterSignal(source_mob, COMSIG_ATOM_ATTACKBY)
+
+/datum/component/uplink/proc/host_attackby(mob/living/host, obj/item/item, mob/user)
+	SIGNAL_HANDLER
+
+	if(host != user || !active || !istype(item) || istype(item, /obj/item/implant))
+		return
+	SEND_SIGNAL(item, COMSIG_ITEM_ATTEMPT_TC_REIMBURSE, user, src)
+	if(QDELETED(item))
+		return COMPONENT_NO_AFTERATTACK
 
 /datum/component/uplink/proc/old_implant(datum/source, list/arguments, obj/item/implant/new_implant)
 	SIGNAL_HANDLER
