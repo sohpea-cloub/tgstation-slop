@@ -531,6 +531,10 @@
 	if(!DEFIB_CAN_HURT(src))
 		return
 	busy = TRUE
+	if(M.check_block(src, 10, "\the [src]", MELEE_ATTACK, 0, BURN))
+		playsound(src, 'sound/machines/defib/defib_failed.ogg', 50, FALSE)
+		do_success()
+		return
 	M.visible_message(span_danger("[user] touches [M] with [src]!"), \
 			span_userdanger("[user] touches [M] with [src]!"))
 	M.adjust_stamina_loss(60)
@@ -567,6 +571,10 @@
 				to_chat(user, span_warning("[H] is dead."))
 				playsound(src, 'sound/machines/defib/defib_failed.ogg', 50, FALSE)
 				do_cancel()
+				return
+			if(H.check_block(src, 50, "\the [src]", MELEE_ATTACK, 0, BURN))
+				playsound(src, 'sound/machines/defib/defib_failed.ogg', 50, FALSE)
+				do_success()
 				return
 			user.visible_message(span_bolddanger("<i>[user] shocks [H] with \the [src]!"), span_warning("You shock [H] with \the [src]!"))
 			playsound(src, 'sound/machines/defib/defib_zap.ogg', 100, TRUE, -1)
