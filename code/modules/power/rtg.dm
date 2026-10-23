@@ -22,6 +22,8 @@
 	var/power_gen = 1 KILO WATTS
 	/// Base power gen level, potentially modified by parts
 	VAR_PRIVATE/base_power_gen
+	/// Whether this RTG irradiates its surroundings (including whoever is buckled to it) while its panel is open
+	var/irradiate_when_open = TRUE
 
 /obj/machinery/power/rtg/Initialize(mapload)
 	base_power_gen = power_gen
@@ -31,6 +33,8 @@
 
 /obj/machinery/power/rtg/process()
 	add_avail(power_to_energy(power_gen))
+	if(panel_open && irradiate_when_open)
+		radiation_pulse(src, max_range = 3, threshold = RAD_LIGHT_INSULATION)
 
 /obj/machinery/power/rtg/RefreshParts()
 	. = ..()
@@ -84,6 +88,7 @@
 	circuit = /obj/item/circuitboard/machine/abductor/core
 	power_gen = 20 KILO WATTS
 	can_buckle = FALSE
+	irradiate_when_open = FALSE
 	SET_BASE_PIXEL(0, 7)
 	/// Is it about to explode?
 	VAR_PRIVATE/going_kaboom = FALSE
