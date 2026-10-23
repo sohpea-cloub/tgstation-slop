@@ -445,9 +445,14 @@
 				if(QDELING(container)) //it's deleting...
 					surroundings -= container
 					continue
-				var/reagent_volume = container.reagents.get_reagent_amount(path_key)
-				if(reagent_volume)
-					container.reagents.trans_to(holder, min(amount, reagent_volume), target_id = path_key, no_react = TRUE)
+				// check_contents() accepts subtypes of the required reagent (e.g. olive oil for oil), so take them too
+				for(var/datum/reagent/contained_reagent as anything in container.reagents.reagent_list.Copy())
+					if(amount <= 0)
+						break
+					if(!ispath(contained_reagent.type, path_key))
+						continue
+					var/reagent_volume = contained_reagent.volume
+					container.reagents.trans_to(holder, min(amount, reagent_volume), target_id = contained_reagent.type, no_react = TRUE)
 					amount -= reagent_volume
 				checked += container
 				container.update_appearance(UPDATE_ICON)
