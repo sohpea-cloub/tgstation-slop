@@ -328,8 +328,15 @@
 		return NONE
 	if(!tool.toolspeed)
 		return ITEM_INTERACT_BLOCKING
+	if(locate(/obj/machinery/porta_turret) in get_turf(src))
+		balloon_alert(user, "no room!")
+		return ITEM_INTERACT_BLOCKING
 	balloon_alert(user, "constructing...")
 	if(!tool.use_tool(src, user, 2 SECONDS, volume = 20))
+		return ITEM_INTERACT_BLOCKING
+	// re-check after the delay, someone may have deployed another turret meanwhile
+	if(locate(/obj/machinery/porta_turret) in get_turf(src))
+		balloon_alert(user, "no room!")
 		return ITEM_INTERACT_BLOCKING
 
 	balloon_alert(user, "constructed!")
