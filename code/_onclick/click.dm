@@ -73,10 +73,16 @@
 		return
 	next_click = world.time + 1
 
-	if(check_click_intercept(params,A) || HAS_TRAIT(src, TRAIT_NO_TRANSFORM))
+	if(check_click_intercept(params,A))
 		return
 
 	var/list/modifiers = params2list(params)
+
+	if(HAS_TRAIT(src, TRAIT_NO_TRANSFORM))
+		// Mobs that can't act can still look around (e.g. someone inside an immortality talisman's effect)
+		if(LAZYACCESS(modifiers, SHIFT_CLICK) && !LAZYACCESS(modifiers, MIDDLE_CLICK) && !LAZYACCESS(modifiers, CTRL_CLICK) && !LAZYACCESS(modifiers, ALT_CLICK))
+			ShiftClickOn(A)
+		return
 
 	if(SEND_SIGNAL(src, COMSIG_MOB_CLICKON, A, modifiers) & COMSIG_MOB_CANCEL_CLICKON)
 		return
