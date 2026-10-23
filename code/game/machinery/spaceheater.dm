@@ -369,6 +369,10 @@
 	if(on)
 		begin_processing()
 
+/// The improvised heater only heats its water bath, never the room: all of its work is in process().
+/obj/machinery/space_heater/improvised_chem_heater/process_atmos()
+	return PROCESS_KILL
+
 /obj/machinery/space_heater/improvised_chem_heater/process(seconds_per_tick)
 	if(!on || !is_operational || QDELETED(cell) || cell.charge <= 1 || QDELETED(beaker))
 		if (on) // If it's broken, turn it off too
@@ -393,11 +397,10 @@
 		if(required_energy < 1)
 			return
 
+		// The direction depends on the reagents, not on the room's temperature (which is what `mode` follows).
 		var/delta_energy = required_energy
-		if(mode == HEATER_MODE_COOL)
+		if(target_temperature < beaker.reagents.chem_temp)
 			delta_energy *= -1
-		if(delta_energy == 0)
-			return
 
 		beaker.reagents.adjust_thermal_energy(delta_energy)
 		beaker.reagents.handle_reactions()
