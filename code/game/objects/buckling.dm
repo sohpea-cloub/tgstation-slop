@@ -117,6 +117,9 @@
 	M.set_glide_size(glide_size)
 
 	M.Move(loc)
+	// Move() can be blocked (e.g. by the dense user standing on our turf), which would leave M buckled to us from a different tile.
+	if(M.buckled == src && M.loc != loc)
+		M.doMove(loc) // not forceMove(): that unbuckles living mobs
 	if(buckle_dir == BUCKLE_MATCH_DIR)
 		M.setDir(dir)
 	else
