@@ -40,8 +40,9 @@
 		fail_movement(controller)
 
 /datum/ai_movement/proc/fail_movement(datum/ai_controller/controller)
+	var/atom/failed_target = moving_controllers[controller] // stop_moving_towards() forgets it
 	stop_moving_towards(controller)
-	SEND_SIGNAL(controller.pawn, COMSIG_MOB_AI_MOVEMENT_FAILED, moving_controllers[controller])
+	SEND_SIGNAL(controller.pawn, COMSIG_MOB_AI_MOVEMENT_FAILED, failed_target)
 
 /datum/ai_movement/proc/reset_pathing_failures(datum/ai_controller/controller)
 	controller.consecutive_pathing_attempts = 0
