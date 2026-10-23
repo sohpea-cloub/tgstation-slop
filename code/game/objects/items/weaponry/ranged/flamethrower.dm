@@ -219,12 +219,13 @@
 		if(igniter)
 			igniter.ignite_turf(src,T)
 		else
-			default_ignite(T)
+			default_ignite(T, exposed_temperature = (ptank.return_air().temperature * 2) + 380)
 		sleep(0.1 SECONDS)
 		previousturf = T
 	operating = FALSE
 
-/obj/item/flamethrower/proc/default_ignite(turf/target, release_amount = 0.05)
+/// Releases some of the tank's gas on the target turf. If exposed_temperature is set, the turf is exposed to a hotspot of that temperature.
+/obj/item/flamethrower/proc/default_ignite(turf/target, release_amount = 0.05, exposed_temperature)
 	//TODO: DEFERRED Consider checking to make sure tank pressure is high enough before doing this...
 	//Transfer 5% of current tank air contents to turf
 	var/datum/gas_mixture/tank_mix = ptank.return_air()
@@ -235,8 +236,8 @@
 		air_transfer.set_gas(/datum/gas/plasma, moles)
 	target.assume_air(air_transfer)
 	//Burn it based on transferred gas
-	target.hotspot_expose((tank_mix.temperature*2) + 380,500)
-	//location.hotspot_expose(1000,500,1)
+	if(!isnull(exposed_temperature))
+		target.hotspot_expose(exposed_temperature, 500)
 
 /obj/item/flamethrower/Initialize(mapload)
 	. = ..()
@@ -282,7 +283,12 @@
 	location.hotspot_expose(heat,2)
 
 /obj/item/assembly/igniter/proc/ignite_turf(obj/item/flamethrower/F,turf/open/location,release_amount = 0.05)
-	F.default_ignite(location,release_amount)
+	var/datum/gas_mixture/tank_mix = F.ptank?.return_air()
+	F.default_ignite(location, release_amount, tank_mix ? get_flamethrower_exposed_temperature(tank_mix) : null)
+
+/// The temperature the turf is exposed to when a flamethrower with this igniter expels gas. Null means no hotspot at all.
+/obj/item/assembly/igniter/proc/get_flamethrower_exposed_temperature(datum/gas_mixture/tank_mix)
+	return (tank_mix.temperature * 2) + 380
 
 /obj/item/flamethrower/proc/instant_refill()
 	SIGNAL_HANDLER

@@ -70,6 +70,10 @@
 		enviro.temperature = clamp(min(ROOM_TEMP, enviro.temperature * 0.85), MIN_FREEZE_TEMP, MAX_FREEZE_TEMP)
 		location.air_update_turf(FALSE, FALSE)
 
+/// A condenser doesn't light the gas a flamethrower expels.
+/obj/item/assembly/igniter/condenser/get_flamethrower_exposed_temperature(datum/gas_mixture/tank_mix)
+	return null
+
 #undef EXPOSED_VOLUME
 #undef ROOM_TEMP
 #undef MIN_FREEZE_TEMP
