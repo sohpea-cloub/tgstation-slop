@@ -46,6 +46,19 @@ GLOBAL_LIST_INIT(blacklisted_automated_baseturfs, typecacheof(list(
 		new_wet_floor_component.InheritComponent(slip)
 	if (copy_air)
 		copy_to_turf.air.copy_from(air)
+	// Carry over damage so it isn't repaired by being copied (e.g. when a shuttle moves).
+	if(copy_to_turf.broken != broken || copy_to_turf.burnt != burnt)
+		copy_to_turf.broken = broken
+		copy_to_turf.burnt = burnt
+		copy_to_turf.update_appearance()
+
+/turf/closed/wall/copyTurf(turf/closed/wall/copy_to_turf, copy_air = FALSE, flags = null)
+	. = ..()
+	if(LAZYLEN(dent_decals) && istype(copy_to_turf))
+		if(LAZYLEN(copy_to_turf.dent_decals))
+			copy_to_turf.cut_overlay(copy_to_turf.dent_decals)
+		copy_to_turf.dent_decals = dent_decals.Copy()
+		copy_to_turf.add_overlay(copy_to_turf.dent_decals)
 
 //wrapper for ChangeTurf()s that you want to prevent/affect without overriding ChangeTurf() itself
 /turf/proc/TerraformTurf(path, new_baseturf, flags)
