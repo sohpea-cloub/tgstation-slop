@@ -334,9 +334,15 @@
 	if(!proximity || !can_unarmed_attack())
 		return NONE
 
-	if(is_type_in_typecache(target, huntable_pests) && !isnull(our_mop))
-		INVOKE_ASYNC(our_mop, TYPE_PROC_REF(/obj/item, melee_attack_chain), src, target)
-		return COMPONENT_CANCEL_ATTACK_CHAIN
+	if(is_type_in_typecache(target, huntable_pests))
+		if(!(janitor_mode_flags & CLEANBOT_CLEAN_PESTS))
+			balloon_alert(src, "pest control disabled!")
+			return COMPONENT_CANCEL_ATTACK_CHAIN
+		if(!isnull(our_mop))
+			// Bash it with the mop directly: going through the mop's own attack chain would make its cleaner
+			// try to wash the pest instead, and complain that the mop is dry.
+			INVOKE_ASYNC(our_mop, TYPE_PROC_REF(/obj/item, attack), target, src)
+			return COMPONENT_CANCEL_ATTACK_CHAIN
 
 	if(!(iscarbon(target) && (bot_access_flags & BOT_COVER_EMAGGED)) && !is_type_in_typecache(target, huntable_trash))
 		return NONE
