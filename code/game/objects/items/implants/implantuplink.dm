@@ -17,11 +17,18 @@
 
 /obj/item/implant/uplink/implant(mob/living/carbon/target, mob/user, silent, force)
 	. = ..()
-	var/datum/component/uplink/new_uplink = AddComponent(/datum/component/uplink, owner = target?.key, lockable = TRUE, enabled = FALSE, uplink_flag = uplink_flag, starting_tc = starting_tc)
+	// The parent deletes this implant if the target already has an uplink implant
+	if(QDELETED(src))
+		return
+	// The implant keeps its uplink (and its telecrystals) when it is removed and implanted again,
+	// adding the component a second time would delete the new component and, through on_component_removing(), this implant
+	var/datum/component/uplink/new_uplink = GetComponent(/datum/component/uplink)
+	if(!new_uplink)
+		new_uplink = AddComponent(/datum/component/uplink, owner = target.key, lockable = TRUE, enabled = FALSE, uplink_flag = uplink_flag, starting_tc = starting_tc)
 	new_uplink.unlock_text = "Your Syndicate Uplink has been cunningly implanted in you, for a small TC fee. Simply trigger the uplink to access it."
 	new_uplink.uplink_handler.owner = target.mind
-	new_uplink.uplink_handler.assigned_role = target.mind.assigned_role.title
-	new_uplink.uplink_handler.assigned_species = target.dna.species.id
+	new_uplink.uplink_handler.assigned_role = target.mind?.assigned_role?.title
+	new_uplink.uplink_handler.assigned_species = target.dna?.species?.id
 
 /**
  * Proc called when component is removed; ie. uplink component
