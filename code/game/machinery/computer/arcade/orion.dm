@@ -197,11 +197,10 @@
 		gamer_skill = gamer.mind.get_skill_modifier(/datum/skill/gaming, SKILL_PROBS_MODIFIER)
 		gamer_skill_rands = gamer.mind.get_skill_modifier(/datum/skill/gaming, SKILL_RANDS_MODIFIER)
 
-	var/xp_gained = 0
-
 	gamer.played_game()
 
 	if(event)
+		gamer.mind?.adjust_experience(/datum/skill/gaming, 1) //responding to an event is playing the game too
 		event.response(src, action)
 		if(!settlers.len || food <= 0 || fuel <= 0)
 			set_game_over(gamer)
@@ -229,10 +228,10 @@
 			if (gameStatus == ORION_STATUS_START)
 				return
 			if(turns >= ORION_TRAIL_WINTURN)
+				gamer.mind?.adjust_experience(/datum/skill/gaming, 35) //34 for making it to Orion, 1 for the turn
 				win(gamer)
-				xp_gained += 34
 				return
-			gamer.mind.adjust_experience(/datum/skill/gaming, xp_gained+1)
+			gamer.mind?.adjust_experience(/datum/skill/gaming, 1)
 			food -= (alive+lings_aboard)*2
 			fuel -= 5
 			turns += 1
