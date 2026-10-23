@@ -93,10 +93,11 @@
 	if(!istype(M))
 		return FALSE
 	remove_occupant(M)
-	if(!isAI(M))//This is the ONE mob we don't want to be moved to the vehicle that should be handled when used
-		M.forceMove(exit_location(M))
-	else
+	// An AI that left a mech was already sent back to its core (or shunted) by the mech's own mob_exit(), don't pull it
+	// out of there. An AI that is still inside us (e.g. a clown car swallowed it) has nowhere else to go, so it exits normally.
+	if(isAI(M) && M.loc != src)
 		return TRUE
+	M.forceMove(exit_location(M))
 	if(randomstep)
 		var/turf/target_turf = get_step(exit_location(M), pick(GLOB.cardinals))
 		M.throw_at(target_turf, 5, 10)
