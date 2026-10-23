@@ -71,11 +71,20 @@ ADMIN_VERB(spawn_obj_as_mob, R_SPAWN, "Spawn Object-Mob", "Spawn an object as if
 
 	settings = pref_return["settings"]
 	var/mainsettings = settings["mainsettings"]
-	chosen_obj = text2path(mainsettings["objtype"]["value"])
+	// the picker stores a typepath once the value has been changed, and text while it is still the default
+	chosen_obj = mainsettings["objtype"]["value"]
+	if (!ispath(chosen_obj))
+		chosen_obj = text2path(chosen_obj)
 
-	basemob = text2path(mainsettings["mobtype"]["value"])
+	basemob = mainsettings["mobtype"]["value"]
+	if (!ispath(basemob))
+		basemob = text2path(basemob)
 	if (!ispath(basemob, /mob/living/basic/mimic/copy) || !ispath(chosen_obj, /obj))
 		to_chat(user.mob, "Mob or object path invalid", confidential = TRUE)
+		return
+	if (ispath(basemob, /mob/living/basic/mimic/copy/ranged) && !ispath(chosen_obj, /obj/item/gun))
+		to_chat(user.mob, "Ranged mimics can only copy guns", confidential = TRUE)
+		return
 
 	basemob = new basemob(get_turf(user.mob), new chosen_obj(get_turf(user.mob)), user.mob, mainsettings["dropitem"]["value"] == "Yes" ? FALSE : TRUE, (mainsettings["googlyeyes"]["value"] == "Yes" ? FALSE : TRUE))
 
