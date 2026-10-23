@@ -62,6 +62,9 @@
 /obj/item/universal_scanner/interact_with_atom(atom/interacting_with, mob/living/user, list/modifiers)
 	if(!isobj(interacting_with))
 		return NONE
+	// Combat mode lets you place the scanner on tables, in backpacks, etc. instead of scanning them
+	if(user.combat_mode)
+		return NONE
 	if(scanning_mode == SCAN_EXPORTS)
 		export_scan(interacting_with, user)
 		return ITEM_INTERACT_SUCCESS
