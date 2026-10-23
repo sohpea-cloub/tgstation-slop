@@ -27,7 +27,12 @@
 		if(HAS_TRAIT(src, TRAIT_SIGN_LANG))
 			return "signs"
 		return "gurgles"
-	return  tongue.temp_say_mod || tongue.say_mod || ..()
+	if(tongue.temp_say_mod)
+		return tongue.temp_say_mod
+	// An explicitly changed verb_say (admin VV, for example) wins over the tongue's default
+	if(verb_say != initial(verb_say))
+		return verb_say
+	return tongue.say_mod || ..()
 
 /mob/living/carbon/human/get_voice(add_id_name = FALSE)
 	if(HAS_TRAIT(src, TRAIT_UNKNOWN_VOICE))
