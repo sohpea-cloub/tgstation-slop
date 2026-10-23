@@ -62,6 +62,8 @@
 		if(!QDELETED(reserved_area))
 			qdel(reserved_area)
 		reserved_area = null
+		// the transit area is made together with the dock (SSshuttle.generate_transit_dock), so go with it
+		QDEL_NULL(assigned_area)
 	return ..()
 
 /obj/docking_port/stationary/picked
