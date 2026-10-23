@@ -166,7 +166,7 @@ GLOBAL_LIST_INIT(trait_blockers_to_hud, list(
 		RegisterSignal(new_viewer, COMSIG_MOVABLE_Z_CHANGED, PROC_REF(on_atom_or_user_z_level_changed), override = TRUE)
 		RegisterSignal(new_viewer, COMSIG_LIVING_LOOK_Z_CHANGE, PROC_REF(on_look_z_level_changed), override = TRUE)
 
-		var/turf/their_turf = get_turf(new_viewer)
+		var/turf/their_turf = get_turf(new_viewer.client?.eye || new_viewer)
 		if(!their_turf)
 			return
 		hud_users[their_turf.z][new_viewer] = TRUE
@@ -203,14 +203,17 @@ GLOBAL_LIST_INIT(trait_blockers_to_hud, list(
 		if(next_time_allowed[former_viewer])
 			next_time_allowed -= former_viewer
 
-		var/turf/their_turf = get_turf(former_viewer)
-		if(their_turf)
-			hud_users[their_turf.z] -= former_viewer
+		// the viewer may be registered on the z level their eye is on, not the one their body is on
+		var/viewed_z = 0
+		for(var/z_level in 1 to length(hud_users))
+			if(hud_users[z_level][former_viewer])
+				hud_users[z_level] -= former_viewer
+				viewed_z = z_level
 
 		if(queued_to_see[former_viewer])
 			queued_to_see -= former_viewer
-		else if (their_turf)
-			for(var/atom/hud_atom as anything in get_hud_atoms_for_z_level(their_turf.z))
+		else if (viewed_z)
+			for(var/atom/hud_atom as anything in get_hud_atoms_for_z_level(viewed_z))
 				remove_atom_from_single_hud(former_viewer, hud_atom)
 
 /// add new_hud_atom to this hud
@@ -454,7 +457,7 @@ GLOBAL_LIST_INIT(trait_blockers_to_hud, list(
 	queued_to_see -= queued_hud_user
 	next_time_allowed[queued_hud_user] = world.time + ADD_HUD_TO_COOLDOWN
 
-	var/turf/user_turf = get_turf(queued_hud_user)
+	var/turf/user_turf = get_turf(queued_hud_user.client?.eye || queued_hud_user)
 	if(!user_turf)
 		return
 
@@ -463,7 +466,7 @@ GLOBAL_LIST_INIT(trait_blockers_to_hud, list(
 
 //MOB PROCS
 /mob/proc/reload_huds()
-	var/turf/our_turf = get_turf(src)
+	var/turf/our_turf = get_turf(src.client?.eye || src)
 	if(!our_turf)
 		return
 
