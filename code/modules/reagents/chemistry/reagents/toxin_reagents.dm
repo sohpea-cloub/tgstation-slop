@@ -143,17 +143,16 @@
 	holder.del_reagent(type)
 
 /datum/reagent/toxin/plasma/expose_turf(turf/open/exposed_turf, reac_volume)
-	if(!istype(exposed_turf) || !boils_into_gas)
-		return
-	var/temp = holder ? holder.chem_temp : T20C
-	if(temp >= LIQUID_PLASMA_BP)
-		exposed_turf.atmos_spawn_air("[GAS_PLASMA]=[reac_volume];[TURF_TEMPERATURE(temp)]")
+	if(boils_into_gas && (holder ? holder.chem_temp : T20C) >= LIQUID_PLASMA_BP)
+		release_gas(exposed_turf, GAS_PLASMA, reac_volume)
 	return ..()
 
 
 // Splashing people with plasma is stronger than fuel!
 /datum/reagent/toxin/plasma/expose_mob(mob/living/exposed_mob, methods=TOUCH, reac_volume)
 	. = ..()
+	if((methods & TOUCH) && boils_into_gas && (holder ? holder.chem_temp : T20C) >= LIQUID_PLASMA_BP)
+		release_gas(exposed_mob, GAS_PLASMA, reac_volume)
 	if(methods & (TOUCH|VAPOR))
 		exposed_mob.adjust_fire_stacks(reac_volume / 5)
 		return

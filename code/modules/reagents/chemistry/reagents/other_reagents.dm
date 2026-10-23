@@ -998,9 +998,12 @@
 
 /datum/reagent/oxygen/expose_turf(turf/open/exposed_turf, reac_volume)
 	. = ..()
-	if(istype(exposed_turf))
-		exposed_turf.atmos_spawn_air("[GAS_O2]=[reac_volume/20];[TURF_TEMPERATURE(holder ? holder.chem_temp : T20C)]")
-	return
+	release_gas(exposed_turf, GAS_O2, reac_volume / 20)
+
+/datum/reagent/oxygen/expose_mob(mob/living/exposed_mob, methods = TOUCH, reac_volume, show_message = TRUE, touch_protection = 0)
+	. = ..()
+	if(methods & TOUCH)
+		release_gas(exposed_mob, GAS_O2, reac_volume / 20)
 
 /datum/reagent/copper
 	name = "Copper"
@@ -1030,9 +1033,13 @@
 	randomized_spawns = REAGENT_SPAWN_ALL_RANDOM_SPAWNS
 
 /datum/reagent/nitrogen/expose_turf(turf/open/exposed_turf, reac_volume)
-	if(istype(exposed_turf))
-		exposed_turf.atmos_spawn_air("[GAS_N2]=[reac_volume/20];[TURF_TEMPERATURE(holder ? holder.chem_temp : T20C)]")
+	release_gas(exposed_turf, GAS_N2, reac_volume / 20)
 	return ..()
+
+/datum/reagent/nitrogen/expose_mob(mob/living/exposed_mob, methods = TOUCH, reac_volume, show_message = TRUE, touch_protection = 0)
+	. = ..()
+	if(methods & TOUCH)
+		release_gas(exposed_mob, GAS_N2, reac_volume / 20)
 
 /datum/reagent/hydrogen
 	name = "Hydrogen"
@@ -1679,9 +1686,13 @@
 	randomized_spawns = REAGENT_SPAWN_ALL_RANDOM_SPAWNS
 
 /datum/reagent/carbondioxide/expose_turf(turf/open/exposed_turf, reac_volume)
-	if(istype(exposed_turf))
-		exposed_turf.atmos_spawn_air("[GAS_CO2]=[reac_volume/20];[TURF_TEMPERATURE(holder ? holder.chem_temp : T20C)]")
+	release_gas(exposed_turf, GAS_CO2, reac_volume / 20)
 	return ..()
+
+/datum/reagent/carbondioxide/expose_mob(mob/living/exposed_mob, methods = TOUCH, reac_volume, show_message = TRUE, touch_protection = 0)
+	. = ..()
+	if(methods & TOUCH)
+		release_gas(exposed_mob, GAS_CO2, reac_volume / 20)
 
 /datum/reagent/nitrous_oxide
 	name = "Nitrous Oxide"
@@ -1696,11 +1707,12 @@
 
 /datum/reagent/nitrous_oxide/expose_turf(turf/open/exposed_turf, reac_volume)
 	. = ..()
-	if(istype(exposed_turf))
-		exposed_turf.atmos_spawn_air("[GAS_N2O]=[reac_volume/20];[TURF_TEMPERATURE(holder ? holder.chem_temp : T20C)]")
+	release_gas(exposed_turf, GAS_N2O, reac_volume / 20)
 
 /datum/reagent/nitrous_oxide/expose_mob(mob/living/exposed_mob, methods=TOUCH, reac_volume, show_message = TRUE, touch_protection = 0)
 	. = ..()
+	if(methods & TOUCH)
+		release_gas(exposed_mob, GAS_N2O, reac_volume / 20)
 	if(methods & (VAPOR|INHALE))
 		// apply 2 seconds of drowsiness per unit applied, with a min duration of 4 seconds
 		var/drowsiness_to_apply = max(round(reac_volume, 1) * 2 SECONDS * (1 - touch_protection), 4 SECONDS)

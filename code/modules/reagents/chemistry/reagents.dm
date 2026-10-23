@@ -121,6 +121,24 @@
 	. |= SEND_SIGNAL(src, COMSIG_REAGENT_EXPOSE_ATOM, exposed_atom, reac_volume, methods)
 	. |= SEND_SIGNAL(exposed_atom, COMSIG_ATOM_EXPOSE_REAGENT, src, reac_volume, methods)
 
+/**
+ * Releases a gas into the air where this reagent was splashed, for reagents that are just the liquid form of a gas.
+ * Something with air of its own (a floor, or whatever stands on it, like a mob) gets it on its own turf. Something without
+ * (a wall) gets it on the open turf the container is in, if that is right next to it.
+ *
+ * Arguments
+ * * target - the atom this reagent was splashed on
+ * * gas_id - the GAS_ define to release
+ * * moles - how many moles to release
+ */
+/datum/reagent/proc/release_gas(atom/target, gas_id, moles)
+	var/turf/gas_turf = get_turf(target)
+	if(!isopenturf(gas_turf))
+		gas_turf = get_turf(holder?.my_atom)
+		if(!isopenturf(gas_turf) || get_dist(gas_turf, target) > 1)
+			return
+	gas_turf.atmos_spawn_air("[gas_id]=[moles];[TURF_TEMPERATURE(holder ? holder.chem_temp : T20C)]")
+
 /// Applies this reagent to a [/mob/living]
 /datum/reagent/proc/expose_mob(mob/living/exposed_mob, methods = TOUCH, reac_volume, show_message = TRUE, touch_protection = 0)
 	SHOULD_CALL_PARENT(TRUE)
