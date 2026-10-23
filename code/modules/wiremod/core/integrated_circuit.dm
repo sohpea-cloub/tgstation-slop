@@ -135,8 +135,19 @@ GLOBAL_LIST_EMPTY_TYPED(integrated_circuits, /obj/item/integrated_circuit)
  * * cell_to_set - The new cell of the circuit. Can be null.
  **/
 /obj/item/integrated_circuit/proc/set_cell(obj/item/stock_parts/power_store/cell_to_set)
+	if(cell)
+		UnregisterSignal(cell, COMSIG_QDELETING)
 	SEND_SIGNAL(src, COMSIG_CIRCUIT_SET_CELL, cell_to_set)
 	cell = cell_to_set
+	if(cell)
+		RegisterSignal(cell, COMSIG_QDELETING, PROC_REF(on_cell_qdeleting))
+
+/// The cell was deleted out from under the circuit (e.g. a rigged cell exploded), so stop treating it as a working cell.
+/obj/item/integrated_circuit/proc/on_cell_qdeleting(obj/item/stock_parts/power_store/source)
+	SIGNAL_HANDLER
+	if(source != cell)
+		return
+	set_cell(null)
 
 /**
  * Sets the locked status of the integrated circuit.
