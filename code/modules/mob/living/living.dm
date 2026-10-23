@@ -1737,6 +1737,9 @@ GAME_VERB_PROC(/mob/living, mob_sleep, "Sleep", null)
 	// I don't actually know why we do this
 	new_mob.set_combat_mode(TRUE)
 
+	// Whatever we became, we aren't one of them (hostile mobs don't take us for kin)
+	ADD_TRAIT(new_mob, TRAIT_POLYMORPHED, MAGIC_TRAIT)
+
 	// on_wabbajack is where we handle setting up the name,
 	// transfering the mind and observerse, and other miscellaneous
 	// actions that should be done before we delete the original mob.

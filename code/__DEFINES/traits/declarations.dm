@@ -154,6 +154,9 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 /// "Magic" trait that blocks the mob from moving or interacting with anything. Used for transient stuff like mob transformations or incorporality in special cases.
 /// Will block movement, `Life()` (!!!), and other stuff based on the mob.
 #define TRAIT_NO_TRANSFORM "block_transformations"
+/// This mob was polymorphed into its current form by magic (see [/mob/living/proc/wabbajack]).
+/// Hostile mobs ignore shared factions when targeting it, so a player turned into fauna isn't taken for kin.
+#define TRAIT_POLYMORPHED "polymorphed"
 /// Tracks whether we're gonna be a baby alien's mummy.
 #define TRAIT_XENO_HOST "xeno_host"
 /// This parrot is currently perched
