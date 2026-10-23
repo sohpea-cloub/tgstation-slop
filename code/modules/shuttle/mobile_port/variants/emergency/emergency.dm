@@ -207,6 +207,9 @@
 					success &= (M.check_transit_zone() == TRANSIT_READY)
 			if(!success)
 				setTimer(ENGINE_START_TIME)
+				// time_left was read before the reset above: without this a timer that
+				// ran out in this very tick still launches us with no transit dock ready
+				time_left = timeLeft(1)
 
 			if(time_left <= 50 && !sound_played) //4 seconds left:REV UP THOSE ENGINES BOYS. - should sync up with the launch
 				sound_played = 1 //Only rev them up once.
@@ -226,7 +229,12 @@
 				for(var/area/shuttle/escape/E in GLOB.areas)
 					areas += E
 				hyperspace_sound(HYPERSPACE_LAUNCH, areas)
-				enterTransit()
+				if(!enterTransit())
+					// We are still docked at the station: don't announce a departure and
+					// run the escape timer from here, try again shortly.
+					mode = SHUTTLE_IGNITING
+					setTimer(20)
+					return
 
 				//Tell the events we're starting, so they can time their spawns or do some other stuff
 				for(var/datum/shuttle_event/event as anything in event_list)
@@ -243,9 +251,6 @@
 				)
 				INVOKE_ASYNC(SSticker, TYPE_PROC_REF(/datum/controller/subsystem/ticker, poll_hearts))
 				INVOKE_ASYNC(SSvote, TYPE_PROC_REF(/datum/controller/subsystem/vote, initiate_vote), /datum/vote/map_vote, vote_initiator_name = "Map Rotation", forced = TRUE)
-
-				if(!is_reserved_level(z))
-					CRASH("Emergency shuttle did not move to transit z-level!")
 
 		if(SHUTTLE_STRANDED, SHUTTLE_DISABLED)
 			SSshuttle.checkHostileEnvironment()

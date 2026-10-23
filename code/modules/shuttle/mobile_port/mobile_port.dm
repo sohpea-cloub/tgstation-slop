@@ -330,10 +330,11 @@
 	invertTimer()
 	mode = SHUTTLE_RECALL
 
+/// Moves the shuttle into its assigned transit dock. Returns TRUE if it is there, FALSE if it could not leave.
 /obj/docking_port/mobile/proc/enterTransit()
 	if((SSshuttle.lockdown && is_station_level(z)) || !canMove()) //emp went off, no escape
 		mode = SHUTTLE_IDLE
-		return
+		return FALSE
 	previous = null
 	if(!destination)
 		// sent to transit with no destination -> unlimited timer
@@ -343,13 +344,15 @@
 	if(S1)
 		if(initiate_docking(S1) != DOCKING_SUCCESS)
 			WARNING("shuttle \"[shuttle_id]\" could not enter transit space. Docked at [S0 ? S0.shuttle_id : "null"]. Transit dock [S1 ? S1.shuttle_id : "null"].")
-		else if(S0)
+			return FALSE
+		if(S0)
 			if(S0.delete_after)
 				qdel(S0, TRUE)
 			else
 				previous = S0
-	else
-		WARNING("shuttle \"[shuttle_id]\" could not enter transit space. S0=[S0 ? S0.shuttle_id : "null"] S1=[S1 ? S1.shuttle_id : "null"]")
+		return TRUE
+	WARNING("shuttle \"[shuttle_id]\" could not enter transit space. S0=[S0 ? S0.shuttle_id : "null"] S1=[S1 ? S1.shuttle_id : "null"]")
+	return FALSE
 
 
 /obj/docking_port/mobile/proc/jumpToNullSpace()
