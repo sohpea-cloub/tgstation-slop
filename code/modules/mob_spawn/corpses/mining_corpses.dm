@@ -94,8 +94,9 @@
 /obj/effect/mob_spawn/corpse/human/legioninfested/dwarf
 
 /obj/effect/mob_spawn/corpse/human/legioninfested/dwarf/special(mob/living/carbon/human/spawned_human, mob/mob_possessor, apply_prefs)
-	. = ..()
+	// Mutations can't be given to dead mobs, so this has to happen before the parent kills the corpse.
 	spawned_human.dna.add_mutation(/datum/mutation/dwarfism, MUTATION_SOURCE_MUTATOR)
+	return ..()
 
 /// Corpse spawner used by snow legions with alternate costumes
 /obj/effect/mob_spawn/corpse/human/legioninfested/snow
