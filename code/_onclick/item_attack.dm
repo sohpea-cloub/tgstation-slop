@@ -329,7 +329,11 @@
 	if(!LAZYACCESS(attack_modifiers, SILENCE_DEFAULT_MESSAGES))
 		send_item_attack_message(attacking_item, user, targeting_human_readable, targeting)
 
-	var/armor_block = min(run_armor_check(
+	var/final_force = CALCULATE_FORCE(attacking_item, attack_modifiers)
+	// no armor message for hits that can't do any damage anyway
+	var/armor_block = 0
+	if(final_force > 0)
+		armor_block = min(run_armor_check(
 			def_zone = targeting,
 			attack_flag = MELEE,
 			absorb_text = span_notice("Your armor has protected your [targeting_human_readable]!"),
@@ -338,7 +342,6 @@
 			weak_against_armour = attacking_item.weak_against_armour,
 		), ARMOR_MAX_BLOCK)
 
-	var/final_force = CALCULATE_FORCE(attacking_item, attack_modifiers)
 	if(mob_biotypes & (MOB_ROBOTIC|MOB_MINERAL|MOB_SKELETAL)) // this should probably check hit bodypart for humanoids
 		final_force *= attacking_item.get_demolition_modifier(src)
 
