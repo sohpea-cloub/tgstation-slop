@@ -181,6 +181,8 @@
 	var/mob/living/silicon/ai/ai_mob = new(loc, the_brainmob, core_mmi.laws, default_link_ref?.resolve())
 
 	ai_mob.posibrain_inside = core_mmi.braintype == "Android"
+	if(ai_mob.posibrain_inside && ispath(core_mmi.type, /obj/item/brain_processor/positronic))
+		ai_mob.posibrain_type = core_mmi.type
 	deadchat_broadcast(" has been brought online at <b>[get_area_name(ai_mob, format_text = TRUE)]</b>.", span_name("[ai_mob]"), follow_target = ai_mob, message_type = DEADCHAT_ANNOUNCEMENT)
 	qdel(src)
 	return ai_mob
@@ -227,6 +229,8 @@ That prevents a few funky behaviors.
 		card.AI = null
 		AI.battery = circuit.battery
 		AI.posibrain_inside = isnull(core_mmi) || core_mmi.braintype == "Android"
+		if(core_mmi && AI.posibrain_inside && ispath(core_mmi.type, /obj/item/brain_processor/positronic))
+			AI.posibrain_type = core_mmi.type
 		qdel(src)
 	else //If for some reason you use an empty card on an empty AI terminal.
 		to_chat(user, span_alert("There is no AI loaded on this terminal."))

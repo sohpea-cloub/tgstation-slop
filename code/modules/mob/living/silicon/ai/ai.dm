@@ -410,7 +410,7 @@ GAME_VERB(/mob/living/silicon/ai, toggle_anchor, "Toggle Floor Bolts", "AI Comma
 	RETURN_TYPE(/obj/item/brain_processor)
 	var/obj/item/brain_processor/copied_mmi
 	if(posibrain_inside)
-		copied_mmi = new /obj/item/brain_processor/positronic(destination, FALSE)
+		copied_mmi = new posibrain_type(destination, FALSE)
 		copied_mmi.brainmob.set_stat(STABLE) // posis are dead by default
 	else
 		copied_mmi = new /obj/item/brain_processor/organic(destination, new /obj/item/organ/brain())

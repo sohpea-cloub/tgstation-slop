@@ -24,6 +24,8 @@
 	var/explodes_on_death = FALSE
 	/// Whether its MMI is a posibrain or regular MMI, used when being [obj/structure/ai_core][deconstructed]
 	var/posibrain_inside = TRUE
+	/// Exact type of the posibrain this AI came from (e.g. the spherical one), so [obj/structure/ai_core][deconstructing] it gives the same kind back. Only used if posibrain_inside.
+	var/posibrain_type = /obj/item/brain_processor/positronic
 	/// Whether other AIs get a "new host" announcement text. Syndicate AIs get to be sneaky and won't send the message.
 	var/announce_init_to_others = TRUE
 
