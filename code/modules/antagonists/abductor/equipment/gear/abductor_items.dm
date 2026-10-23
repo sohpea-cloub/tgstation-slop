@@ -679,6 +679,17 @@ Return to step 11 of normal process."}
 	TOOL_WRENCH,
 	)
 
+/// The welding mode doesn't use fuel or need to be turned on, but the generic tool checks would fail without this
+/obj/item/abductor/alien_omnitool/tool_use_check(mob/living/user, amount, heat_required)
+	if(tool_behaviour == TOOL_WELDER)
+		return TRUE
+	return ..()
+
+/obj/item/abductor/alien_omnitool/use(used)
+	if(tool_behaviour == TOOL_WELDER)
+		return TRUE
+	return ..()
+
 /obj/item/abductor/alien_omnitool/Initialize(mapload)
 	. = ..()
 	set_toolset() //This populates the tool list, and sets it to the hacking configuration.
