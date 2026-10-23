@@ -16,7 +16,8 @@
 
 /obj/item/assembly/prox_sensor/Initialize(mapload)
 	. = ..()
-	proximity_monitor = new(src, 0)
+	// Works from inside containers too (lockers, boxes, satchels under the floor...), see HasProximity for who it ignores.
+	proximity_monitor = new(src, 0, _ignore_if_not_on_turf = FALSE)
 	START_PROCESSING(SSobj, src)
 
 /obj/item/assembly/prox_sensor/Destroy()
@@ -84,6 +85,10 @@
 
 /obj/item/assembly/prox_sensor/HasProximity(atom/movable/AM as mob|obj)
 	if (istype(AM, /obj/effect/beam))
+		return
+	// Whatever carries or contains us (the mob holding us, the locker we're in) moving around isn't a detection.
+	var/atom/monitored = proximity_monitor?.host
+	if(ismovable(monitored) && (AM in get_nested_locs(monitored)))
 		return
 	sense()
 
