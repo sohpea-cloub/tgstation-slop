@@ -846,6 +846,10 @@
 
 	return CONTEXTUAL_SCREENTIP_SET
 
+/// Spraycans paint things, they are not writing implements (otherwise they rename folders and so on instead of painting).
+/obj/item/toy/crayon/spraycan/get_writing_implement_details()
+	return null
+
 /obj/item/toy/crayon/spraycan/isValidSurface(surface)
 	return (isfloorturf(surface) || iswallturf(surface))
 
