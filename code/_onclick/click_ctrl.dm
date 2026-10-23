@@ -34,7 +34,15 @@
 	SHOULD_NOT_OVERRIDE(TRUE)
 
 	. = ..()
-	if(. || !ismovable(target) || world.time < next_move || !can_perform_action(target, NOT_INSIDE_TARGET | SILENT_ADJACENCY | ALLOW_RESTING | FORBID_TELEKINESIS_REACH))
+	if(.)
+		return
+	// Ctrl-clicking something that can't be pulled (the floor, a wall) lets go of whatever we're pulling
+	if(!ismovable(target))
+		if(!pulling)
+			return
+		stop_pulling()
+		return TRUE
+	if(world.time < next_move || !can_perform_action(target, NOT_INSIDE_TARGET | SILENT_ADJACENCY | ALLOW_RESTING | FORBID_TELEKINESIS_REACH))
 		return
 
 	. = TRUE
