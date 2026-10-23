@@ -1,7 +1,8 @@
 #define MAX_RADIUS_REQUIRED 20 //maxcap
 #define MIN_RADIUS_REQUIRED 4 //1, 2, 4
-/// How long the compression test can last before the machine just gives up and ejects the items.
-#define COMPRESSION_TEST_TIME (SSOBJ_DT SECONDS * 5)
+/// How many SSobj runs the compression test can last before the machine just gives up and ejects the items.
+/// Counted in subsystem runs rather than world time, so a lagging SSobj (which is what runs the tanks) doesn't make us give up before the bomb had a chance to go off.
+#define COMPRESSION_TEST_FIRES 5
 
 /**
  * # Explosive compressor machines
@@ -25,6 +26,8 @@
 	var/obj/item/transfer_valve/inserted_bomb
 	/// The timer that lets us timeout the test.
 	var/datum/timedevent/timeout_timer
+	/// The SSobj.times_fired value the running test is allowed to time out at.
+	var/timeout_at_fire = 0
 	/// Whether we are currently active a bomb and core.
 	var/active = FALSE
 	/// The message produced by the explosive compressor at the end of the compression test.
@@ -170,8 +173,13 @@
 		return
 
 	inserted_bomb.toggle_valve(tank_to_target)
-	timeout_timer = addtimer(CALLBACK(src, PROC_REF(timeout_test)), COMPRESSION_TEST_TIME, TIMER_STOPPABLE | TIMER_UNIQUE | TIMER_NO_HASH_WAIT)
+	start_timeout()
 	return
+
+/// Starts the countdown to the end of the test, measured in SSobj runs.
+/obj/machinery/research/anomaly_refinery/proc/start_timeout()
+	timeout_at_fire = SSobj.times_fired + COMPRESSION_TEST_FIRES
+	timeout_timer = addtimer(CALLBACK(src, PROC_REF(timeout_test)), SSOBJ_DT SECONDS * COMPRESSION_TEST_FIRES, TIMER_STOPPABLE | TIMER_UNIQUE | TIMER_NO_HASH_WAIT)
 
 /**
  * Ejects a live TTV.
@@ -185,7 +193,7 @@
 	say("Issue resolved. Have a nice day!")
 	inserted_bomb.toggle_valve(tank_to_target)
 	eject_bomb(force = TRUE)
-	timeout_timer = addtimer(CALLBACK(src, PROC_REF(timeout_test)), COMPRESSION_TEST_TIME, TIMER_STOPPABLE | TIMER_UNIQUE | TIMER_NO_HASH_WAIT) // Actually start the test so they can't just put the bomb back in.
+	start_timeout() // Actually start the test so they can't just put the bomb back in.
 
 /**
  * Ends a compression test.
@@ -245,6 +253,10 @@
  */
 /obj/machinery/research/anomaly_refinery/proc/timeout_test()
 	timeout_timer = null
+	// The tanks only get processed when SSobj runs: if it is lagging, wait for it before we eject a bomb that is about to go off.
+	if(SSobj.times_fired < timeout_at_fire)
+		timeout_timer = addtimer(CALLBACK(src, PROC_REF(timeout_test)), SSOBJ_DT SECONDS, TIMER_STOPPABLE | TIMER_UNIQUE | TIMER_NO_HASH_WAIT)
+		return
 	if(!test_status)
 		test_status = "Transfer valve resulted in negligible explosive power. Items ejected."
 	end_test(test_status)
@@ -365,4 +377,4 @@
 
 #undef MAX_RADIUS_REQUIRED
 #undef MIN_RADIUS_REQUIRED
-#undef COMPRESSION_TEST_TIME
+#undef COMPRESSION_TEST_FIRES
