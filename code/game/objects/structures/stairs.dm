@@ -33,6 +33,8 @@
 	var/list/minimap_blip_targets
 	/// Lazyassoc list of weakef to mob viewing stair indicators to their images
 	VAR_PRIVATE/list/mob_to_image
+	/// The movable whose exit from our turf is being checked by stair_ascend(), so on_exit_stairs() doesn't recurse
+	VAR_PRIVATE/atom/movable/checking_exit
 
 /obj/structure/stairs/north
 	dir = NORTH
@@ -181,7 +183,7 @@
 /obj/structure/stairs/proc/on_exit_stairs(datum/source, atom/movable/leaving, direction)
 	SIGNAL_HANDLER
 
-	if(leaving == src)
+	if(leaving == src || leaving == checking_exit)
 		return //Let's not block ourselves.
 
 	if(!isobserver(leaving) && isTerminator() && direction == dir)
@@ -280,12 +282,39 @@
 		return
 	var/turf/target = get_step_multiz(src, dir|UP)
 	if(istype(target) && !climber.can_z_move(DOWN, target, z_move_flags = ZMOVE_FALL_FLAGS)) //Don't throw them into a tile that will just dump them back down.
+		if(!can_climb_through(climber, target))
+			climber.set_currently_z_moving(FALSE, TRUE)
+			return
 		climber.zMove(target = target, z_move_flags = ZMOVE_STAIRS_FLAGS)
 		/// Moves anything that's being dragged by src or anything buckled to it to the stairs turf.
 		climber.pulling?.move_from_pull(climber, loc, climber.glide_size)
 		for(var/mob/living/buckled as anything in climber.buckled_mobs)
 			buckled.pulling?.move_from_pull(buckled, loc, buckled.glide_size)
 
+
+/// Whether climber could step off our turf and onto the target turf in our direction, as if the two were adjacent.
+/// zMove() uses forceMove(), which ignores directional dense objects (railings, firelocks, windows...) on both turfs.
+/obj/structure/stairs/proc/can_climb_through(atom/movable/climber, turf/target)
+	if(climber.movement_type & PHASING)
+		return TRUE
+	// Things on our own turf that block leaving it in our direction. We skip our own exit handler to not recurse.
+	checking_exit = climber
+	var/can_exit = get_turf(src).Exit(climber, dir)
+	checking_exit = null
+	if(!can_exit)
+		return FALSE
+	// Things on the target turf that block entering it from our side
+	var/border_dir = REVERSE_DIR(dir)
+	if(!target.CanPass(climber, border_dir))
+		climber.Bump(target)
+		return FALSE
+	for(var/atom/movable/thing as anything in target)
+		if(thing == climber || ismob(thing))
+			continue
+		if(!thing.CanPass(climber, border_dir))
+			climber.Bump(thing)
+			return FALSE
+	return TRUE
 
 /obj/structure/stairs/vv_edit_var(var_name, var_value)
 	. = ..()
