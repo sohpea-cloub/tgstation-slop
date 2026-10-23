@@ -2318,6 +2318,7 @@
 	. = ..()
 	if(space_dir)
 		unres_sides |= space_dir
+		update_appearance() // the one-way overlay was missed by the update in Initialize()
 
 /obj/machinery/door/airlock/external/examine(mob/user)
 	. = ..()
@@ -2330,6 +2331,10 @@
 	if(istype(cycle_linked_external_airlock))
 		cycle_linked_external_airlock.space_dir |= space_dir
 		space_dir |= cycle_linked_external_airlock.space_dir
+		cycle_linked_external_airlock.unres_sides |= space_dir
+		unres_sides |= space_dir
+		cycle_linked_external_airlock.update_appearance()
+		update_appearance()
 
 /obj/machinery/door/airlock/external/try_safety_unlock(mob/user)
 	if(space_dir && density)
