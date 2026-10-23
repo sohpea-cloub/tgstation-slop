@@ -14,6 +14,11 @@
 	if(!A.requires_power || A.always_unpowered)
 		to_chat(user, span_warning("You cannot place [src] in this area!"))
 		return FALSE //can't place apcs in areas with no power requirement
+	if(A.power_light && A.power_equip && A.power_environ)
+		// An area without an APC that still has power on every channel was mapped without one (the supermatter chamber, away missions...):
+		// it's powered for free, and an APC here could only take that power away. Areas that lost their APC are unpowered, so they can get a new one.
+		to_chat(user, span_warning("This area is already powered without an APC!"))
+		return FALSE
 	for(var/obj/machinery/power/terminal/E in T)
 		if(E.master)
 			to_chat(user, span_warning("There is another network terminal here!"))
