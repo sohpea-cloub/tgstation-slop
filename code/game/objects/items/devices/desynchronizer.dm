@@ -91,6 +91,12 @@
 	// While faded out of spacetime, no, you cannot move.
 	return
 
+/obj/effect/abstract/sync_holder/Exit(atom/movable/leaving, direction)
+	// Nothing walks out of here: an AI movement loop that was already running (feral instincts) could otherwise Move() the occupant onto the
+	// turf (get_step() works from the container's turf), leaving their client's eye stuck on this holder, which is deleted when the effect ends.
+	// Destroy() releases the contents with forceMove(), which doesn't ask Exit().
+	return FALSE
+
 /obj/effect/abstract/sync_holder/Destroy()
 	for(var/I in contents)
 		var/atom/movable/AM = I
