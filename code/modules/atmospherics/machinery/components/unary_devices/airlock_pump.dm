@@ -255,6 +255,20 @@
 	waste_pipe.update = TRUE
 
 
+/**
+ * Returns the turf on the docked vessel's side of an external airlock, to compare its pressure with docked_side_pressure.
+ * The dock request samples the tile behind the docked vessel's own airlock (see /obj/machinery/door/airlock/afterShuttleMove),
+ * so we skip over that airlock here too: while closed, the air on its own tile is whatever was left in it
+ * when it last closed, and that stale value used to keep the external airlock bolted forever.
+ */
+/obj/machinery/atmospherics/components/unary/airlock_pump/proc/get_docked_side_turf(obj/machinery/door/airlock/airlock)
+	var/turf/docked_turf = get_step(airlock, REVERSE_DIR(dir))
+	if(docked_turf && (locate(/obj/machinery/door/airlock) in docked_turf))
+		var/turf/behind_door = get_step(docked_turf, REVERSE_DIR(dir))
+		if(behind_door && !isclosedturf(behind_door))
+			docked_turf = behind_door
+	return docked_turf
+
 /// Proc for triggering cycle by clicking on a bolted airlock that has a pump assigned
 /obj/machinery/atmospherics/components/unary/airlock_pump/proc/airlock_act(obj/machinery/door/airlock/airlock)
 	if(on)
@@ -268,7 +282,7 @@
 		// (it may be 0. Maybe badmin set internal pressure to 0 as well, who knows)
 		if(docked_side_pressure != null)
 			// Space-faced airlock detection
-			var/turf/external_tile = get_step(airlock, REVERSE_DIR(dir))
+			var/turf/external_tile = get_docked_side_turf(airlock)
 			// Map edge or space turf
 			if (external_tile == null || is_space_or_openspace(external_tile))
 				airlock.run_animation(DOOR_DENY_ANIMATION)
@@ -384,6 +398,8 @@
 		if (airlocks_animating)	// Should (almost) never happened
 			say("ERROR: D11. Please re-initiate docking sequence.")
 			return
+		if (docked_side_pressure == null) // The shuttle already left again
+			return
 
 	if (on)
 		// You can't go there, there is a shuttle now
@@ -428,7 +444,7 @@
 	for(var/obj/machinery/door/airlock/airlock as anything in (external_airlocks + internal_airlocks))
 		if (airlock in external_airlocks)
 			airlock.air_tight = TRUE
-			local_turf = get_step(airlock, REVERSE_DIR(dir))
+			local_turf = get_docked_side_turf(airlock)
 			// Map edge or space turf
 			if (local_turf == null || is_space_or_openspace(local_turf))
 				continue
@@ -460,6 +476,16 @@
 	if(!powered())
 		return
 
+	// The shuttle may leave while a docking sequence is still opening the airlocks. Closing an airlock that is
+	// mid-animation does nothing, which would leave the pair open (and bolted) towards the void with nothing to cycle.
+	// So wait for the animations to finish first.
+	for(var/attempt in 1 to 30)
+		if(!airlocks_animating && !are_airlocks_operating())
+			break
+		stoplag(0.2 SECONDS)
+	if(docked_side_pressure != null || !powered())
+		return // Docked again (that sequence now owns the airlocks) or lost power while waiting
+
 	for(var/obj/machinery/door/airlock/airlock as anything in external_airlocks)
 		INVOKE_ASYNC(airlock, TYPE_PROC_REF(/obj/machinery/door/airlock, secure_close), TRUE)
 
@@ -467,6 +493,14 @@
 	airlocks_animating = TRUE
 	stoplag(1 SECONDS) // Wait for closing animation
 	airlocks_animating = FALSE
+
+
+///Whether any of the linked airlocks is in the middle of opening or closing
+/obj/machinery/atmospherics/components/unary/airlock_pump/proc/are_airlocks_operating()
+	for(var/obj/machinery/door/airlock/airlock as anything in (internal_airlocks + external_airlocks))
+		if(airlock.operating)
+			return TRUE
+	return FALSE
 
 
 ///Update adjacent_turfs with atmospherically adjacent tiles
