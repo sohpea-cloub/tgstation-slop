@@ -75,11 +75,13 @@
 	//We're nodrop, but we'll watch for the drop hotkey anyway and then stow if possible.
 	//FIXME: This makes it so that AI-controlled mobs can't drop their items... hook into dropped signal instead
 	RegisterSignal(organ_owner, COMSIG_KB_MOB_DROPITEM_DOWN, PROC_REF(on_drop_key))
+	// emagging the person with the arm selected also emags the implant, as it can't be clicked while installed
+	RegisterSignal(organ_owner, COMSIG_ATOM_EMAG_ACT, PROC_REF(on_owner_emagged))
 
 /obj/item/organ/cyberimp/arm/toolkit/on_mob_remove(mob/living/carbon/organ_owner)
 	. = ..()
 	Retract()
-	UnregisterSignal(organ_owner, COMSIG_KB_MOB_DROPITEM_DOWN)
+	UnregisterSignal(organ_owner, list(COMSIG_KB_MOB_DROPITEM_DOWN, COMSIG_ATOM_EMAG_ACT))
 
 /obj/item/organ/cyberimp/arm/toolkit/on_bodypart_insert(obj/item/bodypart/limb)
 	. = ..()
@@ -111,6 +113,13 @@
 		return //wrong hand
 	if(Retract())
 		return COMSIG_KB_ACTIVATED
+
+/// Passes an emag aimed at the arm we are installed in on to us
+/obj/item/organ/cyberimp/arm/toolkit/proc/on_owner_emagged(mob/living/carbon/source, mob/user, obj/item/card/emag/emag_card)
+	SIGNAL_HANDLER
+	if(user?.zone_selected != zone)
+		return FALSE
+	return emag_act(user, emag_card)
 
 /obj/item/organ/cyberimp/arm/toolkit/proc/Retract()
 	if(!active_item)
