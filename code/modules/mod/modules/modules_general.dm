@@ -441,6 +441,8 @@
 	var/min_range = 2
 	/// Maximum range we can set.
 	var/max_range = 5
+	/// If set, the color of the worn indicator overlay instead of the light's own color.
+	var/worn_light_color
 
 /obj/item/mod/module/flashlight/on_activation(mob/activator)
 	set_light_flags(light_flags | LIGHT_ATTACHED)
@@ -466,7 +468,7 @@
 	if(!active)
 		return
 	var/mutable_appearance/light_icon = mutable_appearance(overlay_icon_file, "module_light_on", layer = standing.layer + 0.2, appearance_flags = RESET_COLOR)
-	light_icon.color = light_color
+	light_icon.color = worn_light_color || light_color
 	. += light_icon
 
 /obj/item/mod/module/flashlight/get_configuration()
@@ -488,12 +490,15 @@
 		if("light_range")
 			set_light_range(clamp(value, min_range, max_range))
 
-///Like the flashlight module, except the light color is stuck to black and cannot be changed.
+///Like the flashlight module, except it subtracts light (negative power) instead of adding it.
 /obj/item/mod/module/flashlight/darkness
 	name = "\improper MOD flashdark module"
 	desc = "A quirky pair of configurable flashdarks installed on the sides of the helmet, \
 		useful for providing darkness at a configurable range."
-	light_color = COLOR_BLACK
+	// Darkness is a subtracted light, so it needs a negative power and a color that subtracts something (not black).
+	light_color = COLOR_WHITE
+	light_power = -1
+	worn_light_color = COLOR_BLACK
 	light_system = OVERLAY_LIGHT
 	light_range = 2
 	min_range = 1
