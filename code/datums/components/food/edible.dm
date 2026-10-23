@@ -348,7 +348,11 @@ Behavior that's still missing from this component that original food items had t
 		if(!crafted_part.reagents)
 			continue
 		this_food.reagents.maximum_volume += crafted_part.reagents.maximum_volume
-		crafted_part.reagents.trans_to(this_food.reagents, crafted_part.reagents.maximum_volume)
+		crafted_part.reagents.trans_to(this_food.reagents, crafted_part.reagents.maximum_volume, no_react = TRUE)
+
+	// Reagents that were harmless in separate ingredients (potassium in a banana, water in a melon, cocoa and sugar in a chocolate bar...)
+	// mustn't react now that they share a holder, or the dish blows up / duplicates itself / spawns food out of nowhere
+	this_food.reagents.remove_reactive_reagents()
 
 	this_food.reagents.maximum_volume = ROUND_UP(this_food.reagents.maximum_volume) // Just because I like whole numbers for this.
 

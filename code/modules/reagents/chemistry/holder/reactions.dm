@@ -106,6 +106,53 @@
 
 	TEST_ONLY_ASSERT(!. || MC_RUNNING(), "We reacted during subsystem init, that shouldn't be happening!")
 
+/**
+ * Removes the reagents taking part in any reaction that could start in this holder right now, until none is left to start.
+ * Doesn't trigger any reaction itself. Meant for holders that were filled without reacting from several sources whose
+ * reagents were harmless while apart (crafting results inheriting those of their ingredients), and shouldn't react once mixed.
+ *
+ * Returns the total volume removed.
+ */
+/datum/reagents/proc/remove_reactive_reagents()
+	if(!length(reagent_list))
+		return 0
+	var/list/cached_reactions = GLOB.chemical_reactions_list_reactant_index
+	var/old_flags = flags
+	flags |= NO_REACT // removing reagents updates the holder, which would otherwise start the very reactions we are avoiding
+	. = 0
+	var/found_reaction = TRUE
+	while(found_reaction)
+		found_reaction = FALSE
+		var/list/cached_reagents = list()
+		for(var/datum/reagent/target as anything in reagent_list)
+			cached_reagents[target.type] = target.volume
+		for(var/reagent_type in cached_reagents)
+			for(var/datum/chemical_reaction/reaction as anything in cached_reactions[reagent_type])
+				if(reaction.required_container) // these can't happen in whatever we are holding
+					continue
+				var/list/requirements = reaction.required_reagents | reaction.required_catalysts
+				if(length(requirements) < 2) // spontaneous reactions (decomposition...) aren't about reagents mixing
+					continue
+				var/granularity = (reaction.reaction_flags & REACTION_INSTANT) ? 1 : CHEMICAL_QUANTISATION_LEVEL
+				var/missing = FALSE
+				for(var/requirement in requirements)
+					if(cached_reagents[requirement] < requirements[requirement] * granularity)
+						missing = TRUE
+						break
+				if(missing)
+					continue
+				var/required_temp = reaction.required_temp
+				if(required_temp != 0 && (reaction.is_cold_recipe ? chem_temp > required_temp : chem_temp < required_temp))
+					continue
+				for(var/removed_type in reaction.required_reagents)
+					. += remove_reagent(removed_type, cached_reagents[removed_type])
+				found_reaction = TRUE
+				break
+			if(found_reaction)
+				break // our volumes are outdated now
+	flags = old_flags
+	update_total()
+
 /*
 * Main Reaction loop handler, Do not call this directly
 *

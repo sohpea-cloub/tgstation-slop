@@ -321,6 +321,8 @@
 	if(holder) //transfer reagents from ingredients to result
 		if(result.reagents && (recipe.crafting_flags & CRAFT_TRANSFERS_REAGENT_COMPONENTS))
 			holder.trans_to(result.reagents, holder.total_volume, no_react = TRUE)
+			// whatever was harmless while in separate ingredients (potassium in a banana, water in a melon...) mustn't react now they are in one place
+			result.reagents.remove_reactive_reagents()
 		stuff_to_use -= holder //This is the only non-movable in our list, we need to remove it.
 		qdel(holder)
 	result.on_craft_completion(stuff_to_use, recipe, crafter)
