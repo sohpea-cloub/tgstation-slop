@@ -11,6 +11,8 @@
 	custom_materials = list(/datum/material/silver = SHEET_MATERIAL_AMOUNT * 2, /datum/material/uranium = SHEET_MATERIAL_AMOUNT, /datum/material/diamond = SHEET_MATERIAL_AMOUNT)
 	/// Typepath of a mob we have scanned, we only store one at a time
 	var/stored_mob_type
+	/// Projectile type of the spell of the magicarp we scanned, so that we turn into the same kind of magicarp
+	var/stored_mob_spell
 	/// Have we activated the belt?
 	var/active = FALSE
 	/// Our current transformation action
@@ -77,7 +79,8 @@
 	if (!target_mob.compare_sentience_type(SENTIENCE_ORGANIC))
 		balloon_alert(user, "target too intelligent!")
 		return TRUE
-	if (stored_mob_type == target_mob.type)
+	var/target_spell = get_mob_spell(target_mob)
+	if (stored_mob_type == target_mob.type && stored_mob_spell == target_spell)
 		balloon_alert(user, "already scanned!")
 		return TRUE
 	if (DOING_INTERACTION_WITH_TARGET(user, target_mob))
@@ -89,9 +92,15 @@
 		return TRUE
 	visible_message(span_notice("[user] scans [target_mob] with [src]."))
 	stored_mob_type = target_mob.type
+	stored_mob_spell = target_spell
 	update_transform_action()
 	playsound(src, 'sound/machines/ping.ogg', 50, FALSE)
 	return TRUE
+
+/// Returns the spell type which makes this particular mob different from others of its type, if any
+/obj/item/polymorph_belt/proc/get_mob_spell(mob/living/target_mob)
+	var/mob/living/basic/carp/magic/magicarp = target_mob
+	return istype(magicarp) ? magicarp.get_spell_type() : null
 
 /// Make sure we can transform into the scanned target
 /obj/item/polymorph_belt/proc/update_transform_action()
@@ -99,7 +108,7 @@
 		return
 	if (isnull(transform_action))
 		transform_action = add_item_action(/datum/action/cooldown/spell/shapeshift/polymorph_belt)
-	transform_action.update_type(stored_mob_type)
+	transform_action.update_type(stored_mob_type, stored_mob_spell)
 
 /// Pre-activated polymorph belt
 /obj/item/polymorph_belt/functioning
@@ -119,6 +128,8 @@
 	shapechange_type = /datum/status_effect/shapechange_mob/from_spell/polymorph_belt
 	/// Amount of time it takes us to transform back or forth
 	var/channel_time = 3 SECONDS
+	/// Projectile type to give the new form if it is a magicarp
+	var/shapeshift_spell
 
 /datum/action/cooldown/spell/shapeshift/polymorph_belt/cast(mob/living/cast_on)
 	cast_on = owner //make sure this is only affecting the wearer of the belt
@@ -166,10 +177,19 @@
 	animate(owner, transform = matrix() * 0.1, time = 0, easing = JUMP_EASING)
 	animate(transform = matrix(), time = 0.25 SECONDS, easing = SINE_EASING)
 
+/datum/action/cooldown/spell/shapeshift/polymorph_belt/create_shapeshift_mob(atom/loc)
+	var/mob/living/new_shape = ..()
+	if (shapeshift_spell)
+		var/mob/living/basic/carp/magic/magicarp = new_shape
+		if (istype(magicarp))
+			magicarp.set_spell_type(shapeshift_spell)
+	return new_shape
+
 /// Update what you are transforming to or from
-/datum/action/cooldown/spell/shapeshift/polymorph_belt/proc/update_type(transform_type)
+/datum/action/cooldown/spell/shapeshift/polymorph_belt/proc/update_type(transform_type, spell_type)
 	unshift_owner()
 	shapeshift_type = transform_type
+	shapeshift_spell = spell_type
 	possible_shapes = list(transform_type)
 	var/mob/living/will_become = transform_type
 	desc = "Assume your [initial(will_become.name)] form!"

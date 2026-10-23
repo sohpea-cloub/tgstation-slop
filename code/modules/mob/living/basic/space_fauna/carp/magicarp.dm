@@ -88,9 +88,18 @@ GLOBAL_LIST_INIT(magicarp_spell_colours, list(
 /mob/living/basic/carp/magic/proc/spell_list()
 	return GLOB.magicarp_spell_types
 
+/// Returns the projectile type of the spell we cast, or null if we don't have a fixed one
+/mob/living/basic/carp/magic/proc/get_spell_type()
+	return spell?.projectile_type
+
+/// Replaces our spell (and the name and colour which come with it) with a different one
+/mob/living/basic/carp/magic/proc/set_spell_type(obj/projectile/spell_type)
+	QDEL_NULL(spell)
+	name = initial(name)
+	assign_spell(spell_type)
+
 /// Updates name based on chosen spell
-/mob/living/basic/carp/magic/proc/assign_spell()
-	var/obj/projectile/spell_type = pick(allowed_projectile_types)
+/mob/living/basic/carp/magic/proc/assign_spell(obj/projectile/spell_type = pick(allowed_projectile_types))
 	name = "[GLOB.magicarp_spell_types[spell_type]] [name]"
 	set_greyscale(colors = list(GLOB.magicarp_spell_colours[spell_type]))
 
@@ -128,7 +137,10 @@ GLOBAL_LIST_INIT(magicarp_spell_colours, list(
 	maxHealth = 75
 	health = 75
 
-/mob/living/basic/carp/magic/chaos/assign_spell()
+/mob/living/basic/carp/magic/chaos/get_spell_type()
+	return null // Our spell changes every time we cast it
+
+/mob/living/basic/carp/magic/chaos/assign_spell(obj/projectile/spell_type)
 	var/datum/action/cooldown/mob_cooldown/projectile_attack/magicarp_bolt/chaos/chaos_bolt = new(src)
 	chaos_bolt.permitted_projectiles = allowed_projectile_types
 	chaos_bolt.Grant(src)
