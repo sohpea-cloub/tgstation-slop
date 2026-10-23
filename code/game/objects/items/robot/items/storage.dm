@@ -182,6 +182,13 @@ GAME_VERB(/obj/item/borg/apparatus, verb_dropHeld, "Drop", null)
 		return
 	handle_reflling(arrived)
 
+/obj/item/borg/apparatus/beaker/service/Exited(atom/movable/gone, direction)
+	. = ..()
+	// Only glasses held by the apparatus may resynthesize, otherwise they keep refilling after being taken away (pockets, other people's hands)
+	var/datum/component/reagent_refiller/refiller = gone.GetComponent(/datum/component/reagent_refiller)
+	if (refiller)
+		qdel(refiller)
+
 ///Used by the service borg drink apparatus upgrade, holds drink-related items
 /obj/item/borg/apparatus/beaker/drink
 	name = "secondary beverage storage apparatus"
