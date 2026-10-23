@@ -645,11 +645,12 @@
 	misfire_probability += chambered.misfire_increment
 	misfire_probability = clamp(misfire_probability, 0, misfire_probability_cap)
 
-///Installs a new suppressor, assumes that the suppressor is already in the contents of src
-/obj/item/gun/ballistic/proc/install_suppressor(obj/item/suppressor/new_suppressor)
+///Installs a new suppressor, assumes that the suppressor is already in the contents of src. If adjust_weight_class is FALSE the caller has already accounted for the suppressor's size.
+/obj/item/gun/ballistic/proc/install_suppressor(obj/item/suppressor/new_suppressor, adjust_weight_class = TRUE)
 	suppressor = new_suppressor
 	suppressed = suppressor.suppression
-	update_weight_class(w_class + suppressor.w_class) //so pistols do not fit in pockets when suppressed
+	if(adjust_weight_class)
+		update_weight_class(w_class + suppressor.w_class) //so pistols do not fit in pockets when suppressed
 	can_muzzle_flash = FALSE
 	update_appearance()
 

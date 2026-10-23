@@ -50,7 +50,10 @@
 /obj/item/gun/ballistic/automatic/pistol/suppressed/Initialize(mapload)
 	. = ..()
 	var/obj/item/suppressor/S = new(src)
-	install_suppressor(S)
+	// We spawn with the suppressor already attached, so just account for its size without announcing a weight class change,
+	// which would make us fall out of whatever storage we spawned in.
+	w_class += S.w_class
+	install_suppressor(S, adjust_weight_class = FALSE)
 
 /obj/item/gun/ballistic/automatic/pistol/clandestine
 	name = "\improper Ansem pistol"
