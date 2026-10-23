@@ -47,9 +47,10 @@
 		return
 
 	// Snowflake for cyborgs and bots buckling people by dragging them onto them, unless in combat mode.
+	// Mulebots are always in combat mode but have no hands to strip with, so dragging onto them always loads.
 	if(iscyborg(user) || isbot(user))
 		var/mob/living/bot_user = user
-		if (!bot_user.combat_mode)
+		if (!bot_user.combat_mode || istype(user, /mob/living/basic/bot/mulebot))
 			return
 	// Snowflake for xeno consumption code
 	if (isalienadult(user))
