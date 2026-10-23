@@ -15,10 +15,20 @@
 	/// If the magic has been enhanced somehow, likely due to a crimson medallion.
 	var/magic_enhanced = FALSE
 
-/datum/action/innate/cult/blood_magic/Remove()
-	for(var/X in spells)
-		qdel(X)
-	..()
+/datum/action/innate/cult/blood_magic/Remove(mob/remove_from)
+	// Granting this action to a new mob (ie. a mind transfer) removes it from the old one first: the prepared spells move with us then.
+	if(owner == remove_from)
+		for(var/datum/action/innate/cult/blood_spell/spell as anything in spells)
+			qdel(spell)
+		spells.Cut()
+	return ..()
+
+/// Throws out spells that have been deleted (or any other junk) without leaving the list, so they can't take up spell slots.
+/datum/action/innate/cult/blood_magic/proc/prune_spells()
+	list_clear_nulls(spells)
+	for(var/datum/action/innate/cult/blood_spell/spell as anything in spells)
+		if(QDELETED(spell))
+			spells -= spell
 
 /datum/action/innate/cult/blood_magic/IsAvailable(feedback = FALSE)
 	if(!IS_CULTIST(owner))
@@ -46,6 +56,7 @@
 			blood_spell.positioned = first_available_slot
 
 /datum/action/innate/cult/blood_magic/Activate()
+	prune_spells()
 	var/rune = FALSE
 	var/limit = RUNELESS_MAX_BLOODCHARGE
 	for(var/obj/effect/rune/empower/R in range(1, owner))
@@ -121,20 +132,30 @@
 	var/deletes_on_empty = TRUE
 
 /datum/action/innate/cult/blood_spell/Grant(mob/living/owner, datum/action/innate/cult/blood_magic/BM)
-	if(health_cost)
-		desc += "<br>Deals <u>[health_cost] damage</u> to your arm per use."
-	base_desc = desc
-	desc += "<br><b><u>Has [charges] use\s remaining</u></b>."
-	all_magic = BM
+	// Moving to another mob along with our mind calls this without a blood magic action: we still belong to the one we had
+	if(BM)
+		all_magic = BM
+	if(isnull(base_desc))
+		if(health_cost)
+			desc += "<br>Deals <u>[health_cost] damage</u> to your arm per use."
+		base_desc = desc
+		desc += "<br><b><u>Has [charges] use\s remaining</u></b>."
 	return ..()
 
-/datum/action/innate/cult/blood_spell/Remove()
-	if(all_magic)
+/datum/action/innate/cult/blood_spell/Destroy()
+	// Whatever our owner is (or isn't) by now, we must not stay in the list of prepared spells
+	all_magic?.spells -= src
+	all_magic = null
+	return ..()
+
+/datum/action/innate/cult/blood_spell/Remove(mob/remove_from)
+	// Granting this action to another mob removes it from the previous one first: it is still prepared then
+	if(all_magic && owner == remove_from)
 		all_magic.spells -= src
 	if(hand_magic)
 		qdel(hand_magic)
 		hand_magic = null
-	..()
+	return ..()
 
 /datum/action/innate/cult/blood_spell/IsAvailable(feedback = FALSE)
 	if(!IS_CULTIST(owner) || owner.incapacitated || (!charges && deletes_on_empty))

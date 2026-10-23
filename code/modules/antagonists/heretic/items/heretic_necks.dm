@@ -96,10 +96,14 @@
 
 	// If boosted enable is set, to prevent false dropped() calls from repeatedly nuking the max spells.
 	var/datum/action/innate/cult/blood_magic/magic_holder = locate() in user.actions
-	// Remove the last spell if over new limit, as we will reduce our max spell amount. Done beforehand as it causes a index out of bounds runtime otherwise.
 	if(magic_holder?.magic_enhanced)
-		QDEL_NULL(magic_holder.spells[ENHANCED_BLOODCHARGE])
-	magic_holder?.magic_enhanced = FALSE
+		magic_holder.magic_enhanced = FALSE
+		// Remove the spells that are over the new limit. Deleting a spell takes it out of the list by itself.
+		magic_holder.prune_spells()
+		while(length(magic_holder.spells) > MAX_BLOODCHARGE)
+			var/datum/action/innate/cult/blood_spell/excess_spell = magic_holder.spells[length(magic_holder.spells)]
+			magic_holder.spells -= excess_spell
+			qdel(excess_spell)
 
 
 /obj/item/clothing/neck/heretic_focus/crimson_medallion/attack_self(mob/living/user, modifiers)
