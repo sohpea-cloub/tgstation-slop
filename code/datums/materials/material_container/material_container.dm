@@ -708,7 +708,9 @@
 	var/count = 0
 	while(stack_amt > 0)
 		//don't merge yet. we need to do stuff with it first
-		var/obj/item/stack/new_stack = new type_to_retrieve(target, min(stack_amt, MAX_STACK_SIZE), FALSE)
+		//bespoke materials (e.g. a mob's meat) are not the sheet's default material, so the sheet needs to be told which one it is made of
+		var/list/mat_override = (material.init_flags & MATERIAL_INIT_BESPOKE) ? list((material) = SHEET_MATERIAL_AMOUNT) : null
+		var/obj/item/stack/new_stack = new type_to_retrieve(target, min(stack_amt, MAX_STACK_SIZE), FALSE, mat_override)
 		if(istype(new_stack, /obj/item/stack/sheet))
 			var/obj/item/stack/sheet/new_sheets = new_stack
 			new_sheets.manufactured = TRUE
@@ -723,7 +725,7 @@
 			continue
 		//now we can merge since we are done with it
 		for(var/obj/item/stack/item_stack in target)
-			if(item_stack == new_stack || item_stack.type != type_to_retrieve) //don't merge with self or different type
+			if(item_stack == new_stack || item_stack.type != type_to_retrieve || !new_stack.can_merge(item_stack)) //don't merge with self, a different type or a different material
 				continue
 			//speed merge
 			var/merge_amount = min(item_stack.amount, new_stack.max_amount - new_stack.get_amount())
