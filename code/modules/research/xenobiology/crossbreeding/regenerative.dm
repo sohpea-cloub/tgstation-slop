@@ -28,6 +28,11 @@ Regenerative extracts:
 	else
 		user.visible_message(span_notice("[user] crushes [src] over [user.p_them()]self, the milky goo quickly regenerating all of [user.p_their()] injuries!"),
 			span_notice("You squeeze [src], and it bursts in your hand, splashing you with milky goo which quickly regenerates your injuries!"))
+	if(H != user)
+		user.log_message("used [src] ([type]) on [key_name(H)]", LOG_GAME)
+		H.log_message("had [src] ([type]) used on them by [key_name(user)]", LOG_VICTIM, log_globally = FALSE)
+	else
+		user.log_message("used [src] ([type]) on themselves", LOG_GAME)
 	core_effect_before(H, user)
 	user.do_attack_animation(interacting_with)
 	H.revive(HEAL_ALL & ~HEAL_REFRESH_ORGANS)
