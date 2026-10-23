@@ -189,7 +189,8 @@
 		var/mob/loser = players[ckey]["mob"]
 		unregister_player_signals(loser)
 		players[ckey]["mob"] = null
-		loser.ghostize(can_reenter_corpse = FALSE)
+		// The ghost has to keep the arena body's mind (can_reenter_corpse TRUE) so the temporary_body component can find it when the body is deleted and give the player their old mind back.
+		loser.ghostize()
 		qdel(loser)
 
 	for(var/datum/deathmatch_modifier/modifier_path as anything in modifiers)
