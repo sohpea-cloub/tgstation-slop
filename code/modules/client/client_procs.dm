@@ -1015,9 +1015,6 @@ GLOBAL_LIST_INIT(unrecommended_builds, list(
 			return TRUE
 	. = ..()
 
-/client/proc/rescale_view(change, min, max)
-	view_size.setTo(clamp(change, min, max), clamp(change, min, max))
-
 /client/proc/set_eye(new_eye)
 	if(new_eye == eye)
 		return

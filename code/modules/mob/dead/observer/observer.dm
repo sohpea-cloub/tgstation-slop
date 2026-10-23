@@ -507,7 +507,7 @@ GAME_VERB(/mob/dead/observer, change_view_range, "View Range", null)
 			views |= i
 		var/new_view = tgui_input_list(usr, "New view", "Modify view range", views)
 		if(new_view)
-			client.view_size.setTo(clamp(new_view, 7, max_view) - 7)
+			client.view_size.setRadiusOffset(clamp(new_view, GHOST_MIN_VIEW_RANGE, max_view) - GHOST_MIN_VIEW_RANGE)
 	else
 		client.view_size.resetToDefault()
 
@@ -673,7 +673,8 @@ GAME_VERB_HIDDEN(/mob/dead/observer, add_view_range, "Add View Range")
 
 	var/max_view = client.prefs.unlock_content ? GHOST_MAX_VIEW_RANGE_MEMBER : GHOST_MAX_VIEW_RANGE_DEFAULT
 	if(input)
-		client.rescale_view(input, 0, ((max_view * 2) + 1) - 15)
+		var/new_offset = clamp(client.view_size.getRadiusOffset() + input, 0, max_view - GHOST_MIN_VIEW_RANGE)
+		client.view_size.setRadiusOffset(new_offset)
 
 /mob/dead/observer/proc/boo()
 	if(!COOLDOWN_FINISHED(src, bootime))

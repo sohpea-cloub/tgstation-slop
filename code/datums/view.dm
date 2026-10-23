@@ -86,6 +86,15 @@
 	height = shitcode[2] //this, but it was jank, so I had to move it
 	apply()
 
+/// Sets the view to the default plus radius_offset extra tiles on every side (so a total of 2 * radius_offset added to width and height).
+/// Unlike setTo(), which treats its argument as a world.view style radius (a radius of N adds 2N + 1), 0 is the default and 1 is exactly one tile further.
+/datum/view_data/proc/setRadiusOffset(radius_offset)
+	setBoth(radius_offset * 2, radius_offset * 2)
+
+/// The extra radius currently applied on top of the default view, see setRadiusOffset()
+/datum/view_data/proc/getRadiusOffset()
+	return round(max(width, height) / 2)
+
 /datum/view_data/proc/setBoth(wid, hei)
 	width = wid
 	height = hei

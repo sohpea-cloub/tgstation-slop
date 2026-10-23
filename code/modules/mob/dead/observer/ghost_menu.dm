@@ -179,6 +179,6 @@ GLOBAL_DATUM_INIT(ghost_menu, /datum/ghost_menu, new)
 		to_chat(user, span_notice("That verb is currently globally disabled."))
 		return TRUE
 	var/max_view = user.client.prefs.unlock_content ? GHOST_MAX_VIEW_RANGE_MEMBER : GHOST_MAX_VIEW_RANGE_DEFAULT
-	if(max_view >= new_view && new_view < GHOST_MIN_VIEW_RANGE)
+	if(new_view < GHOST_MIN_VIEW_RANGE)
 		return TRUE
-	user.client.view_size.setTo(round(new_view, 1) - GHOST_MIN_VIEW_RANGE)
+	user.client.view_size.setRadiusOffset(round(min(new_view, max_view), 1) - GHOST_MIN_VIEW_RANGE)
