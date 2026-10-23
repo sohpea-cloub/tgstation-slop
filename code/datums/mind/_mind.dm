@@ -162,9 +162,11 @@
 		CRASH("Tried to set a mind's current var to a qdeleted mob, what the fuck")
 	if(current)
 		UnregisterSignal(src, COMSIG_QDELETING)
+		UnregisterSignal(current, COMSIG_LIVING_DEATH)
 	current = new_current
 	if(current)
 		RegisterSignal(src, COMSIG_QDELETING, PROC_REF(clear_current))
+		RegisterSignal(current, COMSIG_LIVING_DEATH, PROC_REF(set_death_time))
 
 /datum/mind/proc/clear_current(datum/source)
 	SIGNAL_HANDLER
@@ -174,7 +176,6 @@
 	set_original_character(null)
 	if(current) // remove ourself from our old body's mind variable
 		current.mind = null
-		UnregisterSignal(current, COMSIG_LIVING_DEATH)
 		SStgui.on_transfer(current, new_character)
 
 	if(key)
@@ -212,7 +213,6 @@
 		var/mob/living/carbon/carbon_character = new_character
 		carbon_character.last_mind = src
 
-	RegisterSignal(new_character, COMSIG_LIVING_DEATH, PROC_REF(set_death_time))
 	if(active || force_key_move)
 		new_character.PossessByPlayer(key) //now transfer the key to link the client to our new body
 	if(new_character.client)
