@@ -632,9 +632,7 @@ GAME_VERB(/mob/dead/observer, restore_ghost_appearance, "Restore Ghost Character
 	if (!istype(target) || (is_secret_level(target.z) && !client?.holder))
 		return
 
-	var/list/icon_dimensions = get_icon_dimensions(target.icon)
-	var/orbitsize = (icon_dimensions["width"] + icon_dimensions["height"]) * 0.5
-	orbitsize -= (orbitsize/ICON_SIZE_ALL)*(ICON_SIZE_ALL*0.25)
+	var/orbitsize = get_orbit_radius(target)
 
 	var/rot_seg
 
@@ -651,6 +649,12 @@ GAME_VERB(/mob/dead/observer, restore_ghost_appearance, "Restore Ghost Character
 			rot_seg = 36 //360/10 bby, smooth enough aproximation of a circle
 
 	orbit(target,orbitsize, FALSE, 20, rot_seg)
+
+/mob/dead/observer/get_orbit_radius(atom/target)
+	var/list/icon_dimensions = get_icon_dimensions(target.icon)
+	var/orbitsize = (icon_dimensions["width"] + icon_dimensions["height"]) * 0.5
+	orbitsize -= (orbitsize/ICON_SIZE_ALL)*(ICON_SIZE_ALL*0.25)
+	return orbitsize
 
 /mob/dead/observer/orbit()
 	setDir(2)//reset dir so the right directional sprites show up

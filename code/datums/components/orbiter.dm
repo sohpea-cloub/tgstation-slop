@@ -37,6 +37,7 @@
 		for(var/atom/movable/orbiter as anything in orbiter_list)
 			orbiter.orbit_target = target
 			SEND_SIGNAL(target, COMSIG_ATOM_ORBIT_BEGIN, orbiter)
+		refresh_orbit_radii()
 	move_react(target)
 
 /datum/component/orbiter/UnregisterFromParent()
@@ -76,6 +77,7 @@
 	for(var/atom/movable/incoming_orbiter as anything in incoming_orbiters)
 		incoming_orbiter.orbit_target = parent
 		SEND_SIGNAL(parent, COMSIG_ATOM_ORBIT_BEGIN, incoming_orbiter)
+	refresh_orbit_radii()
 	move_react(parent)
 
 /datum/component/orbiter/PreTransfer(datum/new_parent)
@@ -197,6 +199,31 @@
 			break
 
 
+/// Recalculates the orbit radius of every orbiter that picks its radius from the size of what it orbits
+/// (ghosts), for when the orbited thing is replaced by or turns into something bigger or smaller.
+/datum/component/orbiter/proc/refresh_orbit_radii()
+	for(var/atom/movable/orbiter as anything in orbiter_list)
+		var/new_radius = orbiter.get_orbit_radius(parent)
+		if(!isnull(new_radius))
+			set_orbit_radius(orbiter, new_radius)
+
+/// Changes the radius an orbiter orbits at without ending and restarting the orbit
+/datum/component/orbiter/proc/set_orbit_radius(atom/movable/orbiter, new_radius)
+	var/list/params = orbiter_params?[orbiter]
+	var/matrix/initial_transform = orbiter_list?[orbiter]
+	// params are (radius, clockwise, rotation_speed, rotation_segments, pre_rotation)
+	if(length(params) < 5 || !istype(initial_transform) || params[1] == new_radius)
+		return
+	params[1] = new_radius
+	var/clockwise = params[2]
+	orbiter.SpinAnimation(0, 0)
+	var/matrix/new_transform = matrix(initial_transform)
+	if(params[5])
+		new_transform.Turn(clockwise ? 90 : -90)
+	new_transform.Translate(0, new_radius)
+	orbiter.transform = new_transform
+	orbiter.SpinAnimation(params[3], -1, clockwise, params[4], parallel = FALSE)
+
 /datum/component/orbiter/proc/orbiter_move_react(atom/movable/orbiter, atom/oldloc, direction)
 	SIGNAL_HANDLER
 
@@ -225,6 +252,11 @@
 			return
 	orbit_target = A
 	return A.AddComponent(/datum/component/orbiter, src, radius, clockwise, rotation_speed, rotation_segments, pre_rotation)
+
+/// The radius (in pixels) this movable wants to orbit target at, or null to keep whatever radius it was given when it started orbiting.
+/// Recalculated when the orbited thing changes size or is replaced by another (mob transfers).
+/atom/movable/proc/get_orbit_radius(atom/target)
+	return null
 
 /atom/movable/proc/stop_orbit(datum/component/orbiter/orbits, refreshing = FALSE)
 	if(refreshing)

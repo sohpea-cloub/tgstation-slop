@@ -267,6 +267,8 @@
 			new_consume_range = 5
 			dissipate = FALSE
 
+	orbiters?.refresh_orbit_radii() // ghosts orbit at a radius based on our icon size
+
 	if(temp_allowed_size == STAGE_SIX)
 		AddComponent(/datum/component/vision_hurting)
 	else
