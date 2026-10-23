@@ -95,7 +95,10 @@ GLOBAL_DATUM_INIT(orbit_menu, /datum/orbit_menu, new)
 			dead += list(serialized)
 			continue
 
-		if(isnull(mob_poi.mind))
+		// Eyes (like the AI's) have no mind of their own: whoever controls them does.
+		var/mob/mind_holder = get_mind_holder(mob_poi)
+
+		if(isnull(mind_holder.mind))
 			if(isliving(mob_poi))
 				var/mob/living/npc = mob_poi
 				serialized["health"] = FLOOR((npc.health / npc.maxHealth * 100), 1)
@@ -103,13 +106,13 @@ GLOBAL_DATUM_INIT(orbit_menu, /datum/orbit_menu, new)
 			npcs += list(serialized)
 			continue
 
-		serialized["client"] = !!mob_poi.client
-		serialized["name"] = mob_poi.real_name
+		serialized["client"] = !!mind_holder.client
+		serialized["name"] = mind_holder.real_name
 
-		if(isliving(mob_poi))
-			serialized += get_living_data(mob_poi)
+		if(isliving(mind_holder))
+			serialized += get_living_data(mind_holder)
 
-		var/list/antag_data = get_antag_data(mob_poi.mind, is_admin)
+		var/list/antag_data = get_antag_data(mind_holder.mind, is_admin)
 		if(length(antag_data))
 			serialized += antag_data
 			antagonists += list(serialized)
@@ -154,6 +157,15 @@ GLOBAL_DATUM_INIT(orbit_menu, /datum/orbit_menu, new)
 /// Shows the UI to the specified user.
 /datum/orbit_menu/proc/show(mob/user)
 	ui_interact(user)
+
+
+/// Returns the mob that holds the mind for this point of interest: the AI for its (main) eye, the mob itself otherwise.
+/datum/orbit_menu/proc/get_mind_holder(mob/mob_poi) as /mob
+	if(istype(mob_poi, /mob/eye/camera/ai))
+		var/mob/eye/camera/ai/ai_eye = mob_poi
+		if(ai_eye.ai?.eyeobj == ai_eye)
+			return ai_eye.ai
+	return mob_poi
 
 
 /// Helper function to get threat type, group, overrides for job and icon
