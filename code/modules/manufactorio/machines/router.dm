@@ -46,15 +46,20 @@
 		directions = GLOB.cardinals.Copy()
 	for(var/target in filtered)
 		directions -= target
+		var/obj/to_send = receiving
 		if(isstack(receiving))
-			receiving = handle_stack(receiving, receive_dir)
-		if(send_resource(receiving, target))
+			to_send = handle_stack(receiving)
+		if(send_resource(to_send, target))
 			dir = receive_dir
 			update_appearance(UPDATE_OVERLAYS) // im sorry
 			return MANUFACTURING_SUCCESS
+		if(to_send != receiving && !QDELETED(to_send)) // couldn't send the split off piece, put it back so it isnt lost in nullspace
+			var/obj/item/stack/piece = to_send
+			piece.merge(receiving)
 	return MANUFACTURING_FAIL
 
-/obj/machinery/power/manufacturing/router/proc/handle_stack(obj/item/stack/stack, direction)
-	if(stack.amount <= 1) // last implementation was just not good so lets cheap out
+/// Splits a single sheet off of a stack, or returns the stack itself if it only has one thing in it
+/obj/machinery/power/manufacturing/router/proc/handle_stack(obj/item/stack/stack)
+	if(stack.amount <= 1)
 		return stack
 	return stack.split_stack(1)
