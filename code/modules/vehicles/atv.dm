@@ -20,6 +20,7 @@
 /obj/vehicle/ridden/atv/Initialize(mapload)
 	. = ..()
 	AddElement(/datum/element/ridable, /datum/component/riding/vehicle/atv)
+	ADD_TRAIT(src, TRAIT_NO_SLIP_RIDERS, INNATE_TRAIT)
 	if(!atvcover)
 		atvcover = mutable_appearance(icon, "atvcover", MOB_LAYER + 0.1)
 

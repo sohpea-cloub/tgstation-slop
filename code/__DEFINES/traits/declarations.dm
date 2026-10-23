@@ -362,6 +362,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_NO_SLIP_SLIDE "noslip_slide"
 /// Stops all slipping and sliding from occurring
 #define TRAIT_NO_SLIP_ALL "noslip_all"
+/// Placed on a vehicle: mobs buckled to it never slip, whatever the floor is (ice, lube...). For all-terrain vehicles.
+#define TRAIT_NO_SLIP_RIDERS "noslip_riders"
 
 /// Stops the mob from leaving prints in the snow
 #define TRAIT_NO_SNOWPRINTS "no_snowprints"

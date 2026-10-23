@@ -580,6 +580,8 @@
 
 	var/obj/buckled_obj
 	if(slipper.buckled)
+		if(HAS_TRAIT(slipper.buckled, TRAIT_NO_SLIP_RIDERS)) //all-terrain vehicles don't care what's on the floor.
+			return FALSE
 		if(!(lube & GALOSHES_DONT_HELP)) //can't slip while buckled unless it's lube.
 			return FALSE
 		buckled_obj = slipper.buckled

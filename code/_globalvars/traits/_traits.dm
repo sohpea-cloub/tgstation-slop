@@ -863,6 +863,7 @@ GLOBAL_LIST_INIT(traits_by_type, list(
 		"TRAIT_RADSTORM_IMMUNE" = TRAIT_RADSTORM_IMMUNE,
 	),
 	/obj/vehicle = list(
+		"TRAIT_NO_SLIP_RIDERS" = TRAIT_NO_SLIP_RIDERS,
 		"TRAIT_OREBOX_FUNCTIONAL" = TRAIT_OREBOX_FUNCTIONAL,
 	),
 	/obj/vehicle/sealed/mecha = list(
