@@ -164,6 +164,7 @@
 	var/spawner_job_path = /datum/job/ghost_role
 
 	/// Whether this offers a temporary body or not. Essentially, you'll be able to reenter your body after using this spawner.
+	/// The spawned mob gets a fresh mind; the possessor's mind stays with their old body.
 	var/temp_body = FALSE
 
 
@@ -293,7 +294,9 @@
 				mob_possessor.client.prefs.apply_prefs_to(spawned_human, icon_updates = TRUE, do_not_apply = typesof(/datum/preference/name, /datum/preference/choiced/species))
 			if(allow_custom_character & GHOSTROLE_TAKE_PREFS_SPECIES)
 				spawned_human.fully_replace_character_name(spawned_human.real_name, spawned_human.generate_random_mob_name())
-		if(mob_possessor.mind)
+		// A temporary body gets a mind of its own: the old one (antag datums, spells, memories, name, job)
+		// stays with the old body, which the player returns to afterwards
+		if(mob_possessor.mind && !temp_body)
 			mob_possessor.mind.transfer_to(spawned_mob, force_key_move = TRUE)
 		else
 			spawned_mob.PossessByPlayer(mob_possessor.key)
