@@ -107,10 +107,12 @@ ADMIN_VERB_ONLY_CONTEXT_MENU(select_equipment, R_FUN, "Select Equipment", /mob)
 
 /datum/select_equipment/ui_data(mob/user)
 	var/list/data = list()
-	if(!dummy_key)
-		init_dummy()
-
 	if(isnull(cached_dummy_icon) || cached_for_identifier != selected_identifier)
+		// Some outfits change the dummy's body (psykerize() swaps the head and brain), and wipe_state() only strips
+		// equipment, so throw the used dummy away and start from a fresh lookalike of the target for every preview.
+		if(dummy_key)
+			clear_human_dummy(dummy_key)
+		init_dummy()
 		cached_dummy_icon = get_flat_human_icon(null,
 			dummy_key = dummy_key,
 			showDirs = list(SOUTH),
