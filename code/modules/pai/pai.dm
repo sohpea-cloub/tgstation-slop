@@ -192,6 +192,10 @@
 	if(!QDELETED(card))
 		card.update_appearance()
 
+/// A pAI is never dense: its holoform can be walked over (and not swapped with) like a bot. Without this, folding out removes TRAIT_UNDENSE and makes it dense.
+/mob/living/silicon/pai/update_density()
+	set_density(FALSE)
+
 /mob/living/silicon/pai/Initialize(mapload)
 	. = ..()
 	AddComponent(/datum/component/holographic_nature)
