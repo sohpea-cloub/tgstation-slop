@@ -9,7 +9,10 @@
 	return // HOLOFLOOR DOES NOT GIVE A FUCK
 
 /turf/open/floor/holofloor/item_interaction(mob/living/user, obj/item/tool, list/modifiers)
-	return ITEM_INTERACT_BLOCKING // Fuck you
+	// Holograms can't be built on or replaced, but everything else (paint, spraycans, ...) should still work
+	if(istype(tool, /obj/item/stack/tile) || istype(tool, /obj/item/stack/sheet))
+		return ITEM_INTERACT_BLOCKING
+	return ..()
 
 /turf/open/floor/holofloor/Initialize(mapload)
 	. = ..()
