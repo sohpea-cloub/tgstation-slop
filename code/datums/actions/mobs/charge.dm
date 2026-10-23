@@ -152,6 +152,15 @@
 	SIGNAL_HANDLER
 	if(owner == target)
 		return
+	// Something buckled to a dense object (a node drone on an ore vent) is what we're really charging into, not the object
+	if(isobj(target))
+		var/obj/target_object = target
+		for(var/mob/living/buckled_mob as anything in target_object.buckled_mobs)
+			if(buckled_mob == owner)
+				continue
+			INVOKE_ASYNC(src, PROC_REF(DestroySurroundings), source)
+			try_hit_target(source, buckled_mob)
+			return
 	if(destroy_objects)
 		if(isturf(target))
 			SSexplosions.medturf += target

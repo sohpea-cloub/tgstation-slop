@@ -19,6 +19,9 @@
 	if(QDELETED(target))
 		return AI_BEHAVIOR_INSTANT | AI_BEHAVIOR_FAILED
 
+	if(target.IsReachableBy(basic_mob)) // Nothing in the way, we can hit the target itself (a mob on a dense object's tile isn't blocked by it)
+		return AI_BEHAVIOR_INSTANT | AI_BEHAVIOR_FAILED
+
 	var/turf/next_step = get_step_towards(basic_mob, target)
 
 	if(!next_step.is_blocked_turf(exclude_mobs = TRUE, source_atom = controller.pawn))
