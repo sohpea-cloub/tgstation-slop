@@ -61,14 +61,14 @@
 		data["money"] = current_user.account_balance
 	data["buying"] = buying
 	if(buying && market)
-		var/datum/market_item/target_item = market.available_items[viewing_category][selected_item]
+		var/datum/market_item/target_item = market.available_items[viewing_category]?[selected_item]
 		var/list/shipping_list = market.shipping
 		if(length(target_item?.shipping_override))
 			shipping_list = target_item.shipping_override
 		for(var/delivery in shipping_list)
 			UNTYPED_LIST_ADD(data["delivery_methods"], list("name" = delivery, "price" = shipping_list[delivery]))
 	data["items"] = list()
-	data["viewing_category"] = market.categories[viewing_category] ? viewing_category : null
+	data["viewing_category"] = (market && (viewing_category in market.categories)) ? viewing_category : null
 	data["viewing_market"] = viewing_market
 	if(viewing_category && market)
 		if(market.available_items[viewing_category])

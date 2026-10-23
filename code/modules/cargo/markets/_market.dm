@@ -43,7 +43,7 @@
  * @param user The mob that is buying the item.
  */
 /datum/market/proc/purchase(identifier, category, method, obj/item/market_uplink/uplink, user)
-	var/datum/market_item/item = available_items[category][identifier]
+	var/datum/market_item/item = available_items[category]?[identifier]
 	if(isnull(item))
 		return FALSE
 
