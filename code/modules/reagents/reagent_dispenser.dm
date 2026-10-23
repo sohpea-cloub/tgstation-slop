@@ -117,9 +117,11 @@
 		var/obj/structure/reagent_dispensers/plumbed/storage/new_tank = new /obj/structure/reagent_dispensers/plumbed/storage(drop_location())
 		new_tank.reagents.maximum_volume = reagents.maximum_volume
 		reagents.trans_to(new_tank, reagents.total_volume)
-		new_tank.name = "stationary [name]"
-		new_tank.update_appearance(UPDATE_OVERLAYS)
+		new_tank.mobile_name = name
+		new_tank.mobile_desc = desc
+		new_tank.mobile_icon_state = icon_state
 		new_tank.set_anchored(anchored)
+		new_tank.update_appearance()
 		qdel(src)
 		return ITEM_INTERACT_SUCCESS
 
@@ -721,10 +723,30 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/structure/reagent_dispensers/wall/virusfood, 30
 	icon_state = "water_stationary"
 	desc = "A stationary, plumbed, water tank."
 	can_be_tanked = FALSE
+	/// Name, description and icon state used while the tank is unwrenched and free to move around, so it doesn't claim to be stationary.
+	var/mobile_name = "water tank"
+	var/mobile_desc = "A water tank."
+	var/mobile_icon_state = "water"
 
 /obj/structure/reagent_dispensers/plumbed/Initialize(mapload)
 	. = ..()
 	AddComponent(/datum/component/plumbing/simple_supply)
+
+/obj/structure/reagent_dispensers/plumbed/set_anchored(anchorvalue)
+	. = ..()
+	update_appearance(UPDATE_NAME | UPDATE_DESC | UPDATE_ICON_STATE)
+
+/obj/structure/reagent_dispensers/plumbed/update_name(updates)
+	. = ..()
+	name = anchored ? "stationary [mobile_name]" : mobile_name
+
+/obj/structure/reagent_dispensers/plumbed/update_desc(updates)
+	. = ..()
+	desc = anchored ? "A stationary, plumbed, [mobile_name]." : mobile_desc
+
+/obj/structure/reagent_dispensers/plumbed/update_icon_state()
+	. = ..()
+	icon_state = anchored ? initial(icon_state) : mobile_icon_state
 
 /obj/structure/reagent_dispensers/plumbed/wrench_act(mob/living/user, obj/item/tool)
 	. = ..()
@@ -734,6 +756,8 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/structure/reagent_dispensers/wall/virusfood, 30
 /obj/structure/reagent_dispensers/plumbed/storage
 	name = "stationary storage tank"
 	icon_state = "tank_stationary"
+	mobile_name = "storage tank"
+	mobile_icon_state = "tank_stationary"
 	reagent_id = null //start empty
 
 /obj/structure/reagent_dispensers/plumbed/storage/Initialize(mapload)
@@ -757,6 +781,9 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/structure/reagent_dispensers/wall/virusfood, 30
 	name = "stationary fuel tank"
 	icon_state = "fuel_stationary"
 	desc = "A stationary, plumbed, fuel tank."
+	mobile_name = "fuel tank"
+	mobile_desc = "A tank full of industrial welding fuel. Do not consume."
+	mobile_icon_state = "fuel"
 	reagent_id = /datum/reagent/fuel
 	accepts_rig = TRUE
 
