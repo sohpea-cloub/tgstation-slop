@@ -702,11 +702,17 @@
 			// GUARD CHECK - Only search occupant for this specific ref, since you
 			//  can only CRISPR existing mutations in a target
 			var/datum/mutation/target_mutation = get_mut_by_ref(bref, search_flags)
+			if(!target_mutation)
+				return
 
 			// Prompt for modifier string
-			var/new_sequence_input = tgui_input_text(usr, "Enter a replacement sequence", "Inherent Gene Replacement", max_length = 32, encode = FALSE)
+			var/new_sequence_input = tgui_input_text(usr, "Enter a replacement sequence: 32 letters (A, T, C, G), alternating the first base of each pair of the current gene with the first base of each pair of the new gene.", "Inherent Gene Replacement", max_length = 32, encode = FALSE)
+			// Dropped the prompt, nothing to say
+			if(isnull(new_sequence_input))
+				return
 			// Drop out if the string is the wrong length
 			if(length(new_sequence_input) != 32)
+				say("ERROR: CRISPR sequence must be exactly 32 bases long.")
 				return
 
 			//Generate the original and new gene sequences from the CRISPR string
@@ -730,6 +736,7 @@
 					else
 						old_sequence+=new_pair
 				else
+					say("ERROR: CRISPR sequence contains an invalid base at position [i].")
 					return //drop out, no pair
 
 			//decrement CRISPR charge
