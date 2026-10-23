@@ -137,7 +137,9 @@
 		notify_flags = NOTIFY_CATEGORY_NOFLASH,
 	)
 
-	moveToNullspace() //Yep
+	// Hide the charge inside what it's stuck to instead of sending it to nullspace, so assemblies wired to it (voice analyzers, proximity sensors...) keep hearing and sensing from the target's location.
+	forceMove(target)
+	SetInvisibility(INVISIBILITY_ABSTRACT, id = type)
 
 	if(isitem(bomb_target)) //your crappy throwing star can't fly so good with a giant brick of c4 on it.
 		var/obj/item/thrown_weapon = bomb_target
