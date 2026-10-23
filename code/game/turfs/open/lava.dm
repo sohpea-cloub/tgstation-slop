@@ -283,7 +283,7 @@
 /turf/open/lava/proc/can_burn_stuff(atom/movable/burn_target)
 	if(QDELETED(burn_target))
 		return LAVA_BE_IGNORING
-	if((burn_target.movement_type & MOVETYPES_NOT_TOUCHING_GROUND) || burn_target.throwing || !burn_target.has_gravity()) //you're flying over it.
+	if((burn_target.movement_type & MOVETYPES_NOT_TOUCHING_GROUND) || burn_target.throwing || HAS_TRAIT(burn_target, TRAIT_BEING_THROWN) || !burn_target.has_gravity()) //you're flying over it.
 		return LAVA_BE_IGNORING
 	if(isobj(burn_target))
 		var/obj/burn_obj = burn_target

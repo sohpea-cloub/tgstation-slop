@@ -1540,6 +1540,9 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 /// Given to a mob that can throw to make them not able to throw
 #define TRAIT_NO_THROWING "no_throwing"
 
+/// Given to an item for the instant it is dropped to the floor in order to be thrown, before it has a throwing datum: it is already in flight, so turfs like lava should treat it as such
+#define TRAIT_BEING_THROWN "being_thrown"
+
 ///Trait which allows mobs to parry mining mob projectiles
 #define TRAIT_MINING_PARRYING "mining_parrying"
 

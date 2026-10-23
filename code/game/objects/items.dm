@@ -1339,8 +1339,13 @@ GAME_VERB_SRC(/obj/item, verb_pickup, oview(1), "Pick up", null)
 /obj/item/proc/on_thrown(mob/living/carbon/user, atom/target)
 	if((item_flags & ABSTRACT) || HAS_TRAIT(src, TRAIT_NODROP))
 		return
+	var/gentle = (throwforce && HAS_TRAIT(user, TRAIT_PACIFISM)) || HAS_TRAIT(user, TRAIT_NO_THROWING)
+	// We are dropped on the thrower's turf before the throw datum exists, so tell that turf (lava) we are in flight
+	if(!gentle)
+		ADD_TRAIT(src, TRAIT_BEING_THROWN, TRAIT_GENERIC)
 	user.dropItemToGround(src, silent = TRUE)
-	if(throwforce && (HAS_TRAIT(user, TRAIT_PACIFISM)) || HAS_TRAIT(user, TRAIT_NO_THROWING))
+	REMOVE_TRAIT(src, TRAIT_BEING_THROWN, TRAIT_GENERIC)
+	if(gentle)
 		to_chat(user, span_notice("You set [src] down gently on the ground."))
 		return
 	return src
