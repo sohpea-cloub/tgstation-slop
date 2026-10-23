@@ -38,6 +38,29 @@ GLOBAL_DATUM_INIT(latejoin_menu, /datum/latejoin_menu, new)
 	if(!player.jobs_menu_mounted)
 		to_chat(player, span_notice("If the late join menu isn't showing, hold CTRL while clicking the join button!"))
 
+/// Groups the joinable jobs by the department the latejoin menu lists them under.
+/// Returns an ordered assoc list of department type = list of jobs.
+/// Command jobs are shown in every department they belong to; any other job in the first department of its
+/// departments_list, or in its department_for_prefs if it has one (like the preferences menu does).
+/// Jobs with neither are listed under the undefined department.
+/datum/latejoin_menu/proc/get_department_layout()
+	var/list/layout = list()
+	for(var/datum/job_department/department as anything in SSjob.joinable_departments)
+		layout[department.type] = list()
+
+	for(var/datum/job/job_datum as anything in SSjob.joinable_occupations)
+		if(job_datum.departments_bitflags & DEPARTMENT_BITFLAG_COMMAND)
+			for(var/department_type in job_datum.departments_list)
+				LAZYADD(layout[department_type], job_datum)
+			continue
+		var/department_type = job_datum.department_for_prefs || job_datum.departments_list?[1] || /datum/job_department/undefined
+		LAZYADD(layout[department_type], job_datum)
+
+	for(var/department_type in layout)
+		if(!length(layout[department_type]))
+			layout -= department_type
+	return layout
+
 /datum/latejoin_menu/ui_data(mob/user)
 	var/mob/dead/new_player/owner = user
 	var/list/departments = list()
@@ -57,19 +80,16 @@ GLOBAL_DATUM_INIT(latejoin_menu, /datum/latejoin_menu, new)
 		if(prioritized_job.current_positions >= prioritized_job.total_positions)
 			SSjob.prioritized_jobs -= prioritized_job
 
-	for(var/datum/job_department/department as anything in SSjob.joinable_departments)
+	var/list/layout = get_department_layout()
+	for(var/datum/job_department/department_type as anything in layout)
 		var/list/department_jobs = list()
 		var/list/department_data = list(
 			"jobs" = department_jobs,
 			"open_slots" = 0,
 		)
-		departments[department.department_name] = department_data
+		departments[initial(department_type.department_name)] = department_data
 
-		for(var/datum/job/job_datum as anything in department.department_jobs)
-			//Jobs under multiple departments should only be displayed if this is their first department or the command department
-			if(LAZYLEN(job_datum.departments_list) > 1 && job_datum.departments_list[1] != department.type && !(job_datum.departments_bitflags & DEPARTMENT_BITFLAG_COMMAND))
-				continue
-
+		for(var/datum/job/job_datum as anything in layout[department_type])
 			var/job_availability = owner.IsJobUnavailable(job_datum.title, latejoin = TRUE)
 
 			var/list/job_data = list(
@@ -99,18 +119,16 @@ GLOBAL_DATUM_INIT(latejoin_menu, /datum/latejoin_menu, new)
 	var/list/departments = list()
 	var/mob/dead/new_player/owner = user
 
-	for(var/datum/job_department/department as anything in SSjob.joinable_departments)
+	var/list/layout = get_department_layout()
+	for(var/datum/job_department/department_type as anything in layout)
 		var/list/department_jobs = list()
 		var/list/department_data = list(
 			"jobs" = department_jobs,
-			"color" = department.ui_color,
+			"color" = initial(department_type.ui_color),
 		)
-		departments[department.department_name] = department_data
+		departments[initial(department_type.department_name)] = department_data
 
-		for(var/datum/job/job_datum as anything in department.department_jobs)
-			//Jobs under multiple departments should only be displayed if this is their first department or the command department
-			if(LAZYLEN(job_datum.departments_list) > 1 && job_datum.departments_list[1] != department.type && !(job_datum.departments_bitflags & DEPARTMENT_BITFLAG_COMMAND))
-				continue
+		for(var/datum/job/job_datum as anything in layout[department_type])
 			if((job_datum.job_flags & JOB_HIDE_WHEN_EMPTY) && owner.IsJobUnavailable(job_datum.title, latejoin = TRUE) != JOB_AVAILABLE)
 				continue
 
