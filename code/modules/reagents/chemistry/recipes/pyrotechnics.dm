@@ -299,12 +299,14 @@
 	required_reagents = list(/datum/reagent/mercury = 1, /datum/reagent/oxygen = 1, /datum/reagent/nitrogen = 1, /datum/reagent/carbon = 1)
 	reaction_tags = REACTION_TAG_EASY | REACTION_TAG_EXPLOSIVE | REACTION_TAG_DANGEROUS
 
-/datum/chemical_reaction/sorium/on_reaction(datum/reagents/holder, datum/equilibrium/reaction, created_volume)
+// The sorium only exists once the reaction has run, so consume it (and blow up) when the reaction finishes; on_reaction() runs before any is made
+/datum/chemical_reaction/sorium/reaction_finish(datum/reagents/holder, datum/equilibrium/reaction, react_vol)
+	. = ..()
 	if(holder.has_reagent(/datum/reagent/stabilizing_agent))
 		return
-	holder.remove_reagent(/datum/reagent/sorium, created_volume * 4)
+	holder.remove_reagent(/datum/reagent/sorium, react_vol)
 	var/turf/T = get_turf(holder.my_atom)
-	var/range = clamp(sqrt(created_volume*4), 1, 6)
+	var/range = clamp(sqrt(react_vol), 1, 6)
 	goonchem_vortex(T, 1, range)
 
 /datum/chemical_reaction/sorium_vortex
@@ -322,12 +324,14 @@
 	required_reagents = list(/datum/reagent/stable_plasma = 1, /datum/reagent/uranium/radium = 1, /datum/reagent/carbon = 1)
 	reaction_tags = REACTION_TAG_EASY | REACTION_TAG_EXPLOSIVE | REACTION_TAG_DANGEROUS
 
-/datum/chemical_reaction/liquid_dark_matter/on_reaction(datum/reagents/holder, datum/equilibrium/reaction, created_volume)
+// The LDM only exists once the reaction has run, so consume it (and blow up) when the reaction finishes; on_reaction() runs before any is made
+/datum/chemical_reaction/liquid_dark_matter/reaction_finish(datum/reagents/holder, datum/equilibrium/reaction, react_vol)
+	. = ..()
 	if(holder.has_reagent(/datum/reagent/stabilizing_agent))
 		return
-	holder.remove_reagent(/datum/reagent/liquid_dark_matter, created_volume * 3)
+	holder.remove_reagent(/datum/reagent/liquid_dark_matter, react_vol)
 	var/turf/T = get_turf(holder.my_atom)
-	var/range = clamp(sqrt(created_volume*3), 1, 6)
+	var/range = clamp(sqrt(react_vol), 1, 6)
 	goonchem_vortex(T, 0, range)
 
 /datum/chemical_reaction/ldm_vortex
