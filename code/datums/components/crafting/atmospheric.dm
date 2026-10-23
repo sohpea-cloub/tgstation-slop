@@ -47,10 +47,16 @@
 	var/pipe_type
 
 /datum/crafting_recipe/spec_pipe/check_requirements(mob/user, list/collected_requirements)
-	var/obj/item/pipe/required_pipe = collected_requirements[/obj/item/pipe][1]
-	if(ispath(required_pipe.pipe_type, /obj/machinery/atmospherics/pipe/smart))
-		return TRUE
+	for(var/obj/item/pipe/required_pipe as anything in collected_requirements[/obj/item/pipe])
+		if(ispath(required_pipe.pipe_type, /obj/machinery/atmospherics/pipe/smart))
+			return TRUE
 	return FALSE
+
+/datum/crafting_recipe/spec_pipe/is_valid_requirement(atom/movable/candidate, requirement_path)
+	if(requirement_path != /obj/item/pipe)
+		return TRUE
+	var/obj/item/pipe/candidate_pipe = candidate
+	return ispath(candidate_pipe.pipe_type, /obj/machinery/atmospherics/pipe/smart)
 
 /datum/crafting_recipe/spec_pipe/layer_adapter
 	name = "Layer manifold fitting"

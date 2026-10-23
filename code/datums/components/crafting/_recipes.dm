@@ -102,6 +102,14 @@
 /datum/crafting_recipe/proc/check_requirements(mob/user, list/collected_requirements)
 	return TRUE
 
+/**
+ * Whether this specific instance may be consumed for the given requirement path. Only the instance is checked here
+ * (the required amounts are counted by path), so recipes that care about a var on the item override this
+ * so the right instance is consumed, rather than the first one found.
+ */
+/datum/crafting_recipe/proc/is_valid_requirement(atom/movable/candidate, requirement_path)
+	return TRUE
+
 ///Run custom pre-craft checks for this recipe for tools, rather than consumed requirements.
 /datum/crafting_recipe/proc/check_tools(atom/source, list/collected_tools, final_check = FALSE)
 	return TRUE

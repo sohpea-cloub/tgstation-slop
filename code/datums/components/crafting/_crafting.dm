@@ -473,7 +473,11 @@
 					total_materials[material] += tally_stack.custom_materials[material]
 		else
 			while(amount > 0)
-				var/atom/movable/item = locate(path_key) in surroundings
+				var/atom/movable/item
+				for(var/atom/movable/candidate in surroundings)
+					if(istype(candidate, path_key) && recipe.is_valid_requirement(candidate, path_key))
+						item = candidate
+						break
 				if(isnull(item)) //This would only happen if the previous checks for contents and tools were flawed.
 					stack_trace("couldn't fulfill the required amount for [path_key]. Dangit")
 					break
