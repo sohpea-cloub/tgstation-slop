@@ -61,6 +61,10 @@
 	freq_listening = list(FREQ_SYNDICATE)
 	syndicate = TRUE
 
+// Syndicate priority comms must not go down with Nanotrasen's (e.g. communications blackout)
+/obj/machinery/telecomms/allinone/nuclear/emp_act(severity)
+	return EMP_PROTECT_SELF
+
 /obj/machinery/telecomms/allinone/indestructible
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
 
