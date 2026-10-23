@@ -49,6 +49,8 @@
 	var/directional_offset_y
 	/// Cast range for the directional cast (how far away the atom is moved)
 	var/cast_range = 2
+	/// How many tiles forward from the holder the directional light is currently centered, after stopping at opaque turfs
+	var/cast_distance = 0
 
 /datum/light_overlay/New(atom/movable/parent, is_directional, is_beam)
 	. = ..()
@@ -305,6 +307,8 @@
 			final_distance = i
 			break
 		scanning = next_turf
+
+	cast_distance = final_distance
 
 	hide_from_holder()
 

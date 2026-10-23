@@ -150,3 +150,6 @@ do { \
 #define LIGHTING_ON (1<<0)
 /// Is the parent attached to something else, its loc? Then we need to keep an eye of this.
 #define LIGHTING_ATTACHED (1<<1)
+
+/// The furthest a directional overlay light can be cast away from its holder, in tiles (see /datum/light_overlay/cast_range)
+#define MAX_DIRECTIONAL_CAST_RANGE 3

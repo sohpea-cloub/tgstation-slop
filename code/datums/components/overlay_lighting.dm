@@ -23,6 +23,8 @@
 	var/datum/light_overlay/light
 	/// The turf we are currently displaying light on, if any
 	var/turf/luminosity_turf
+	/// The range around luminosity_turf we are registered in the spatial grid cells for, so we clean up exactly what we registered
+	var/registered_cell_range = 0
 
 /datum/component/overlay_lighting/Initialize(_range, _power, _color, starts_on, is_directional, is_beam, force)
 	if(!ismovable(parent))
@@ -83,12 +85,24 @@
 	QDEL_NULL(light)
 	return ..()
 
+/// How far from the holder's turf this light can reach turfs, counting the forward shift of a directional light's cast.
+/datum/component/overlay_lighting/proc/get_cell_range()
+	return lumcount_range + (light.directional ? MAX_DIRECTIONAL_CAST_RANGE : 0)
+
+/// The turf the light is centered on: the holder's turf, or for directional lights the turf its cone is cast to.
+/datum/component/overlay_lighting/proc/get_light_center()
+	var/turf/center = get_turf(light.current_holder)
+	if(center && light.directional && light.cast_distance)
+		center = get_ranged_target_turf(center, light.current_direction, light.cast_distance) || center
+	return center
+
 /// Clears ourselves from spatial grid's dynlights lists
 /datum/component/overlay_lighting/proc/clean_old_cells()
 	if (isnull(luminosity_turf))
 		return
-	for (var/datum/spatial_grid_cell/grid_cell as anything in SSspatial_grid.get_cells_in_range(luminosity_turf, lumcount_range))
+	for (var/datum/spatial_grid_cell/grid_cell as anything in SSspatial_grid.get_cells_in_range(luminosity_turf, registered_cell_range))
 		GRID_CELL_REMOVE(grid_cell.dynamic_light_sources, src)
+	luminosity_turf = null
 
 /// Populates the affected_turfs lazylist, adding to its contents the effects of being near the light.
 /datum/component/overlay_lighting/proc/register_new_cells()
@@ -98,7 +112,8 @@
 	luminosity_turf = get_turf(current_holder)
 	if (isnull(luminosity_turf))
 		return
-	for (var/datum/spatial_grid_cell/grid_cell as anything in SSspatial_grid.get_cells_in_range(luminosity_turf, lumcount_range))
+	registered_cell_range = get_cell_range()
+	for (var/datum/spatial_grid_cell/grid_cell as anything in SSspatial_grid.get_cells_in_range(luminosity_turf, registered_cell_range))
 		GRID_CELL_ASSOC_SET(grid_cell.dynamic_light_sources, src, lum_power)
 
 /// Clears the old affected cells and populates the new ones.
@@ -150,15 +165,17 @@
 ///Changes the range which the light reaches. 0 means no light, 6 is the maximum value.
 /datum/component/overlay_lighting/proc/set_range(atom/source, old_range)
 	SIGNAL_HANDLER
+	// Our spatial grid registration depends on the range, so redo it
+	clean_old_cells()
 	light.set_range(source.light_range)
 	lumcount_range = ceil(light.range)
-	update_luminosity_cells()
+	register_new_cells()
 
 /// Changes the intensity/brightness of the light by altering the visual object's alpha.
 /datum/component/overlay_lighting/proc/set_power(atom/source, old_power)
 	SIGNAL_HANDLER
 	light.set_power(source.light_power)
-	lum_power = source.light_power >= 0 ? 0.5 : -0.5
+	lum_power = source.light_power > 0 ? 0.5 : (source.light_power < 0 ? -0.5 : 0)
 	clean_old_cells()
 	register_new_cells()
 
@@ -215,7 +232,7 @@
 		return
 
 	remove_dynamic_lumi(light.current_holder)
-	update_luminosity_cells()
+	clean_old_cells()
 
 /// Handles putting the source for overlay lights into the light eater queue since we aren't tracked by [/atom/var/light_sources]
 /datum/component/overlay_lighting/proc/on_light_eater(datum/source, list/light_queue, datum/light_eater)
