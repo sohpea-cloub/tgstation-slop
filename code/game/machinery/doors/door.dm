@@ -696,6 +696,12 @@
 		return 1
 	return 0
 
+/obj/machinery/door/fire_act(exposed_temperature, exposed_volume)
+	// Heat-proof doors don't take heat damage from fires, whether they're open (so a hotspot can sit on their tile) or closed
+	if(heat_proof)
+		return
+	return ..()
+
 /obj/machinery/door/morgue
 	icon = 'icons/obj/doors/doormorgue.dmi'
 
