@@ -459,6 +459,13 @@ GLOBAL_LIST_INIT(binary, list("0","1"))
 /proc/random_color()
 	return random_string(6, GLOB.hex_characters)
 
+/// Like random_color(), but never returns a color that is_color_dark() rejects at the given threshold (so, not near-black). No hash, like random_color().
+/proc/random_color_not_dark(threshold = 15)
+	var/color = random_color()
+	while(is_color_dark("#[color]", threshold))
+		color = random_color()
+	return color
+
 /proc/ready_random_color()
 	return "#" + random_string(6, GLOB.hex_characters)
 

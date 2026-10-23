@@ -43,6 +43,10 @@
 	var/succeeding_blocks = copytext(old_hash, block_pos + block_length)
 	return (preceding_blocks + value + succeeding_blocks)
 
+/// Returns a random value for this block, to put in a hash with modified_hash()
+/datum/dna_block/proc/random_value()
+	return random_string(block_length, GLOB.hex_characters)
+
 /// Gets the block string from the hash inserted
 /datum/dna_block/proc/get_block(from_hash)
 	if(isnull(from_hash))

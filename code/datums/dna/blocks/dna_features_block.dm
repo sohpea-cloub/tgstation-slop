@@ -5,6 +5,10 @@
 /datum/dna_block/feature/mutant_color/create_unique_block(mob/living/carbon/human/target)
 	return sanitize_hexcolor(target.dna.features[feature_key], include_crunch = FALSE)
 
+/// Skin colors that are near-black are not allowed in preferences, so random mutations don't make them either
+/datum/dna_block/feature/mutant_color/random_value()
+	return random_color_not_dark()
+
 /datum/dna_block/feature/mutant_color/apply_to_mob(mob/living/carbon/human/target, dna_hash)
 	target.dna.features[feature_key] = sanitize_hexcolor(get_block(dna_hash))
 

@@ -349,7 +349,7 @@ GLOBAL_LIST_INIT(total_uf_len_by_block, populate_total_uf_len_by_block())
 			for(var/feature in new_features)
 				features[feature] = new_features[feature]
 
-		features[FEATURE_MUTANT_COLOR] = "#[random_color()]"
+		features[FEATURE_MUTANT_COLOR] = "#[random_color_not_dark()]"
 
 	update_dna_identity()
 
@@ -626,7 +626,7 @@ GLOBAL_LIST_INIT(total_uf_len_by_block, populate_total_uf_len_by_block())
 		CRASH("[src] does not have DNA")
 	var/mutblock_path = pick(GLOB.dna_feature_blocks)
 	var/datum/dna_block/feature/mutblock = GLOB.dna_feature_blocks[mutblock_path]
-	dna.unique_features = mutblock.modified_hash(dna.unique_features, random_string(mutblock.block_length, GLOB.hex_characters))
+	dna.unique_features = mutblock.modified_hash(dna.unique_features, mutblock.random_value())
 	updateappearance(mutcolor_update = TRUE, mutations_overlay_update = TRUE)
 
 /mob/living/carbon/proc/clean_dna()
@@ -657,7 +657,7 @@ GLOBAL_LIST_INIT(total_uf_len_by_block, populate_total_uf_len_by_block())
 		for(var/block_id in GLOB.dna_feature_blocks)
 			var/datum/dna_block/feature/block = GLOB.dna_feature_blocks[block_id]
 			if(prob(probability))
-				M.dna.unique_identity = block.modified_hash(M.dna.unique_identity, random_string(block.block_length, GLOB.hex_characters))
+				M.dna.unique_features = block.modified_hash(M.dna.unique_features, block.random_value())
 	if(ui || uf)
 		M.updateappearance(mutcolor_update=uf, mutations_overlay_update=1)
 
