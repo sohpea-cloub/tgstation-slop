@@ -27,6 +27,8 @@
 
 /obj/effect/dummy/lighting_obj/moblight
 	name = "mob lighting"
+	// Follow the mob's own movement, so the light is re-evaluated when the mob leaves (or starts inside) a container
+	light_flags = LIGHT_ATTACHED
 
 /obj/effect/dummy/lighting_obj/moblight/Initialize(mapload, range, power, color, duration)
 	. = ..()
