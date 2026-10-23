@@ -424,7 +424,6 @@
 					current.dropItemToGround(W, TRUE) //The TRUE forces all items to drop, since this is an admin undress.
 			if("takeuplink")
 				take_uplink()
-				wipe_memory_type(/datum/memory/key/traitor_uplink/implant)
 				log_admin("[key_name(usr)] removed [current]'s uplink.")
 			if("crystals")
 				if(check_rights(R_FUN))

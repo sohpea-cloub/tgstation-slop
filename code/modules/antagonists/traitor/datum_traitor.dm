@@ -91,7 +91,8 @@
 	if(!isnull(uplink_handler))
 		uplink_handler.can_replace_objectives = null
 		uplink_handler.replace_objectives = null
-	owner.take_uplink()
+	// The uplink we were given may no longer be on the mob (a dropped pen, a PDA in a locker): remove that one first
+	owner.take_uplink(uplink_ref?.resolve())
 	return ..()
 
 /// Returns true if we're allowed to assign ourselves a new objective

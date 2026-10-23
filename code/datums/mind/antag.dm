@@ -247,8 +247,13 @@
 		var/datum/action/special_equipment_fallback/fallback = new(src)
 		fallback.Grant(current)
 
-/datum/mind/proc/take_uplink()
-	qdel(find_syndicate_uplink())
+/// Removes an uplink, by default the first one we find on our body, and the memories of where it was.
+/datum/mind/proc/take_uplink(datum/component/uplink/uplink)
+	uplink ||= find_syndicate_uplink()
+	qdel(uplink)
+	// The memories of where the uplink was and its code are of no use any more (and only these: not every memory)
+	wipe_memory_type(/datum/memory/key/traitor_uplink)
+	wipe_memory_type(/datum/memory/key/traitor_uplink/implant)
 
 /datum/mind/proc/make_wizard()
 	if(has_antag_datum(/datum/antagonist/wizard))
