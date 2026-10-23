@@ -35,7 +35,7 @@
 
 /obj/item/organ/body_egg/on_death(seconds_per_tick)
 	. = ..()
-	if(!owner)
+	if(!owner || owner.organs_preserved())
 		return
 	egg_process(seconds_per_tick)
 

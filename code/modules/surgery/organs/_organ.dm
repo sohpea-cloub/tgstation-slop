@@ -162,6 +162,8 @@ INITIALIZE_IMMEDIATE(/obj/item/organ)
 		return
 
 	if(owner)
+		if(owner.organs_preserved())
+			return
 		if(owner.bodytemperature > T0C)
 			var/air_temperature_factor = min((owner.bodytemperature - T0C) / 20, 1)
 			apply_organ_damage(decay_factor * maxHealth * seconds_per_tick * air_temperature_factor)

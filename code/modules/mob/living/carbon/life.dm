@@ -500,10 +500,13 @@
 
 	return COMPONENT_NO_EXPOSE_REAGENTS
 
+/// Whether the body's organs are preserved from decay: no organ decay if the body contains formaldehyde or cryostylane.
+/mob/living/carbon/proc/organs_preserved()
+	return reagents && (reagents.has_reagent(/datum/reagent/toxin/formaldehyde, 1) || reagents.has_reagent(/datum/reagent/cryostylane))
+
 /mob/living/carbon/proc/handle_organs(seconds_per_tick)
 	if(stat == DEAD)
-		if(reagents && (reagents.has_reagent(/datum/reagent/toxin/formaldehyde, 1) || reagents.has_reagent(/datum/reagent/cryostylane))) // No organ decay if the body contains formaldehyde.
-			return
+		// Organs still get on_death while preserved (formaldehyde etc. stops decay inside it), as some organs do more than decay there.
 		for(var/obj/item/organ/organ in organs)
 			// On-death is where organ decay is handled
 			if(organ?.owner) // organ + owner can be null due to reagent metabolization causing organ shuffling
