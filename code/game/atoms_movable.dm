@@ -417,6 +417,10 @@
 	. |= src
 	if(buckled_mobs)
 		. |= buckled_mobs
+		// and whoever rides them, like the rider of a mob that is buckled to a wheelchair
+		for(var/mob/living/buckled as anything in buckled_mobs)
+			if(buckled.has_buckled_mobs())
+				buckled.get_z_move_affected(z_move_flags & ~ZMOVE_INCLUDE_PULLED, .)
 	if(!(z_move_flags & ZMOVE_INCLUDE_PULLED))
 		return
 	for(var/mob/living/buckled as anything in buckled_mobs)
