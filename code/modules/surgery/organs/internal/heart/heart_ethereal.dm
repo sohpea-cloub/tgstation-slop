@@ -84,7 +84,7 @@
 		return // no reviving during mafia, or other inconvenient times.
 
 	if(!can_crystalize(victim))
-		return // no head or no brain: nobody is there to come back.
+		return // no head, no brain, or a body waiting for a soul: nobody is there to come back.
 
 	to_chat(victim, span_nicegreen("Crystals start forming around your dead body."))
 	victim.visible_message(span_notice("Crystals start forming around [victim]."), ignored_mobs = victim)
@@ -97,11 +97,14 @@
 	RegisterSignal(victim, COMSIG_ATOM_EXAMINE, PROC_REF(on_examine), override = TRUE)
 	RegisterSignal(victim, COMSIG_MOB_APPLY_DAMAGE, PROC_REF(on_take_damage))
 
-///Whether this body can be revived by a crystal: it needs its head and brain (revive would regrow them, making a fresh brainless copy).
+///Whether this body can be revived by a crystal: it needs its head and brain (revive would regrow them, making a fresh brainless copy), and must not be a recovered-crew body still waiting for a ghost.
 /obj/item/organ/heart/ethereal/proc/can_crystalize(mob/living/carbon/ethereal)
 	if(!iscarbon(ethereal))
 		return FALSE
 	if(!ethereal.get_bodypart(BODY_ZONE_HEAD) || !ethereal.get_organ_slot(ORGAN_SLOT_BRAIN))
+		return FALSE
+	var/obj/item/organ/brain/brain = ethereal.get_organ_slot(ORGAN_SLOT_BRAIN)
+	if(HAS_TRAIT(ethereal, TRAIT_GHOSTROLE_ON_REVIVE) || HAS_TRAIT(brain, TRAIT_GHOSTROLE_ON_REVIVE))
 		return FALSE
 	return TRUE
 
