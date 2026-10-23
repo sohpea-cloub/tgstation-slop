@@ -353,6 +353,11 @@ INITIALIZE_IMMEDIATE(/obj/item/organ)
 			if(remove_hazardous && (organ.organ_flags & ORGAN_HAZARDOUS))
 				qdel(organ)
 				continue
+			// Scarred eyes are permanently damaged otherwise, so a refresh heals the scars too
+			if(remove_hazardous && istype(organ, /obj/item/organ/eyes))
+				var/obj/item/organ/eyes/scarred_eyes = organ
+				scarred_eyes.fix_scar(RIGHT_EYE_SCAR)
+				scarred_eyes.fix_scar(LEFT_EYE_SCAR)
 			// Species regenerate organs doesn't ALWAYS handle healing the organs because it's dumb
 			organ.set_organ_damage(0)
 
