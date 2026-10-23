@@ -57,6 +57,12 @@
 		/obj/item/cigarette,
 	)
 
+/// Whether this item is the kind of thing that goes into the PDA's pen slot. Spraycans are crayons, but are painted with, not stored.
+/obj/item/modular_computer/pda/proc/can_insert_item(obj/item/tool)
+	if(istype(tool, /obj/item/toy/crayon/spraycan))
+		return FALSE
+	return is_type_in_list(tool, contained_item)
+
 /obj/item/modular_computer/pda/Initialize(mapload)
 	. = ..()
 	if(inserted_item)
@@ -138,7 +144,7 @@
 	if(inserted_item)
 		context[SCREENTIP_CONTEXT_CTRL_LMB] = "Remove [inserted_item]"
 		. = CONTEXTUAL_SCREENTIP_SET
-	else if(istype(held_item) && is_type_in_list(held_item, contained_item))
+	else if(istype(held_item) && can_insert_item(held_item))
 		context[SCREENTIP_CONTEXT_LMB] = "Insert [held_item]"
 		. = CONTEXTUAL_SCREENTIP_SET
 
@@ -153,7 +159,7 @@
 	. = ..()
 	if(.)
 		return .
-	if(!is_type_in_list(tool, contained_item))
+	if(!can_insert_item(tool))
 		return NONE
 	if(tool.w_class >= WEIGHT_CLASS_SMALL) // Anything equal to or larger than small won't work
 		user.balloon_alert(user, "too big!")
