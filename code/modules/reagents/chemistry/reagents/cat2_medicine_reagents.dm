@@ -534,8 +534,8 @@
 	if (!HAS_TRAIT_FROM(exposed_mob, TRAIT_HUSK, BURN))
 		return
 
-	//don't try to unhusk mobs above burn damage threshold
-	if(carbies.get_fire_loss() > UNHUSK_DAMAGE_THRESHOLD)
+	//don't try to unhusk mobs above burn damage threshold, only organic limbs count: synthflesh can't heal robotic ones, and a husk is flesh damage
+	if(carbies.get_fire_loss_for_type(affected_bodytype) > UNHUSK_DAMAGE_THRESHOLD)
 		if(show_message && !need_mob_update)
 			carbies.visible_message(span_minoralert("The liquid fails to properly stick on [carbies]. [carbies]'s burns need to be repaired first!"))
 		return

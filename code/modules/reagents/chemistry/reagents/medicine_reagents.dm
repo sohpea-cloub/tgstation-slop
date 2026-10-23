@@ -257,7 +257,7 @@
 	var/functional_react_volume = reac_volume * (1 - touch_protection)
 
 	var/mob/living/carbon/patient = exposed_mob
-	if(functional_react_volume >= 5 && HAS_TRAIT_FROM(patient, TRAIT_HUSK, BURN) && patient.get_fire_loss() < UNHUSK_DAMAGE_THRESHOLD) //One carp yields 12u rezadone.
+	if(functional_react_volume >= 5 && HAS_TRAIT_FROM(patient, TRAIT_HUSK, BURN) && patient.get_fire_loss_for_type(affected_bodytype) < UNHUSK_DAMAGE_THRESHOLD) //One carp yields 12u rezadone.
 		patient.cure_husk(BURN)
 		patient.visible_message(span_nicegreen("[patient]'s body rapidly absorbs moisture from the environment, taking on a more healthy appearance."))
 
