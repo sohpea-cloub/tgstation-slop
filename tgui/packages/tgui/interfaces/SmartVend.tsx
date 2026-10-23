@@ -21,6 +21,7 @@ type Item = {
   amount: number;
   icon: string;
   icon_state: string;
+  icon_base64: string | null;
 };
 
 type Data = {
@@ -109,6 +110,7 @@ const ItemTile = ({ item }) => {
   return (
     <ImageButton
       key={item.path}
+      base64={item.icon_base64}
       dmIcon={item.icon}
       dmIconState={item.icon_state}
       disabled={item.amount < 1}
@@ -164,6 +166,7 @@ const ItemList = ({ item }) => {
       key={item.path}
       fluid
       imageSize={32}
+      base64={item.icon_base64}
       dmIcon={item.icon}
       dmIconState={item.icon_state}
       disabled={item.amount < 1}

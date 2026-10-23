@@ -386,6 +386,8 @@
 					"name" = full_capitalize(atom.name),
 					"icon" = atom.icon,
 					"icon_state" = atom.icon_state,
+					// Things with no icon_state of their own (bodyparts) are built from overlays, so tgui can't look them up by icon and state
+					"icon_base64" = atom.icon_state ? null : icon2base64(getFlatIcon(atom, no_anim = TRUE)),
 					"amount" = 1
 					)
 	.["contents"] = sort_list(listofitems)
