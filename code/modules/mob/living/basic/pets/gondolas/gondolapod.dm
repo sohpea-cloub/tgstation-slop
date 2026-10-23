@@ -36,6 +36,12 @@
 	QDEL_NULL(linked_pod) //Will cause the open() proc for the linked supplypod to be called with the "broken" parameter set to true, meaning that it will dump its contents on death
 	return ..()
 
+/mob/living/basic/pet/gondola/gondolapod/ex_act(severity, target, origin)
+	//An explosive pod would otherwise kill the gondola it just turned into with its own blast, destroying the delivery.
+	if(!QDELETED(linked_pod) && length(linked_pod.explosionSize) && (linked_pod.explosionSize[1] + linked_pod.explosionSize[2] + linked_pod.explosionSize[3]))
+		return FALSE
+	return ..()
+
 /mob/living/basic/pet/gondola/gondolapod/create_gondola()
 	return
 
