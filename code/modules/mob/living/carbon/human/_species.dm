@@ -311,6 +311,9 @@ GLOBAL_LIST_EMPTY(features_by_species)
 		var/health_pct = 1
 		var/remove_existing = !isnull(existing_organ) && !(existing_organ.zone in excluded_zones) && !(existing_organ.organ_flags & ORGAN_UNREMOVABLE)
 		if(remove_existing)
+			// A brain that was moved out of a missing head (H.A.R.S.) keeps living where it was, instead of vanishing with no head to receive its replacement
+			if(slot == ORGAN_SLOT_BRAIN && existing_organ.zone != new_organ.zone && !organ_holder.get_bodypart(deprecise_zone(new_organ.zone)))
+				new_organ.zone = existing_organ.zone
 			health_pct = (existing_organ.maxHealth - existing_organ.damage) / existing_organ.maxHealth
 			if(slot == ORGAN_SLOT_BRAIN)
 				var/obj/item/organ/brain/existing_brain = existing_organ
