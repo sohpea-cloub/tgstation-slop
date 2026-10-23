@@ -679,6 +679,7 @@ DEFINE_BITFIELD(turret_flags, list(
 	A.aim_projectile(target, T)
 	A.firer = src
 	A.fired_from = src
+	stored_gun?.setup_turret_projectile(A)
 	if(ignore_faction)
 		APPLY_FACTION_AND_ALLIES_FROM(A, src)
 	A.fire()
