@@ -248,6 +248,10 @@ CIGARETTE PACKETS ARE IN FANCY.DM
 	/// Which people ate cigarettes and how many
 	var/static/list/cigarette_eaters = list()
 
+// worn_icon is the mask sprite, which would be drawn at the mouth's position in a suit storage slot
+/obj/item/cigarette/has_suit_storage_icon()
+	return FALSE
+
 /obj/item/cigarette/Initialize(mapload)
 	. = ..()
 	AddComponent(/datum/component/knockoff, 90, list(BODY_ZONE_PRECISE_MOUTH), slot_flags) //90% to knock off when wearing a mask

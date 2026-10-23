@@ -304,9 +304,8 @@ There are several things that need to be remembered:
 
 	if(s_store)
 		var/obj/item/worn_item = s_store
-		if(HAS_TRAIT(worn_item, TRAIT_NO_WORN_ICON) || (obscured_slots & HIDESUITSTORAGE))
+		if(HAS_TRAIT(worn_item, TRAIT_NO_WORN_ICON) || (obscured_slots & HIDESUITSTORAGE) || !worn_item.has_suit_storage_icon())
 			return
-
 
 		var/mutable_appearance/s_store_overlay = worn_item.build_worn_icon(default_layer = SUIT_STORE_LAYER, default_icon_file = 'icons/mob/clothing/belt_mirror.dmi', bodyshape = bodyshape)
 		apply_height(s_store_overlay, ENTIRE_BODY)
@@ -314,6 +313,16 @@ There are several things that need to be remembered:
 		my_chest?.worn_suit_storage_offset?.apply_offset(s_store_overlay)
 		overlays_standing[SUIT_STORE_LAYER] = s_store_overlay
 	apply_overlay(SUIT_STORE_LAYER)
+
+/// Whether this item has a sprite to show while it is in a suit storage slot.
+/// Without one, the missing state falls back to the pink nameless state of the dmi, which is better left undrawn.
+/obj/item/proc/has_suit_storage_icon()
+	var/file2use = worn_icon || 'icons/mob/clothing/belt_mirror.dmi'
+	if(istype(file2use, /icon)) // generated (greyscale) icons are already built for the state
+		return TRUE
+	if(istext(file2use) && !fexists(file2use)) // not a file at all
+		return FALSE
+	return icon_exists(file2use, worn_icon_state || icon_state)
 
 /mob/living/carbon/human/update_worn_head()
 	remove_overlay(HEAD_LAYER)
