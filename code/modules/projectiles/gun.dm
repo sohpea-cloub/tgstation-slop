@@ -406,7 +406,7 @@
 	if(flag) //It's adjacent, is the user, or is on the user's person
 		if(target in user.contents) //can't shoot stuff inside us.
 			return NONE
-		if(!ismob(target)) //melee attack
+		if(!ismob(target) && !(isturf(target) && user.combat_mode)) //melee attack (objects stay melee targets; in combat mode an adjacent turf is shot at)
 			return NONE
 		if(target == user && (user.zone_selected != BODY_ZONE_PRECISE_MOUTH && doafter_self_shoot)) //so we can't shoot ourselves (unless mouth selected)
 			return NONE
