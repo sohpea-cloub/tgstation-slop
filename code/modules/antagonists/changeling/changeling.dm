@@ -570,6 +570,12 @@
 	// Grab the target's sechut icon.
 	new_profile.id_icon = target.wear_id?.get_sechud_job_icon()
 	new_profile.id_icon_state = target.wear_id?.get_sechud_job_icon_state()
+	var/obj/item/card/id/target_id = target.wear_id?.GetID()
+	if(istype(target_id, /obj/item/card/id/advanced))
+		var/obj/item/card/id/advanced/advanced_id = target_id
+		new_profile.id_assignment = advanced_id.trim_assignment_override || advanced_id.assignment
+	else
+		new_profile.id_assignment = target_id?.assignment
 
 	var/list/slots = list("head", "wear_mask", "wear_neck", "back", "wear_suit", "w_uniform", "shoes", "belt", "gloves", "glasses", "ears", "wear_id", "s_store")
 	for(var/slot in slots)
@@ -864,6 +870,7 @@
 			var/obj/item/changeling/id/flesh_id = new_flesh_item
 			flesh_id.hud_icon = chosen_profile.id_icon
 			flesh_id.hud_icon_state = chosen_profile.id_icon_state
+			flesh_id.assignment = chosen_profile.id_assignment
 
 		if(equip)
 			user.equip_to_slot_or_del(new_flesh_item, slot2slot[slot], indirect_action = TRUE)
@@ -923,6 +930,8 @@
 	var/id_icon
 	/// ID HUD icon state associated with the profile
 	var/id_icon_state
+	/// The job on the profile source's ID, if they had one
+	var/id_assignment
 	/// The age of the profile source.
 	var/age
 	/// The body type of the profile source.

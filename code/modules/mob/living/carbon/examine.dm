@@ -446,8 +446,9 @@
 	//ID
 	if(wear_id && !HAS_TRAIT(wear_id, TRAIT_EXAMINE_SKIP))
 		var/obj/item/card/id/id = wear_id.GetID()
-		if(id && get_dist(user, src) <= ID_EXAMINE_DISTANCE)
-			var/id_href = "<a href='byond://?src=[REF(src)];see_id=1;id_ref=[REF(id)];id_name=[id.registered_name];examine_time=[world.time]'>[wear_id.examine_title(user)]</a>"
+		var/obj/item/changeling/id/flesh_id = istype(wear_id, /obj/item/changeling/id) ? wear_id : null
+		if((id || flesh_id) && get_dist(user, src) <= ID_EXAMINE_DISTANCE)
+			var/id_href = "<a href='byond://?src=[REF(src)];see_id=1;id_ref=[REF(id || flesh_id)];id_name=[id ? id.registered_name : real_name];examine_time=[world.time]'>[wear_id.examine_title(user)]</a>"
 			. += "[t_He] [t_is] wearing [id_href]."
 
 		else

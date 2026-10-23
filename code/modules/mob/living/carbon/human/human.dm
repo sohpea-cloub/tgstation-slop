@@ -96,7 +96,9 @@
 		var/can_see_still = (viewer in viewers(src))
 
 		var/obj/item/card/id/id = wear_id?.GetID()
-		var/same_id = id && (href_list["id_ref"] == REF(id) || href_list["id_name"] == id.registered_name)
+		// Changeling flesh IDs aren't real ID cards, but they still need to hold up the illusion
+		var/obj/item/changeling/id/flesh_id = istype(wear_id, /obj/item/changeling/id) ? wear_id : null
+		var/same_id = (id && (href_list["id_ref"] == REF(id) || href_list["id_name"] == id.registered_name)) || (flesh_id && href_list["id_ref"] == REF(flesh_id))
 		if(!same_id && can_see_still)
 			to_chat(viewer, span_notice("[p_They()] [p_are()] no longer wearing that ID card."))
 			return
@@ -112,17 +114,17 @@
 			to_chat(viewer, span_notice("You can't make out that ID from here."))
 			return
 
-		var/id_name = id.registered_name
-		var/id_age = id.registered_age
-		var/id_job = id.assignment
+		var/id_name = flesh_id ? real_name : id.registered_name
+		var/id_age = flesh_id ? age : id.registered_age
+		var/id_job = flesh_id ? flesh_id.assignment : id.assignment
 		// Should probably be recorded on the ID, but this is easier (albiet more restrictive) on chameleon ID users
 		var/datum/record/crew/record = find_record(id_name)
 		var/id_blood_type = record?.blood_type
 		var/id_gender = record?.gender
 		var/id_species = record?.species
-		var/id_icon = jointext(id.get_id_examine_strings(viewer), "")
+		var/id_icon = jointext((flesh_id || id).get_id_examine_strings(viewer), "")
 		// Fill in some blanks for chameleon IDs to maintain the illusion of a real ID
-		if(istype(id, /obj/item/card/id/advanced/chameleon))
+		if(flesh_id || istype(id, /obj/item/card/id/advanced/chameleon))
 			id_gender ||= gender
 			id_species ||= dna.species.name
 			id_blood_type ||= get_bloodtype()

@@ -146,6 +146,8 @@
 	var/hud_icon
 	///HUD job icon state of the ID
 	var/hud_icon_state
+	/// Job shown when somebody takes a closer look at this ID
+	var/assignment
 
 /obj/item/changeling/id/equipped(mob/user, slot, initial)
 	. = ..()
