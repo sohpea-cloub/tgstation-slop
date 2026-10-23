@@ -140,8 +140,8 @@
 	if(!can_launch(user, where, silent = TRUE))
 		return
 	var/obj/vehicle/sealed/mecha/mech = locate() in get_turf(connected_mechpad)
-	mech.setDir(SOUTH)
-	connected_mechpad.launch(where)
+	mech?.setDir(SOUTH)
+	connected_mechpad.launch(where, !connected_mechpad.mech_only && !where.mech_only)
 
 /obj/machinery/computer/mechpad/proc/can_launch(mob/user, obj/machinery/mechpad/where, silent = FALSE)
 	if(QDELETED(where))
@@ -160,11 +160,20 @@
 		if(!silent)
 			to_chat(user, span_warning("Pads have open panels!"))
 		return FALSE
-	var/obj/vehicle/sealed/mecha/mech = locate() in get_turf(connected_mechpad)
+	var/turf/pad_turf = get_turf(connected_mechpad)
+	var/obj/vehicle/sealed/mecha/mech = locate() in pad_turf
 	if(!mech)
-		if(!silent)
-			to_chat(user, span_warning("[src] detects no mecha on the pad!"))
-		return FALSE
+		// Without a mech, only lifeforms standing on the pad can be sent, and only if both pads allow lifeforms.
+		var/has_lifeform = !!(locate(/mob/living) in pad_turf)
+		if(!has_lifeform)
+			if(!silent)
+				to_chat(user, span_warning("[src] detects no mecha or lifeforms on the pad!"))
+			return FALSE
+		if(connected_mechpad.mech_only || where.mech_only)
+			if(!silent)
+				to_chat(user, span_warning("[connected_mechpad.mech_only ? "This" : "The target"] pad does not allow lifeforms!"))
+			return FALSE
+		return TRUE
 	if(where.mech_only && (locate(/mob/living) in mech.get_all_contents()))
 		if(!silent)
 			to_chat(user, span_warning("The target pad does not allow lifeforms!"))

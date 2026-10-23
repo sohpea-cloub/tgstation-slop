@@ -50,14 +50,16 @@
  * Spawns a special supply pod whitelisted to only accept mechs and have its drop off location be another mechpad
  * Arguments:
  * * where - where the supply pod will land after grabbing the mech
+ * * with_lifeforms - whether the pod also grabs living mobs standing on the pad (both pads allow lifeforms)
  */
-/obj/machinery/mechpad/proc/launch(obj/machinery/mechpad/where)
+/obj/machinery/mechpad/proc/launch(obj/machinery/mechpad/where, with_lifeforms = FALSE)
 	var/turf/reverse_turf = get_turf(where)
 	podspawn(list(
 		"target" = get_turf(src),
 		"path" = /obj/structure/closet/supplypod/mechpod,
 		"style" = /datum/pod_style/seethrough,
-		"reverse_dropoff_coords" = list(reverse_turf.x, reverse_turf.y, reverse_turf.z)
+		"reverse_dropoff_coords" = list(reverse_turf.x, reverse_turf.y, reverse_turf.z),
+		"reverse_option_list" = list("Mobs" = with_lifeforms, "Objects" = FALSE, "Anchored" = FALSE, "Underfloor" = FALSE, "Wallmounted" = FALSE, "Floors" = FALSE, "Walls" = FALSE, "Mecha" = TRUE),
 	))
 	use_energy(active_power_usage)
 
