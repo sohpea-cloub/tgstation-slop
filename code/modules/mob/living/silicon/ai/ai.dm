@@ -18,7 +18,7 @@
 	if(target_ai.client)
 		set_gender(target_ai.client)
 
-	ADD_TRAIT(src, TRAIT_NO_TELEPORT, AI_ANCHOR_TRAIT)
+	add_traits(list(TRAIT_NO_TELEPORT, TRAIT_NOMOBSWAP), AI_ANCHOR_TRAIT)
 	status_flags &= ~CANPUSH //AI starts anchored, so dont push it
 
 	if(istype(base_laws, /datum/ai_laws))
@@ -398,12 +398,12 @@ GAME_VERB(/mob/living/silicon/ai, toggle_anchor, "Toggle Floor Bolts", "AI Comma
 		is_anchored = !is_anchored
 		move_resist = MOVE_FORCE_NORMAL
 		status_flags |= CANPUSH //we want the core to be push-able when un-anchored
-		REMOVE_TRAIT(src, TRAIT_NO_TELEPORT, AI_ANCHOR_TRAIT)
+		remove_traits(list(TRAIT_NO_TELEPORT, TRAIT_NOMOBSWAP), AI_ANCHOR_TRAIT) //an unanchored core can be swapped with or pushed
 	else
 		is_anchored = !is_anchored
 		move_resist = MOVE_FORCE_OVERPOWERING
 		status_flags &= ~CANPUSH //we dont want the core to be push-able when anchored
-		ADD_TRAIT(src, TRAIT_NO_TELEPORT, AI_ANCHOR_TRAIT)
+		add_traits(list(TRAIT_NO_TELEPORT, TRAIT_NOMOBSWAP), AI_ANCHOR_TRAIT) //an anchored core can't be swapped with
 
 /// Creates an MMI of the AI based on its configuration.
 /mob/living/silicon/ai/proc/make_mmi(atom/destination) as /obj/item/brain_processor
