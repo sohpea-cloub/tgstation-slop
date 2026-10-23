@@ -28,7 +28,9 @@
 /turf/open/floor/circuit/green,
 /area/ruin/syndicate_lava_base/telecomms)
 "m" = (
-/obj/machinery/computer/camera_advanced,
+/obj/machinery/computer/camera_advanced{
+	lock_override = 1
+	},
 /obj/effect/turf_decal/tile/neutral/fourcorners,
 /turf/open/floor/iron/dark,
 /area/ruin/syndicate_lava_base/telecomms)

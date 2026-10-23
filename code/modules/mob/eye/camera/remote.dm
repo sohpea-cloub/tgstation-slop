@@ -162,6 +162,17 @@
 /mob/eye/camera/remote/proc/allow_z_transition(datum/space_level/from, datum/space_level/into)
 	return from == into
 
+/mob/eye/camera/remote/can_z_move(direction, turf/start, turf/destination, z_move_flags = NONE, mob/living/rider)
+	. = ..()
+	if(!.)
+		return .
+	var/obj/machinery/computer/camera_advanced/console = astype(origin_ref?.resolve(), /obj/machinery/computer/camera_advanced)
+	var/turf/new_turf = .
+	if(length(console?.z_lock) && !(new_turf.z in console.z_lock))
+		if(z_move_flags & ZMOVE_FEEDBACK)
+			to_chat(rider || src, span_warning("The console can't reach that level!"))
+		return FALSE
+
 /mob/eye/camera/remote/on_changed_z_level(turf/old_turf, turf/new_turf, same_z_layer, notify_contents)
 	. = ..()
 	astype(user_ref?.resolve(), /mob/living)?.on_looking_z_level_change(old_turf, new_turf)
