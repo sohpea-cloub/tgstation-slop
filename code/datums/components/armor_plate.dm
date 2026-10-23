@@ -101,14 +101,13 @@
 	var/obj/vehicle/sealed/mecha/mecha_for_upgrading = target_for_upgrading
 	mecha_for_upgrading.update_appearance()
 	to_chat(user, span_info("You strengthen [mecha_for_upgrading], improving its resistance against attacks."))
-	if (plate_component)
-		return
-	plate_component = new(mecha_for_upgrading)
-	plate_component.name = our_upgrade_item.name
-	plate_component.desc = our_upgrade_item.desc
-	plate_component.icon = our_upgrade_item.icon
-	plate_component.icon_state = our_upgrade_item.icon_state
-	plate_component.attach(mecha_for_upgrading)
+	if (!plate_component)
+		plate_component = new(mecha_for_upgrading)
+		plate_component.desc = our_upgrade_item.desc
+		plate_component.icon = our_upgrade_item.icon
+		plate_component.icon_state = our_upgrade_item.icon_state
+		plate_component.attach(mecha_for_upgrading)
+	plate_component.name = "[our_upgrade_item.name] ([amount]/[maxamount])"
 
 /datum/component/armor_plate/proc/dropplates(datum/source, force)
 	SIGNAL_HANDLER
