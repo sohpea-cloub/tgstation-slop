@@ -1006,6 +1006,8 @@ GLOBAL_LIST_INIT(slime_extract_auto_activate_reactions, init_slime_auto_activate
 	if(uses <= 0)
 		qdel(src)
 		return ITEM_INTERACT_BLOCKING
+	if(istype(interacting_with, /obj/item/mod/control))
+		return fireproof_mod(interacting_with, user)
 	var/obj/item/clothing/clothing = interacting_with
 	if(!istype(clothing))
 		to_chat(user, span_warning("The potion can only be used on clothing!"))
@@ -1014,6 +1016,34 @@ GLOBAL_LIST_INIT(slime_extract_auto_activate_reactions, init_slime_auto_activate
 		to_chat(user, span_warning("The [clothing] is already fireproof!"))
 		return ITEM_INTERACT_BLOCKING
 	to_chat(user, span_notice("You slather the blue gunk over the [clothing], fireproofing it."))
+	fireproof_clothing(clothing)
+	uses --
+	if(uses <= 0)
+		qdel(src)
+	return ITEM_INTERACT_BLOCKING
+
+/// Fireproofs every part of a MOD suit at once, so the wearer doesn't have to coat each deployed piece
+/obj/item/slimepotion/fireproof/proc/fireproof_mod(obj/item/mod/control/mod, mob/living/user)
+	var/list/to_fireproof = list()
+	for(var/obj/item/clothing/part in mod.get_parts())
+		if(part.max_heat_protection_temperature < FIRE_IMMUNITY_MAX_TEMP_PROTECT)
+			to_fireproof += part
+	if(!length(to_fireproof))
+		to_chat(user, span_warning("The [mod] is already fireproof!"))
+		return ITEM_INTERACT_BLOCKING
+	to_chat(user, span_notice("You slather the blue gunk over the [mod], fireproofing all of its parts."))
+	for(var/obj/item/clothing/part as anything in to_fireproof)
+		var/heat_protection_before = part.heat_protection
+		fireproof_clothing(part)
+		if(!mod.get_part_datum(part).sealed)
+			part.heat_protection = heat_protection_before //unsealed parts protect nothing, sealing them restores it
+	uses --
+	if(uses <= 0)
+		qdel(src)
+	return ITEM_INTERACT_BLOCKING
+
+/// Applies the fireproofing to a piece of clothing
+/obj/item/slimepotion/fireproof/proc/fireproof_clothing(obj/item/clothing/clothing)
 	clothing.name = "fireproofed [clothing.name]"
 	clothing.remove_atom_colour(WASHABLE_COLOUR_PRIORITY)
 	clothing.add_atom_colour(color_transition_filter(COLOR_NAVY, SATURATION_OVERRIDE), FIXED_COLOUR_PRIORITY)
@@ -1021,10 +1051,6 @@ GLOBAL_LIST_INIT(slime_extract_auto_activate_reactions, init_slime_auto_activate
 	clothing.heat_protection = clothing.body_parts_covered
 	clothing.resistance_flags |= FIRE_PROOF
 	clothing.GetComponent(/datum/component/toggle_attached_clothing)?.inherit_parent_modifications()
-	uses --
-	if(uses <= 0)
-		qdel(src)
-	return ITEM_INTERACT_BLOCKING
 
 /obj/item/slimepotion/genderchange
 	name = "gender change potion"
