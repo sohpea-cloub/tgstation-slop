@@ -236,7 +236,7 @@
 	if(mutual_languages?[type] >= 100)
 		return input
 
-	var/static/regex/first_sentence = regex(@"(.+?(?:[\.!\?]|$))", "g")
+	var/static/regex/first_sentence = regex(@"(.+?(?:[\.!\?]+|$))", "g")
 	var/list/new_paragraph = list()
 	while(first_sentence.Find(input))
 		new_paragraph += scramble_sentence(trim(first_sentence.group[1]), mutual_languages)
