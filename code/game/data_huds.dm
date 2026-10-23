@@ -27,6 +27,23 @@
 	if(HAS_TRAIT(hud_atom, TRAIT_BASIC_HEALTH_HUD_VISIBLE))
 		return ..()
 
+// The bulk paths below skip add_atom_to_single_mob_hud(), so they need the same suit sensor check
+/datum/atom_hud/data/human/medical/basic/add_all_atoms_to_single_mob_hud(mob/requesting_mob, list/atom/hud_atoms)
+	var/list/atom/visible_atoms = list()
+	for(var/atom/hud_atom as anything in hud_atoms)
+		if(HAS_TRAIT(hud_atom, TRAIT_BASIC_HEALTH_HUD_VISIBLE))
+			visible_atoms += hud_atom
+	return ..(requesting_mob, visible_atoms)
+
+/datum/atom_hud/data/human/medical/basic/add_atom_to_all_mob_huds(list/mob/requesting_mobs, atom/hud_atom)
+	if(HAS_TRAIT(hud_atom, TRAIT_BASIC_HEALTH_HUD_VISIBLE))
+		return ..()
+
+/datum/atom_hud/data/human/medical/basic/add_single_hud_category_on_atom(atom/hud_atom, hud_category_to_add)
+	if(HAS_TRAIT(hud_atom, TRAIT_BASIC_HEALTH_HUD_VISIBLE))
+		return ..()
+	return FALSE
+
 /// Sees health (0-100) status (alive, dead), always
 /datum/atom_hud/data/human/medical/advanced
 
