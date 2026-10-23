@@ -588,7 +588,11 @@ export function CommandBar() {
         e.preventDefault();
         if (!selectedVerb && verbSuggestions.length > 0) {
           const verb = verbSuggestions[selectedIndex];
-          if (verb.args.length === 0) {
+          // A fully typed verb name runs the verb at once: the server asks
+          // for any argument still missing (or opens its own UI, like Spawn).
+          const exactMatch =
+            toKebab(verb.name).toLowerCase() === input.toLowerCase();
+          if (verb.args.length === 0 || exactMatch) {
             pushHistory(input);
             Byond.sendMessage('verbs/invoke', {
               verb_type: verb.type,
