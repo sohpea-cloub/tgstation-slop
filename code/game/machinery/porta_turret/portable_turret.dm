@@ -161,6 +161,8 @@ DEFINE_BITFIELD(turret_flags, list(
 	check_should_process()
 	if (!on)
 		popDown()
+	else if (always_up)
+		popUp()
 
 ///Prevents turned from being turned on for a duration, then restarts them after that if the second ard is true.
 /obj/machinery/porta_turret/proc/set_disabled(duration = 6 SECONDS, will_restart = on)
@@ -188,7 +190,7 @@ DEFINE_BITFIELD(turret_flags, list(
 	return null
 
 /obj/machinery/porta_turret/update_icon_state()
-	if(!anchored)
+	if(!anchored && has_cover) // a turret with a cover is its own cover while unbolted; one without has nothing to fold into
 		icon_state = "turretCover"
 		return ..()
 	if(machine_stat & BROKEN)
@@ -364,7 +366,8 @@ DEFINE_BITFIELD(turret_flags, list(
 	//This code handles moving the turret around. After all, it's a portable turret!
 	if(!anchored && !isinspace())
 		set_anchored(TRUE)
-		RemoveInvisibility(id=type)
+		if(has_cover) // without a cover, our base invisibility (hidden inside the cover) would make us an unseen, unclickable barrier
+			RemoveInvisibility(id=type)
 		update_appearance()
 		to_chat(user, span_notice("You secure the exterior bolts on the turret."))
 		if(has_cover)
@@ -564,6 +567,7 @@ DEFINE_BITFIELD(turret_flags, list(
 		cover.icon_state = "openTurretCover"
 	raised = 1
 	layer = MOB_LAYER
+	update_appearance()
 
 /obj/machinery/porta_turret/proc/popDown() //pops the turret down
 	if(raising || !raised)
@@ -581,7 +585,8 @@ DEFINE_BITFIELD(turret_flags, list(
 	if(cover)
 		cover.icon_state = "turretCover"
 	raised = 0
-	SetInvisibility(2, id=type)
+	if(has_cover) // without a cover there is nothing left to see: hiding the turret would leave an invisible, unclickable dense barrier
+		SetInvisibility(2, id=type)
 	update_appearance()
 
 /obj/machinery/porta_turret/proc/assess_perp(mob/living/carbon/human/perp)
