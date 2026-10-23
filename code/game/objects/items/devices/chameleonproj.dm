@@ -75,6 +75,13 @@
 	temp.layer = initial(target.layer) // scanning things in your inventory
 	// Store the target's unoffset plane, the dummy offsets it for wherever it ends up being created
 	temp.plane = initial(target.plane)
+	// Appearances don't carry vis_contents (blood trails are made out of them), so bake those in as overlays
+	var/atom/movable/movable_target = target
+	for(var/atom/movable/visual as anything in movable_target.vis_contents)
+		var/mutable_appearance/visual_overlay = new(visual)
+		visual_overlay.plane = FLOAT_PLANE
+		visual_overlay.layer = FLOAT_LAYER
+		temp.add_overlay(visual_overlay)
 	saved_appearance = temp.appearance
 
 /obj/item/chameleon/proc/check_sprite(atom/target)
