@@ -182,7 +182,13 @@ GAME_VERB_SRC(/obj/item/clothing/mask/gas/sechailer, halt, usr, "HALT", null)
 	if(!COOLDOWN_FINISHED(src, hailer_cooldown))
 		return
 	COOLDOWN_START(src, hailer_cooldown, PHRASE_COOLDOWN)
-	user.audible_message("[user]'s Compli-o-Nator: <font color='red' size='4'><b>[initial(phrase.phrase_text)]</b></font>")
+	// The phrases are spoken in common, so listeners who don't understand it only hear gibberish
+	var/phrase_text = initial(phrase.phrase_text)
+	for(var/mob/hearing_mob as anything in mob_only_listeners(get_hearers_in_view(DEFAULT_MESSAGE_RANGE, user)))
+		if(!hearing_mob.client)
+			continue
+		var/heard_text = hearing_mob.translate_language(user, /datum/language/common, phrase_text)
+		hearing_mob.show_message("[user]'s Compli-o-Nator: <font color='red' size='4'><b>[heard_text]</b></font>", MSG_AUDIBLE)
 	playsound(src, "sound/runtime/complionator/[initial(phrase.phrase_sound)].ogg", 100, FALSE, 4)
 	return TRUE
 
