@@ -37,6 +37,11 @@
 						continue
 					this["you_are_text"] = mob_spawner.you_are_text
 					this["flavor_text"] = mob_spawner.flavour_text
+					// the policy.json text for this role's job, which is also shown to the player when they spawn
+					var/datum/job/spawner_job = SSjob.get_job_type(mob_spawner.spawner_job_path)
+					var/job_policy = spawner_job && get_policy(spawner_job.policy_override || spawner_job.title)
+					if(job_policy)
+						this["flavor_text"] = this["flavor_text"] ? "[this["flavor_text"]] [job_policy]" : job_policy
 					this["important_text"] = mob_spawner.important_text
 				else
 					var/obj/object = spawner_obj
