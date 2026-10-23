@@ -1000,7 +1000,8 @@ GAME_VERB(/client, view_latest_ticket, "View Latest Ticket", "Admin")
 	var/list/mobs_found = list()
 	for(var/original_word in msglist)
 		var/word = ckey(original_word)
-		if(word)
+		// words starting with @ or # are admin pings, datum refs and ticket refs in asay: they get their own links, so leave them alone
+		if(word && !((original_word[1] == "@") || (original_word[1] == "#")))
 			if(!(word in adminhelp_ignored_words))
 				if(word == "ai")
 					ai_found = 1
