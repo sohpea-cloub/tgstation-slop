@@ -34,6 +34,9 @@
 	for(var/datum/component/singularity/singulo as anything in GLOB.singularities)
 		if(singulo.target == src)
 			singulo.target = null
+	for(var/obj/energy_ball/ball as anything in GLOB.energy_balls)
+		if(ball.target == src)
+			ball.target = null
 	icon_state = "[icontype]0"
 	active = FALSE
 	if(user)
@@ -97,6 +100,10 @@
 				if(singulo.z == z)
 					singulo_component.target = src
 					say("[singulo] is now [get_dist(src,singulo)] standard lengths away to the [dir2text(get_dir(src,singulo))]")
+			for(var/obj/energy_ball/ball as anything in GLOB.energy_balls)
+				if(ball.z == z)
+					ball.target = src
+					say("[ball] is now [get_dist(src,ball)] standard lengths away to the [dir2text(get_dir(src,ball))]")
 	else
 		Deactivate()
 		say("Insufficient charge detected - powering down")

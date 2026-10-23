@@ -30,7 +30,8 @@
 	flags_1 = SUPERMATTER_IGNORES_1
 
 	var/energy
-	var/target
+	/// What the energy ball is slowly drifting towards (set by power beacons)
+	var/atom/target
 	var/list/orbiting_balls = list()
 	var/miniball = FALSE
 	var/produced_power
@@ -46,6 +47,7 @@
 	START_PROCESSING(SSobj, src)
 
 	if (!is_miniball)
+		GLOB.energy_balls += src
 		set_light(10, 7, "#5e5edd")
 
 		var/turf/spawned_turf = get_turf(src)
@@ -53,6 +55,8 @@
 		investigate_log("was created at [AREACOORD(spawned_turf)].", INVESTIGATE_ENGINE)
 
 /obj/energy_ball/Destroy()
+	GLOB.energy_balls -= src
+	target = null
 	if(orbiting && istype(orbiting.parent, /obj/energy_ball))
 		var/obj/energy_ball/parent_energy_ball = orbiting.parent
 		parent_energy_ball.orbiting_balls -= src

@@ -30,6 +30,8 @@ GLOBAL_LIST_EMPTY(deliverybeacontags)
 
 /// List of all singularity components that exist
 GLOBAL_LIST_EMPTY_TYPED(singularities, /datum/component/singularity)
+/// All the tesla energy balls (not their orbiting mini balls) in the world, so that power beacons can attract them
+GLOBAL_LIST_EMPTY_TYPED(energy_balls, /obj/energy_ball)
 
 /// Global list of all non-cooking related crafting recipes.
 GLOBAL_LIST_EMPTY(crafting_recipes)
