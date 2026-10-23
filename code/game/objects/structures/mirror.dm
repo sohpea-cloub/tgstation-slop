@@ -218,6 +218,7 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/structure/mirror/broken, 28)
 
 	on_species_change(race_changer, newrace)
 	race_changer.set_species(new_race_path, icon_update = FALSE)
+	after_species_change(race_changer, newrace)
 	if(HAS_TRAIT(race_changer, TRAIT_USES_SKINTONES))
 		var/new_s_tone = tgui_input_list(race_changer, "Choose your skin tone", "Race change", GLOB.skin_tones)
 		if(new_s_tone && can_use_mirror(race_changer))
@@ -235,8 +236,12 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/structure/mirror/broken, 28)
 
 	race_changer.update_body(is_creating = TRUE)
 
-/// Hook for mirrors to do stuff on species change
+/// Hook for mirrors to do stuff before a species change
 /obj/structure/mirror/proc/on_species_change(mob/living/carbon/human/race_changer, datum/species/newrace)
+	return
+
+/// Hook for mirrors to do stuff after a species change, once the new species' traits and organs are in place
+/obj/structure/mirror/proc/after_species_change(mob/living/carbon/human/race_changer, datum/species/newrace)
 	return
 
 // possible Genders: MALE, FEMALE, PLURAL, NEUTER
@@ -421,8 +426,9 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/structure/mirror/broken, 28)
 			user.set_facial_haircolor(sanitize_hexcolor(new_face_color))
 			user.dna.update_ui_block(/datum/dna_block/identity/facial_color)
 
-/// Hook for mirrors to do stuff on species change
-/obj/structure/mirror/magic/on_species_change(mob/living/carbon/human/race_changer, datum/species/newrace)
+/// Runs after the species change, as changing species removes the old species' traits
+/obj/structure/mirror/magic/after_species_change(mob/living/carbon/human/race_changer, datum/species/newrace)
+	. = ..()
 	if(HAS_TRAIT(race_changer, TRAIT_ADVANCEDTOOLUSER) && HAS_TRAIT(race_changer, TRAIT_LITERATE))
 		return
 
@@ -490,6 +496,7 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/structure/mirror/broken, 28)
 			var/datum/species/newrace = GLOB.species_prototypes[pick(options)]
 			on_species_change(user, newrace)
 			user.set_species(newrace.type, icon_update = FALSE)
+			after_species_change(user, newrace)
 		if(CHANGE_SEX)
 			to_chat(user, span_hypnophrase("My form - yes, the form is all wrong - I  need to change it...")) // the wording used here needs to be very deliberate...
 			var/list/options = list(MALE, FEMALE, PLURAL, NEUTER) - user.gender
