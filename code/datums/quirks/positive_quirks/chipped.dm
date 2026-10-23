@@ -38,5 +38,15 @@
 	installed_chip.try_activate_skillchip(silent = FALSE, force = TRUE)
 
 /datum/quirk/chipped/remove()
+	if(isnull(installed_chip))
+		return ..()
+	// The holder is being deleted (gibbed, deleted...). The chip stays in whatever brain survives it (the brain
+	// handles its own skillchips when deleted), deleting it here would leave a dead chip in the brain's list.
+	if(QDELETED(quirk_holder))
+		installed_chip = null
+		return ..()
+	// The quirk is removed from a living mob, take the chip out of the brain properly before deleting it.
+	if(!QDELETED(installed_chip.holding_brain))
+		installed_chip.holding_brain.remove_skillchip(installed_chip, silent = TRUE)
 	QDEL_NULL(installed_chip)
 	return ..()
