@@ -123,6 +123,12 @@
 		mob_container = brain.container
 	else if(isAI(M))
 		var/mob/living/silicon/ai/AI = M
+		if(!forced && !AI.linked_core)
+			// the AI has nowhere to return to (its core was destroyed): leave it in full control instead of
+			// half-ejecting it, which would strip its mech control and then runtime in resolve_core_link()
+			if(!silent)
+				to_chat(AI, span_userdanger("Inactive core destroyed. Unable to return."))
+			return FALSE
 		mob_container = AI
 		//stop listening to this signal, as the static update is now handled by the eyeobj's setLoc
 		AI.eyeobj?.UnregisterSignal(src, COMSIG_MOVABLE_MOVED)
