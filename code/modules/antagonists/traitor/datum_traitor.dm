@@ -52,10 +52,12 @@
 	src.give_objectives = give_objectives
 
 /datum/antagonist/traitor/on_gain()
+	var/obj/item/uplink_holder
 	if(give_uplink)
-		owner.give_uplink(silent = TRUE, antag_datum = src)
+		uplink_holder = owner.give_uplink(silent = TRUE, antag_datum = src)
 
-	var/datum/component/uplink/uplink = owner.find_syndicate_uplink()
+	// Use the uplink we just gave, not the first one found on the mob: it may be someone else's uplink that we're carrying
+	var/datum/component/uplink/uplink = uplink_holder?.GetComponent(/datum/component/uplink) || owner.find_syndicate_uplink()
 	uplink_ref = WEAKREF(uplink)
 	if(uplink)
 		if(uplink_handler)

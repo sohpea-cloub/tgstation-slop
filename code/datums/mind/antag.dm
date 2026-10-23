@@ -89,7 +89,11 @@
  * Returns the item found, or null if no item was found.
  */
 /mob/living/carbon/proc/get_uplink_location(desired_location = UPLINK_PDA)
-	var/list/all_contents = get_all_contents()
+	// Items that already hold an uplink (somebody else's, we may just be carrying it) can't take another
+	var/list/all_contents = list()
+	for(var/obj/item/thing in get_all_contents())
+		if(!thing.GetComponent(/datum/component/uplink))
+			all_contents += thing
 	var/obj/item/modular_computer/pda/my_pda = locate() in all_contents
 	var/obj/item/radio/my_radio = locate() in all_contents
 	var/obj/item/pen/my_pen = (locate() in my_pda) || (locate() in all_contents)
