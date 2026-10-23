@@ -354,6 +354,10 @@
 	if(is_within_radio_jammer_range(src) && !(special_channels & RADIO_SPECIAL_SYNDIE))
 		return
 
+	// Several radios can hear the same speech at once (e.g. a pile of radios on one tile); only the first one transmits it.
+	if(is_duplicate_transmission(talking_movable, radio_message, freq, language))
+		return
+
 	// Determine the identity information which will be attached to the signal.
 	var/atom/movable/virtualspeaker/speaker = new(null, talking_movable, src)
 
@@ -387,6 +391,23 @@
 	// Non-subspace radios will check in a couple of seconds, and if the signal
 	// was never received, send a mundane broadcast (no headsets).
 	addtimer(CALLBACK(src, PROC_REF(backup_transmission), signal), 2 SECONDS)
+
+/**
+ * Returns TRUE if an identical message (same speaker, text, language and frequency) was already
+ * transmitted by a radio on this very tick, which happens when multiple radios hear the same speech.
+ * Otherwise records it and returns FALSE.
+ */
+/obj/item/radio/proc/is_duplicate_transmission(atom/movable/talking_movable, message, freq, datum/language/language)
+	var/static/list/transmitted_this_tick = list()
+	var/static/last_transmission_tick = -1
+	if(last_transmission_tick != world.time)
+		transmitted_this_tick.Cut()
+		last_transmission_tick = world.time
+	var/signature = "[REF(talking_movable)]|[freq]|[language]|[message]"
+	if(transmitted_this_tick[signature])
+		return TRUE
+	transmitted_this_tick[signature] = TRUE
+	return FALSE
 
 /obj/item/radio/proc/backup_transmission(datum/signal/subspace/vocal/signal)
 	var/turf/T = get_turf(src)
