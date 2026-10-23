@@ -157,7 +157,10 @@
 /datum/component/supermatter_crystal/proc/attackby_hit(datum/source, obj/item/item, mob/living/user, params)
 	SIGNAL_HANDLER
 	var/atom/atom_source = source
-	if(!istype(item) || (item.item_flags & ABSTRACT) || !istype(user))
+	if(!istype(item) || !istype(user))
+		return
+	// Abstract items are ignored, except hand replacements (e.g. a nightmare's light eater): those are the user's own hand.
+	if((item.item_flags & ABSTRACT) && !HAS_TRAIT_FROM(item, TRAIT_NODROP, HAND_REPLACEMENT_TRAIT))
 		return
 	if(is_type_in_typecache(item, sm_item_whitelist))
 		return FALSE
