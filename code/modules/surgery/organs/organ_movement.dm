@@ -68,7 +68,7 @@
 
 	var/obj/item/organ/replaced = receiver.get_organ_slot(slot)
 	if(replaced)
-		replaced.Remove(receiver, special = TRUE)
+		replaced.Remove(receiver, special = TRUE, movement_flags = movement_flags)
 		if(movement_flags & DELETE_IF_REPLACED)
 			qdel(replaced)
 		else

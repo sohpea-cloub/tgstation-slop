@@ -21,7 +21,8 @@ ADMIN_VERB(manipulate_organs, R_DEBUG, "Manipulate Organs", "Manipulate the orga
 				return
 			organ_to_grant = organs[organ_to_grant]
 			organ_to_grant = new organ_to_grant
-			organ_to_grant.Insert(carbon_victim)
+			// NO_ID_TRANSFER: swapping out a brain must not eject the owner's mind into the old brain
+			organ_to_grant.Insert(carbon_victim, movement_flags = NO_ID_TRANSFER)
 			log_admin("[key_name(user)] has added organ [organ_to_grant.type] to [key_name(carbon_victim)]")
 			message_admins("[key_name_admin(user)] has added organ [organ_to_grant.type] to [ADMIN_LOOKUPFLW(carbon_victim)]")
 
