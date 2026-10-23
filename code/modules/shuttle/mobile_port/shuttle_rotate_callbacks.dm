@@ -28,16 +28,61 @@ If ever any of these procs are useful for non-shuttles, rename it to proc/rotate
 /************************************Base /atom/movable proc************************************/
 
 /atom/movable/shuttleRotate(rotation, params)
+	// Multi-tile atoms are anchored at their bottom left corner (their loc), and their bounds/icon extend from there.
+	// Moving the loc to the rotated tile is not enough: the whole footprint must be rotated around that tile too.
+	var/rotate_bounds = (params & ROTATE_OFFSET) && (bound_width != ICON_SIZE_X || bound_height != ICON_SIZE_Y)
+	if(rotate_bounds)
+		params &= ~ROTATE_OFFSET // we do it ourselves, the base proc would rotate the offsets as if the atom was one tile big
 	. = ..()
-	//rotate the physical bounds and offsets for multitile atoms too. Owerride base "rotate the pixel offsets" for multitile atoms.
-	//Owerride non zero bound_x, bound_y, pixel_x, pixel_y to zero.
-	//Dont take in account starting bound_x, bound_y, pixel_x, pixel_y.
-	//So it can unintentionally shift physical bounds of things that starts with non zero bound_x, bound_y.
-	if(((bound_height != ICON_SIZE_Y) || (bound_width != ICON_SIZE_X)) && (bound_x == 0) && (bound_y == 0)) //Dont shift things that have non zero bound_x and bound_y, or it move somewhere. Now it BSA and Gateway.
-		pixel_x = dir & (NORTH|EAST) ? -bound_width+ICON_SIZE_X : 0
-		pixel_y = dir & (NORTH|WEST) ? -bound_width+ICON_SIZE_X : 0 //?
-		bound_x = pixel_x
-		bound_y = pixel_y
+	if(!rotate_bounds)
+		return
+
+	var/turns = round(SIMPLIFY_DEGREES(rotation) / 90) % 4
+	if(!turns)
+		return
+
+	// Assume the icon covers the same area as the bounds unless it's a bigger/smaller file (the BSA, the big engines).
+	var/icon_width = bound_width
+	var/icon_height = bound_height
+	if(icon)
+		var/list/icon_dimensions = get_icon_dimensions(icon)
+		icon_width = icon_dimensions["width"] || icon_width
+		icon_height = icon_dimensions["height"] || icon_height
+
+	// A rectangle (x, y, w, h) in pixels, relative to the loc tile, turned clockwise around the center of that tile.
+	var/old_bound_x = bound_x
+	var/old_bound_y = bound_y
+	var/old_bound_width = bound_width
+	var/old_bound_height = bound_height
+	var/old_pixel_x = pixel_x
+	var/old_pixel_y = pixel_y
+	var/new_bound_x
+	var/new_bound_y
+	var/new_pixel_x
+	var/new_pixel_y
+	switch(turns)
+		if(1)
+			new_bound_x = old_bound_y
+			new_bound_y = ICON_SIZE_Y - old_bound_x - old_bound_width
+			new_pixel_x = old_pixel_y
+			new_pixel_y = ICON_SIZE_Y - old_pixel_x - icon_width
+		if(2)
+			new_bound_x = ICON_SIZE_X - old_bound_x - old_bound_width
+			new_bound_y = ICON_SIZE_Y - old_bound_y - old_bound_height
+			new_pixel_x = ICON_SIZE_X - old_pixel_x - icon_width
+			new_pixel_y = ICON_SIZE_Y - old_pixel_y - icon_height
+		if(3)
+			new_bound_x = ICON_SIZE_X - old_bound_y - old_bound_height
+			new_bound_y = old_bound_x
+			new_pixel_x = ICON_SIZE_X - old_pixel_y - icon_height
+			new_pixel_y = old_pixel_x
+	if(turns != 2)
+		bound_width = old_bound_height
+		bound_height = old_bound_width
+	bound_x = new_bound_x
+	bound_y = new_bound_y
+	pixel_x = new_pixel_x
+	pixel_y = new_pixel_y
 
 /************************************Turf rotate procs************************************/
 
