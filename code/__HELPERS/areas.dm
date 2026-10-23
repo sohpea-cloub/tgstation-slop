@@ -135,8 +135,12 @@
 		var/area/place = get_area(the_turf)
 		if(blacklisted_areas[place.type])
 			continue
-		if(!place.requires_power || (place.area_flags & NOTELEPORT) || (place.area_flags & HIDDEN_AREA))
-			continue // No expanding powerless rooms etc
+		if(!place.requires_power)
+			// Turning these turfs into a new area would silently cut them off from their always-on power (e.g. the golem ship)
+			to_chat(creator, span_warning("This structure is part of an area that doesn't need an APC ([place.name]) and can't be redefined."))
+			return
+		if((place.area_flags & NOTELEPORT) || (place.area_flags & HIDDEN_AREA))
+			continue // No expanding special rooms etc
 		if(!TURF_SHARES(the_turf)) // No expanding areas of walls/something blocking this turf because that defeats the whole point of them used to separate areas
 			continue
 		if(!isnull(place.apc))
