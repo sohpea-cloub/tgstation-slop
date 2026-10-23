@@ -115,6 +115,8 @@
 
 /obj/machinery/scanner_gate/proc/on_entered(datum/source, atom/movable/thing)
 	SIGNAL_HANDLER
+	if(thing == src)
+		return
 	INVOKE_ASYNC(src, PROC_REF(auto_scan), thing)
 
 /obj/machinery/scanner_gate/proc/auto_scan(atom/movable/thing)

@@ -115,6 +115,8 @@
 /obj/machinery/recycler/proc/on_entered(datum/source, atom/movable/enterer, old_loc)
 	SIGNAL_HANDLER
 
+	if(enterer == src) // we're connected to our own loc, so we hear ourselves arrive
+		return
 	if(can_butcher(enterer))
 		return
 	INVOKE_ASYNC(src, PROC_REF(eat), enterer)

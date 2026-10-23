@@ -247,6 +247,9 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/machinery/shower, (-16))
 /obj/machinery/shower/proc/on_entered(datum/source, atom/movable/enterer)
 	SIGNAL_HANDLER
 
+	if(enterer == src)
+		return
+
 	if(actually_on && reagents.total_volume)
 		expose_to_reagents(enterer)
 
