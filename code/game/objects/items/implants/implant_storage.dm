@@ -10,6 +10,7 @@
 	atom_storage?.open_storage(imp_in)
 
 /obj/item/implant/storage/removed(source, silent = FALSE, special = FALSE)
+	UnregisterSignal(source, COMSIG_LIVING_GIBBED)
 	if(special)
 		return ..()
 
@@ -37,7 +38,14 @@
 			return FALSE
 	create_storage(storage_type = /datum/storage/implant)
 	ADD_TRAIT(src, TRAIT_CONTRABAND_BLOCKER, INNATE_TRAIT)
-	return ..()
+	. = ..()
+	if(.)
+		RegisterSignal(target, COMSIG_LIVING_GIBBED, PROC_REF(on_implantee_gibbed))
+
+/// The implantee is being gibbed, which deletes their implants (and our contents with them), so spill the contents first.
+/obj/item/implant/storage/proc/on_implantee_gibbed(mob/living/source, drop_bitflags)
+	SIGNAL_HANDLER
+	atom_storage?.remove_all(source.drop_location())
 
 /obj/item/implanter/storage
 	name = "implanter (storage)"
