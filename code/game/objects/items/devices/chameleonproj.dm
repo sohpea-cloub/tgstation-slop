@@ -73,7 +73,8 @@
 	var/obj/temp = new /obj()
 	temp.appearance = target.appearance
 	temp.layer = initial(target.layer) // scanning things in your inventory
-	SET_PLANE_EXPLICIT(temp, initial(plane), src)
+	// Store the target's unoffset plane, the dummy offsets it for wherever it ends up being created
+	temp.plane = initial(target.plane)
 	saved_appearance = temp.appearance
 
 /obj/item/chameleon/proc/check_sprite(atom/target)
@@ -125,6 +126,7 @@
 
 /obj/effect/dummy/chameleon/proc/activate(mob/M, saved_appearance, obj/item/chameleon/C)
 	appearance = saved_appearance
+	SET_PLANE_IMPLICIT(src, plane) // The saved plane is unoffset, move it to the z level we're on
 	if(istype(M.buckled, /obj/vehicle))
 		var/obj/vehicle/V = M.buckled
 		V.unbuckle_mob(M, force = TRUE)
