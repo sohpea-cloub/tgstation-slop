@@ -269,7 +269,7 @@
 		for(var/datum/reagent/R as anything in recipe.required_catalysts)
 			dat += "<li>[recipe.required_catalysts[R]]u of [R::name]</li>"
 		dat += "</ul>"
-	dat += "</ul>Mix slowly<ul>"
+	dat += "Mix slowly<ul>"
 	if(recipe.required_container)
 		var/obj/item/I = recipe.required_container
 		dat += "<li> in a [initial(I.name)]</li>"
@@ -279,13 +279,12 @@
 			dat += " but not below [recipe.overheat_temp] degrees</li>"
 		else
 			dat += " <li>heating it above [recipe.required_temp] degrees"
-			dat += " but not above [recipe.overheat_temp] degrees"
+			dat += " but not above [recipe.overheat_temp] degrees</li>"
 		if(recipe.thermic_constant > 0)
 			dat += "<li> taking care of its exothermic nature</li>"
 		else if(recipe.thermic_constant < 0)
 			dat += "<li> taking care of its endothermic nature</li>"
-	var/datum/chemical_reaction/randomized/random_recipe = recipe
-	if(random_recipe)
+	if(istype(recipe, /datum/chemical_reaction/randomized))
 		dat += "<li> keeping your pH between [recipe.optimal_ph_min] and [recipe.optimal_ph_max]</li>"
 		dat += "<li> and your purity above [recipe.purity_min]</li>"
 	dat += "</ul>"
