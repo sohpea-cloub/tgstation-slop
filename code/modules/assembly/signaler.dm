@@ -26,6 +26,8 @@
 	var/hearing_range = 1
 	/// String containing the last piece of logging data relating to when this signaller has received a signal.
 	var/last_receive_signal_log
+	/// The mob that sent the last signal this signaller received, if known (only kept while attached to a bomb).
+	var/datum/weakref/last_receive_signal_sender
 	/// Signal range, see /datum/radio_frequency/proc/post_signal
 	var/range = 0 //Everywhere
 
@@ -159,6 +161,8 @@
 	add_to_signaler_investigate_log(logging_data)
 
 	var/datum/signal/signal = new(list("code" = code), logging_data = logging_data)
+	if(ismob(usr))
+		signal.sender = WEAKREF(usr)
 	radio_connection.post_signal(src, signal, range = range)
 
 /obj/item/assembly/signaler/receive_signal(datum/signal/signal)
@@ -171,8 +175,13 @@
 		manual_suicide()
 		return
 
-	// If the holder is a TTV, we want to store the last received signal to incorporate it into TTV logging, else wipe it.
-	last_receive_signal_log = istype(holder, /obj/item/transfer_valve) ? signal.logging_data : null
+	// If the holder is a TTV or we are wired into a chem grenade, we want to store the last received signal to incorporate it into bomb logging, else wipe it.
+	if(istype(holder, /obj/item/transfer_valve) || istype(connected?.holder, /obj/item/grenade/chem_grenade))
+		last_receive_signal_log = signal.logging_data
+		last_receive_signal_sender = signal.sender
+	else
+		last_receive_signal_log = null
+		last_receive_signal_sender = null
 
 	pulse()
 	audible_message(span_infoplain("[icon2html(src, hearers(src))] *beep* *beep* *beep*"), null, hearing_range)

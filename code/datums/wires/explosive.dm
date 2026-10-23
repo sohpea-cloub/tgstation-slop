@@ -75,10 +75,17 @@
 	if(istype(pulser, /obj/item/assembly/voice))
 		var/obj/item/assembly/voice/spoken_trigger = pulser
 		message +=  " with the following activation message: \"[spoken_trigger.recorded]\""
+	// If a signaler set this off, blame whoever sent the signal rather than whoever built the grenade.
+	var/mob/triggerer
+	if(issignaler(pulser))
+		var/obj/item/assembly/signaler/signaler = pulser
+		if(signaler.last_receive_signal_log)
+			message += ". Last signal received: [signaler.last_receive_signal_log]"
+		triggerer = signaler.last_receive_signal_sender?.resolve()
 	if(!grenade.dud_flags)
 		message_admins(message)
 	log_game(message)
-	grenade.log_grenade(get_mob_by_ckey(fingerprint)) //Used in arm_grenade() too but this one conveys where the mob who triggered the bomb is
+	grenade.log_grenade(triggerer || get_mob_by_ckey(fingerprint)) //Used in arm_grenade() too but this one conveys where the mob who triggered the bomb is
 	if(grenade.landminemode)
 		grenade.detonate() ///already armed
 	else

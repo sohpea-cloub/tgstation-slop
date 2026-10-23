@@ -229,6 +229,8 @@ GLOBAL_LIST_INIT(reserved_radio_colors, list(
 	var/list/data
 	/// Logging data, used for logging purposes. Makes sense, right?
 	var/logging_data
+	/// The mob that caused this signal to be sent, if known. Used so bombs triggered remotely can blame the sender.
+	var/datum/weakref/sender
 
 /datum/signal/New(data, transmission_method = TRANSMISSION_RADIO, logging_data = null)
 	src.data = data || list()
