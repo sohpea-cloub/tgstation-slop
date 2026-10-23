@@ -257,6 +257,7 @@
 		sparks.start()
 	projectile.firer = user ? user : src
 	projectile.fired_from = src
+	gun?.setup_turret_projectile(projectile)
 	if(last_projectile_params)
 		projectile.p_x = last_projectile_params[2]
 		projectile.p_y = last_projectile_params[3]

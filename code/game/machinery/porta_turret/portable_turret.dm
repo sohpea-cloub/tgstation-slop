@@ -966,6 +966,14 @@ DEFINE_BITFIELD(turret_flags, list(
 	.["stun_projectile_sound"] = null
 	.["base_icon_state"] = "standard"
 
+/**
+ * Called by machines that fire this gun's projectiles without going through the gun (turrets, emitters),
+ * on each projectile they make, before it is fired. Guns whose projectiles need a link back to the gun
+ * (normally given by their ammo casing) set it up here.
+ */
+/obj/item/gun/proc/setup_turret_projectile(obj/projectile/fired_projectile)
+	return
+
 /obj/item/gun/energy/get_turret_properties()
 	. = ..()
 

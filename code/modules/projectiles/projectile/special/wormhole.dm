@@ -23,7 +23,7 @@
 
 
 /obj/projectile/beam/wormhole/on_hit(atom/target, blocked = 0, pierce_hit)
-	var/obj/item/gun/energy/wormhole_projector/projector = gun.resolve()
+	var/obj/item/gun/energy/wormhole_projector/projector = gun?.resolve()
 	if(!projector)
 		qdel(src)
 		return BULLET_ACT_BLOCK

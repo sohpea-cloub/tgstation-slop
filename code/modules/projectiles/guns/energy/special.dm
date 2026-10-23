@@ -241,6 +241,12 @@
 			if(istype(WH))
 				WH.gun = WEAKREF(src)
 
+/obj/item/gun/energy/wormhole_projector/setup_turret_projectile(obj/projectile/fired_projectile)
+	. = ..()
+	var/obj/projectile/beam/wormhole/wormhole_beam = fired_projectile
+	if(istype(wormhole_beam))
+		wormhole_beam.gun = WEAKREF(src)
+
 /obj/item/gun/energy/wormhole_projector/try_fire_gun(atom/target, mob/living/user, params)
 	if(LAZYACCESS(params2list(params), RIGHT_CLICK))
 		if(select == AMMO_SELECT_BLUE) //Last fired in left click mode. Switch to orange wormhole (right click).
