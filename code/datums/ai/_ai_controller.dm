@@ -656,6 +656,9 @@ multiple modular subtrees with behaviors
 	if(ai_status == AI_STATUS_OFF)
 		if(!(additional_flags & AI_PREVENT_CANCEL_ACTIONS))
 			cancel_current_plan()
+		// a move loop must not outlive the controller being turned off, whether or not a running behavior owned it
+		if(ai_movement.moving_controllers[src])
+			ai_movement.stop_moving_towards(src)
 
 
 
