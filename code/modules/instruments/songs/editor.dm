@@ -65,6 +65,8 @@
 
 /datum/song/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
 	. = ..()
+	if(.) // not interactive for this user (ghosts only get to watch)
+		return
 	var/mob/user = ui.user
 	if(!istype(user))
 		return FALSE
