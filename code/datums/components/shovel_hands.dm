@@ -32,7 +32,7 @@
 	if (!isopenturf(target))
 		return
 
-	INVOKE_ASYNC(target, TYPE_PROC_REF(/atom, attackby), internal_shovel, mole)
+	INVOKE_ASYNC(internal_shovel, TYPE_PROC_REF(/obj/item, melee_attack_chain), mole, target)
 	return COMPONENT_CANCEL_ATTACK_CHAIN
 
 /// Don't know how the fuck this happened but I guess you can't dig any more
