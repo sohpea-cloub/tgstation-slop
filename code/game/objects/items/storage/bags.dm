@@ -134,6 +134,9 @@
 	. = ..()
 	if(!listening_to)
 		return
+	// Cyborgs keep collecting ore while the satchel is stored in their model, so you don't need to hold it
+	if(iscyborg(listening_to) && istype(loc, /obj/item/robot_model))
+		return
 	UnregisterSignal(listening_to, COMSIG_MOVABLE_MOVED)
 	if (listening_turf)
 		UnregisterSignal(listening_turf, list(COMSIG_ATOM_ENTERED, COMSIG_ATOM_AFTER_SUCCESSFUL_INITIALIZED_ON))
