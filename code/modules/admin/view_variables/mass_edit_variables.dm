@@ -157,14 +157,20 @@
 				if (!thing)
 					continue
 				var/datum/D = thing
-				if(many && !new_value)
-					new_value = new type()
+				var/item_value = new_value
+				if(many)
+					if(islist(new_value))
+						// a new list already holds its contents, so each thing gets its own copy
+						item_value = new_value:Copy()
+					else
+						// the first thing gets the datum made while asking, the others a fresh one
+						item_value = new_value || new type()
+						new_value = null
 
-				if (D.vv_edit_var(variable, new_value) != FALSE)
+				if (D.vv_edit_var(variable, item_value) != FALSE)
 					accepted++
 				else
 					rejected++
-				new_value = null
 				CHECK_TICK
 
 		else
