@@ -67,6 +67,9 @@
 	item = /obj/item/assembly/control/transport/remote
 	cost = 2
 
+/datum/uplink_item/device_tools/tram_remote/is_available_on_map()
+	return LAZYLEN(SStransport.transports_by_type?[TRANSPORT_TYPE_TRAM]) > 0
+
 /datum/uplink_item/device_tools/thermal
 	name = "Thermal Imaging Glasses"
 	desc = "These goggles can be turned to resemble common eyewear found throughout the station. \

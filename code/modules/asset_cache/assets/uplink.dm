@@ -19,7 +19,7 @@
 	for(var/datum/uplink_item/item_path as anything in subtypesof(/datum/uplink_item))
 		var/datum/uplink_item/item = new item_path()
 		var/atom/actual_item = item.item
-		if(item.item) {
+		if(item.item && item.is_available_on_map()) {
 			items += list(list(
 				"id" = item_path,
 				"name" = item.name,

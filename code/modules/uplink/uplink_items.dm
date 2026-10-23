@@ -218,6 +218,11 @@
 
 ///For special overrides if an item can be bought or not.
 /datum/uplink_item/proc/can_be_bought(datum/uplink_handler/source)
+	return is_available_on_map()
+
+/// Whether the current map has what this item needs to be of any use (a tram, for example).
+/// Items for which this is FALSE are hidden from uplinks, and can't be bought or rewarded as spy bounties.
+/datum/uplink_item/proc/is_available_on_map()
 	return TRUE
 
 /datum/uplink_category/discounts

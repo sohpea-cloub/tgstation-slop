@@ -137,7 +137,7 @@
 
 /// Helper to attempt to add the passed uplink item datum to the possible bounty pool(s).
 /datum/spy_bounty_handler/proc/try_add_to_loot_pool(datum/uplink_item/item)
-	if(isnull(item.item) || item.item == ABSTRACT_UPLINK_ITEM || !(item.purchasable_from & UPLINK_SPY))
+	if(isnull(item.item) || item.item == ABSTRACT_UPLINK_ITEM || !(item.purchasable_from & UPLINK_SPY) || !item.is_available_on_map())
 		return FALSE
 
 	// This will have some overlap, and that's intentional -
