@@ -2338,15 +2338,20 @@
 
 /obj/machinery/door/airlock/external/try_safety_unlock(mob/user)
 	if(space_dir && density)
+		// always open from the space side
+		// get_dir(src, user) & space_dir, checked in unresricted_sides
+		var/should_safety_open = shuttledocked || cyclelinkedairlock?.shuttledocked || is_safe_turf(get_step(src, space_dir), TRUE, FALSE)
 		if(!hasPower())
+			// Without power, the airlock acts as if it was powered: it opens at once from the space side
+			// or when it's safe to, and only needs the slow safety unlock to open into a vacuum from the other side
+			if(should_safety_open || (get_dir(src, user) & space_dir))
+				try_to_crowbar(null, user, TRUE)
+				return TRUE
 			to_chat(user, span_notice("You begin unlocking the airlock safety mechanism..."))
 			if(do_after(user, 15 SECONDS, target = src))
 				try_to_crowbar(null, user, TRUE)
 				return TRUE
 		else
-			// always open from the space side
-			// get_dir(src, user) & space_dir, checked in unresricted_sides
-			var/should_safety_open = shuttledocked || cyclelinkedairlock?.shuttledocked || is_safe_turf(get_step(src, space_dir), TRUE, FALSE)
 			return try_to_activate_door(user, should_safety_open)
 
 	return ..()
