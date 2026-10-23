@@ -3,6 +3,7 @@ GLOBAL_LIST_INIT(oilfry_blacklisted_items, typecacheof(list(
 	/obj/item/bodybag/bluespace,
 	/obj/item/delivery,
 	/obj/item/his_grace,
+	/obj/item/mob_holder, //a held mob would be released unharmed as soon as it's taken out, so the fryer would just be a way to farm "fried" mobs
 	/obj/item/mod/control,
 	/obj/item/reagent_containers/condiment,
 	/obj/item/reagent_containers/cup,
@@ -127,6 +128,10 @@ GLOBAL_LIST_INIT(oilfry_blacklisted_items, typecacheof(list(
 
 	if(tool.resistance_flags & INDESTRUCTIBLE)
 		to_chat(user, span_warning("You don't feel it would be wise to fry [tool]..."))
+		return ITEM_INTERACT_BLOCKING
+
+	if(istype(tool, /obj/item/mob_holder))
+		to_chat(user, span_warning("You can't deep fry a living creature!"))
 		return ITEM_INTERACT_BLOCKING
 
 	var/deepfry_blacklisted = is_type_in_typecache(tool, deepfry_blacklisted_items) || is_type_in_typecache(tool, GLOB.oilfry_blacklisted_items)
