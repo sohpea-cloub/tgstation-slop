@@ -60,6 +60,8 @@
 	/// Delay between bursts (if burst-firing) or individual shots (if weapon is single-fire).
 	var/fire_delay = 0 SECONDS
 	var/firing_burst = 0 //Prevent the weapon from firing again while already firing
+	/// Where the target of the current burst was when the burst started, so the rest of the burst can still be fired if the target is destroyed mid-burst.
+	var/turf/burst_target_turf
 	/// firing cooldown, true if this gun shouldn't be allowed to manually fire
 	var/fire_cd = 0
 	var/weapon_weight = WEAPON_LIGHT
@@ -493,6 +495,11 @@
 	if(!user || !firing_burst)
 		firing_burst = FALSE
 		return FALSE
+	if(QDELETED(target)) // the target got destroyed by an earlier shot of this burst, keep firing at where it was
+		target = burst_target_turf
+		if(!target)
+			firing_burst = FALSE
+			return FALSE
 	if(!issilicon(user))
 		if(iteration > 1 && !(user.is_holding(src))) //for burst firing
 			firing_burst = FALSE
@@ -589,6 +596,7 @@
 	if(burst_size > 1)
 		firing_burst = TRUE
 		fire_cd = TRUE
+		burst_target_turf = get_turf(target)
 		for(var/i = 1 to burst_size)
 			addtimer(CALLBACK(src, PROC_REF(process_burst), user, target, message, params, zone_override, total_random_spread, burst_spread_mult, i), modified_burst_delay * (i - 1))
 			addtimer(CALLBACK(src, PROC_REF(reset_fire_cd)), modified_fire_delay) // for the case of fire delay longer than burst
