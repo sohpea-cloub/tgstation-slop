@@ -367,6 +367,8 @@ GAME_VERB_PROC(/mob, Cell, "Cell", "Admin")
 			continue
 		if(self_message && hearing_mob == src)
 			continue
+		if((audible_message_flags & SMELL_MESSAGE) && HAS_TRAIT(hearing_mob, TRAIT_ANOSMIA))
+			continue
 		if(audible_message_flags & EMOTE_MESSAGE && runechat_prefs_check(hearing_mob, audible_message_flags) && !HAS_TRAIT(hearing_mob, TRAIT_DEAF))
 			hearing_mob.create_chat_message(src, raw_message = raw_msg, runechat_flags = audible_message_flags)
 		hearing_mob.show_message(message, MSG_AUDIBLE, deaf_message, MSG_VISUAL)

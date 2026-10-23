@@ -121,6 +121,8 @@
 		stack_trace("[src] | [my_atom] was forced to stop reacting. This might be unintentional.")
 	//sum of output messages.
 	var/list/mix_message = list()
+	//same, but for smells, which people with anosmia don't get
+	var/list/smell_message = list()
 	//Process over our reaction list
 	//See equilibrium.dm for mechanics
 	var/num_reactions = 0
@@ -130,16 +132,20 @@
 		num_reactions++
 		//if it's been flagged to delete
 		if(equilibrium.to_delete)
+			var/list/target_message = equilibrium.reaction?.mix_message_is_smell ? smell_message : mix_message
 			var/temp_mix_message = end_reaction(equilibrium)
-			if(!text_in_list(temp_mix_message, mix_message))
-				mix_message += temp_mix_message
+			if(!text_in_list(temp_mix_message, target_message))
+				target_message += temp_mix_message
 			continue
 		SSblackbox.record_feedback("tally", "chemical_reaction", 1, "[equilibrium.reaction.type] total reaction steps")
 	if(num_reactions)
 		SEND_SIGNAL(src, COMSIG_REAGENTS_REACTION_STEP, num_reactions, seconds_per_tick)
 
-	if(length(mix_message) && !HAS_TRAIT(my_atom, TRAIT_SILENT_REACTIONS)) //This is only at the end
-		my_atom.audible_message(span_notice("[icon2html(my_atom, viewers(DEFAULT_MESSAGE_RANGE, src))] [mix_message.Join()]"))
+	if(!HAS_TRAIT(my_atom, TRAIT_SILENT_REACTIONS)) //This is only at the end
+		if(length(mix_message))
+			my_atom.audible_message(span_notice("[icon2html(my_atom, viewers(DEFAULT_MESSAGE_RANGE, src))] [mix_message.Join()]"))
+		if(length(smell_message))
+			my_atom.audible_message(span_notice("[icon2html(my_atom, viewers(DEFAULT_MESSAGE_RANGE, src))] [smell_message.Join()]"), audible_message_flags = SMELL_MESSAGE)
 
 	if(!LAZYLEN(reaction_list))
 		finish_reacting()
@@ -196,10 +202,15 @@
 */
 /datum/reagents/proc/force_stop_reacting()
 	var/list/mix_message = list()
+	var/list/smell_message = list()
 	for(var/datum/equilibrium/equilibrium as anything in reaction_list)
-		mix_message += end_reaction(equilibrium)
-	if(!QDELETED(my_atom) && length(mix_message))
-		my_atom.audible_message(span_notice("[icon2html(my_atom, viewers(DEFAULT_MESSAGE_RANGE, src))] [mix_message.Join()]"))
+		var/list/target_message = equilibrium.reaction?.mix_message_is_smell ? smell_message : mix_message
+		target_message += end_reaction(equilibrium)
+	if(!QDELETED(my_atom))
+		if(length(mix_message))
+			my_atom.audible_message(span_notice("[icon2html(my_atom, viewers(DEFAULT_MESSAGE_RANGE, src))] [mix_message.Join()]"))
+		if(length(smell_message))
+			my_atom.audible_message(span_notice("[icon2html(my_atom, viewers(DEFAULT_MESSAGE_RANGE, src))] [smell_message.Join()]"), audible_message_flags = SMELL_MESSAGE)
 	finish_reacting()
 
 /**

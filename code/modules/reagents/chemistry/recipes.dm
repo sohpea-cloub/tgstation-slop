@@ -22,6 +22,8 @@
 	var/mob_react = TRUE
 	///The message shown to nearby people upon mixing, if applicable
 	var/mix_message = "The solution begins to bubble."
+	///Is the mix message about a smell? If so, people with anosmia don't get it
+	var/mix_message_is_smell = FALSE
 	///The sound played upon mixing, if applicable
 	var/mix_sound = 'sound/effects/bubbles/bubbles.ogg'
 

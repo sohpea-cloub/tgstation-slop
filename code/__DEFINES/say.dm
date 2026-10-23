@@ -152,6 +152,8 @@
 #define WITH_EMPHASIS_MESSAGE (1<<2)
 /// Blocks chat highlighting from being applied to the message sent to the self.
 #define BLOCK_SELF_HIGHLIGHT_MESSAGE (1<<3)
+/// The message is about a smell: mobs with anosmia do not get it.
+#define SMELL_MESSAGE (1<<4)
 
 ///Defines for priorities for the bubble_icon_override comp
 #define BUBBLE_ICON_PRIORITY_ACCESSORY 2
