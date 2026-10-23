@@ -333,7 +333,8 @@ GAME_VERB_HIDDEN(/client, drop_item, "drop item")
 				continue
 
 		var/pass_allowed = rebound.CanPass(src, get_dir(rebound, src))
-		if(!rebound.density && pass_allowed && !istype(rebound, /obj/structure/lattice))
+		// lattices and ladders are non-dense, but can be held onto to push off of
+		if(!rebound.density && pass_allowed && !istype(rebound, /obj/structure/lattice) && !istype(rebound, /obj/structure/ladder))
 			continue
 		//Sometime this tick, this pushed off something. Doesn't count as a valid pushoff target
 		if(rebound.last_pushoff == world.time)
