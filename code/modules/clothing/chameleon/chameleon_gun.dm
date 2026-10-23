@@ -37,6 +37,8 @@
 	inhand_x_dimension = initial(inhand_x_dimension)
 	inhand_y_dimension = initial(inhand_y_dimension)
 
+	if(!chambered)
+		return
 	QDEL_NULL(chambered.loaded_projectile)
 	chambered.newshot()
 
@@ -66,7 +68,8 @@
 
 	else if(istype(gun_to_set, /obj/item/gun/magic))
 		var/obj/item/gun/magic/magic_gun = gun_to_set
-		casing_to_dupe = new magic_gun.ammo_type(src)
+		if(magic_gun.ammo_type)
+			casing_to_dupe = new magic_gun.ammo_type(src)
 
 	else if(istype(gun_to_set, /obj/item/gun/energy))
 		var/obj/item/gun/energy/energy_gun = gun_to_set
@@ -78,11 +81,26 @@
 	else if(istype(gun_to_set, /obj/item/gun/syringe))
 		casing_to_dupe = new /obj/item/ammo_casing/syringegun(src)
 
-	else
-		casing_to_dupe = new /obj/item/ammo_casing(src)
+	// Guns of no family above that load a casing of their own on creation (the reagent gun)
+	else if(gun_to_set.chambered?.projectile_type)
+		casing_to_dupe = new gun_to_set.chambered.type(src)
 
-	set_chameleon_ammo(casing_to_dupe)
+	if(casing_to_dupe?.loaded_projectile)
+		set_chameleon_ammo(casing_to_dupe)
+		qdel(casing_to_dupe)
+		return TRUE
 	qdel(casing_to_dupe)
+
+	var/obj/projectile/template_projectile
+	if(istype(gun_to_set, /obj/item/gun/blastcannon))
+		// The blast cannon makes its blast wave when it fires, as long as the bomb it holds allows: copy its look at a usual range.
+		template_projectile = new /obj/projectile/blastwave(src)
+		template_projectile.range = initial(template_projectile.range)
+	else
+		// Nothing to copy (a beam gun, a grenade launcher): look like what we really are, rather than like the last gun we mimicked.
+		template_projectile = new /obj/projectile/beam/practice(src)
+	set_chameleon_projectile(template_projectile)
+	return TRUE
 
 /**
  * Description: Sets the ammo type our gun should have.
