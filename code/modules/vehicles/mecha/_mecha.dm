@@ -302,6 +302,23 @@
 	update_part_values()
 
 
+/// Clears our references to stock parts that leave us by any means (deleted by an explosion, moved by other code...), so we don't keep a phantom part.
+/obj/vehicle/sealed/mecha/Exited(atom/movable/gone, direction)
+	. = ..()
+	if(gone == cell)
+		cell = null
+		diag_hud_set_mechcell()
+		update_part_values()
+	else if(gone == scanmod)
+		scanmod = null
+		update_part_values()
+	else if(gone == capacitor)
+		capacitor = null
+		update_part_values()
+	else if(gone == servo)
+		servo = null
+		update_part_values()
+
 /obj/vehicle/sealed/mecha/update_icon_state()
 	icon_state = get_mecha_occupancy_state()
 	return ..()
