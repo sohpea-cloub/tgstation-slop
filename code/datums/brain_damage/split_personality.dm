@@ -158,6 +158,12 @@
 		trauma = _trauma
 	return ..()
 
+/// Personalities share the languages of the body they live in, so they can understand what their host hears
+/mob/living/split_personality/get_language_holder()
+	if(!QDELETED(body))
+		return body.get_language_holder()
+	return ..()
+
 /mob/living/split_personality/Life(seconds_per_tick = SSMOBS_DT)
 	if(QDELETED(body))
 		qdel(src) //in case trauma deletion doesn't already do it
