@@ -936,6 +936,16 @@
 	w_class = WEIGHT_CLASS_SMALL
 	crafting_complexity = FOOD_COMPLEXITY_1
 
+/// A kebab made by putting ingredients on a metal rod, see /datum/component/ingredients_holder.
+/obj/item/food/kebab/empty
+	name = "kebab"
+	desc = "A custom kebab, made by a chef who ran out of plates."
+	icon_state = "rod"
+	food_reagents = list()
+	tastes = list("metal" = 1)
+	foodtypes = NONE
+	crafting_complexity = FOOD_COMPLEXITY_1
+
 /obj/item/food/kebab/human
 	name = "human-kebab"
 	desc = "A human meat, on a stick."

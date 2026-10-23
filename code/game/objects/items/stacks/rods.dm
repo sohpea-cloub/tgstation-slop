@@ -54,6 +54,8 @@ GLOBAL_LIST_INIT(rod_recipes, list ( \
 /obj/item/stack/rods/Initialize(mapload, new_amount, merge = TRUE, list/mat_override=null, mat_amt=1)
 	. = ..()
 	update_appearance()
+	if(merge_type == /obj/item/stack/rods && !is_cyborg)
+		AddComponent(/datum/component/ingredients_holder, /obj/item/food/kebab/empty, CUSTOM_INGREDIENT_ICON_LINE, max_ingredients = 6, screentip_verb = "Skewer", quiet_rejection = TRUE)
 	AddElement(/datum/element/openspace_item_click_handler)
 	var/static/list/tool_behaviors = list(
 		TOOL_WELDER = list(

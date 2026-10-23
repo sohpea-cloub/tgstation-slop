@@ -22,6 +22,12 @@
 	var/ingredient_type
 	/// Adds screentips for all items that call on this proc, defaults to "Add"
 	var/screentip_verb
+	/// If set, using an item of this type on a holder that already has ingredients closes it up (a sandwich getting its top slice), turning it into [closed_type].
+	var/closing_type
+	/// The type of atom the holder becomes once closed with [closing_type].
+	var/closed_type
+	/// If TRUE, items that aren't valid ingredients are ignored silently instead of showing "doesn't go on that!" (for holders that are other things first, like a stack of rods).
+	var/quiet_rejection
 
 	/// Stores the names of the ingredients used on the holder, to pass down if processed into new instances.
 	var/list/ingredient_names
@@ -37,6 +43,9 @@
 		max_ingredients = MAX_ATOM_OVERLAYS - 3, // The cap is >= MAX_ATOM_OVERLAYS so we reserve 2 for top /bottom of item + 1 to stay under cap
 		datum/component/ingredients_holder/processed_holder, //when processing a holder, the results receive their own comps, but need the ingredient names and filling passed down
 		screentip_verb = "Add",
+		closing_type,
+		closed_type,
+		quiet_rejection = FALSE,
 )
 	if(!isatom(parent))
 		return COMPONENT_INCOMPATIBLE
@@ -51,6 +60,9 @@
 	src.max_ingredients = max_ingredients
 	src.ingredient_type = ingredient_type
 	src.screentip_verb = screentip_verb
+	src.closing_type = closing_type
+	src.closed_type = closed_type
+	src.quiet_rejection = quiet_rejection
 
 	if(!processed_holder || !length(processed_holder.ingredient_names))
 		return
@@ -121,7 +133,15 @@
 /datum/component/ingredients_holder/proc/customizable_attack(datum/source, obj/ingredient, mob/attacker, silent = FALSE, force = FALSE)
 	SIGNAL_HANDLER
 
+	if (closing_type && LAZYLEN(ingredient_names) && istype(ingredient, closing_type) && can_close_with(ingredient))
+		if (!attacker.transferItemToLoc(ingredient, parent))
+			return
+		close_holder(ingredient, attacker)
+		return COMPONENT_NO_AFTERATTACK
+
 	if (!valid_ingredient(ingredient))
+		if (quiet_rejection)
+			return
 		if (ingredient.is_drainable()) // For stuff like adding flour from a flour sack into a bowl, we handle the transfer of the reagent elsewhere, but we shouldn't regard it beyond some user feedback.
 			attacker.balloon_alert(attacker, "transferring...")
 			return
@@ -132,9 +152,56 @@
 		attacker.balloon_alert(attacker, "too full!")
 		return COMPONENT_NO_AFTERATTACK
 
+	var/atom/atom_parent = parent
+	if (isstack(atom_parent))
+		// Only one unit of a stack (a rod) becomes the custom food, the rest stay behind.
+		var/obj/item/stack/stack_parent = atom_parent
+		if (stack_parent.amount > 1)
+			var/obj/item/stack/split = stack_parent.split_stack(1)
+			if (!split)
+				return
+			// The new unit stays out of the world until it's a kebab, or it would merge right back into the stack.
+			var/datum/component/ingredients_holder/split_holder = split.GetComponent(type)
+			if (!split_holder || !attacker.transferItemToLoc(ingredient, split))
+				stack_parent.add(1)
+				qdel(split)
+				return
+			split_holder.add_ingredient(ingredient, stack_parent.drop_location())
+			return COMPONENT_NO_AFTERATTACK
+
 	if(!attacker.transferItemToLoc(ingredient, parent))
 		return
 	add_ingredient(ingredient)
+
+/// Whether this item can be used as the top of a closed holder: it can't be a holder that holds ingredients of its own.
+/datum/component/ingredients_holder/proc/can_close_with(obj/item/top)
+	var/datum/component/ingredients_holder/other = top.GetComponent(type)
+	return !other || !LAZYLEN(other.ingredient_names)
+
+/// Turns the holder into [closed_type], keeping everything inside it, and adds [top] to it as the lid.
+/datum/component/ingredients_holder/proc/close_holder(obj/item/top, mob/user)
+	var/atom/old_parent = parent
+	var/was_held = user.is_holding(old_parent)
+	var/atom/finished = new closed_type(old_parent.drop_location())
+	finished.TakeComponent(src)
+	closing_type = null
+	closed_type = null
+	max_ingredients = 0
+	handle_reagents(old_parent)
+	handle_reagents(top)
+	for(var/atom/movable/inside as anything in old_parent.contents.Copy())
+		inside.forceMove(finished)
+		if(isitem(inside))
+			handle_materials(inside)
+	var/obj/item/finished_item = finished
+	if(istype(finished_item) && top.w_class > finished_item.w_class)
+		finished_item.update_weight_class(top.w_class)
+	finished.name = "[custom_adjective()] [custom_name] [initial(finished.name)]"
+	SEND_SIGNAL(finished, COMSIG_ATOM_CUSTOMIZED, top)
+	SEND_SIGNAL(top, COMSIG_ITEM_USED_AS_INGREDIENT, finished)
+	qdel(old_parent)
+	if(was_held && istype(finished_item))
+		user.put_in_hands(finished_item)
 
 
 ///Extract the filling color from the ingredient, than calls apply_fill()
@@ -198,11 +265,11 @@
 
 
 ///Adds a new ingredient and updates the parent's name.
-/datum/component/ingredients_holder/proc/add_ingredient(obj/item/ingredient)
+/datum/component/ingredients_holder/proc/add_ingredient(obj/item/ingredient, atom/replacement_location)
 	var/atom/atom_parent = parent
 
 	if (replacement)
-		var/atom/replacement_parent = new replacement(atom_parent.drop_location())
+		var/atom/replacement_parent = new replacement(replacement_location || atom_parent.drop_location())
 		ingredient.forceMove(replacement_parent)
 		replacement = null
 		replacement_parent.TakeComponent(src)

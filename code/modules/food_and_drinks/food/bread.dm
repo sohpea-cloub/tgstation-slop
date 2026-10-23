@@ -68,7 +68,7 @@
 
 /obj/item/food/breadslice/plain/Initialize(mapload)
 	. = ..()
-	AddComponent(/datum/component/ingredients_holder, null, CUSTOM_INGREDIENT_ICON_STACK)
+	AddComponent(/datum/component/ingredients_holder, null, CUSTOM_INGREDIENT_ICON_STACK, closing_type = /obj/item/food/breadslice, closed_type = /obj/item/food/sandwich/empty)
 
 /obj/item/food/breadslice/plain/make_grillable()
 	AddComponent(/datum/component/grillable, /obj/item/food/griddle_toast, rand(15 SECONDS, 25 SECONDS), TRUE, TRUE)

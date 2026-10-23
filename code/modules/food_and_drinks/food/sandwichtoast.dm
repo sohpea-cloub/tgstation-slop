@@ -15,6 +15,16 @@
 	crafting_complexity = FOOD_COMPLEXITY_3
 	custom_materials = list(/datum/material/meat = MEATSLAB_MATERIAL_AMOUNT)
 
+/// What a custom sandwich becomes once it has been closed with a second slice of bread, see /datum/component/ingredients_holder.
+/obj/item/food/sandwich/empty
+	name = "sandwich"
+	desc = "A custom sandwich, made by a chef with imagination and a lot of bread."
+	food_reagents = list(/datum/reagent/consumable/nutriment = 2)
+	tastes = list("bread" = 1)
+	foodtypes = GRAIN
+	crafting_complexity = FOOD_COMPLEXITY_1
+	custom_materials = null
+
 /obj/item/food/sandwich/cheese
 	name = "cheese sandwich"
 	desc = "A light snack for a warm day. ...but what if you grilled it?"
