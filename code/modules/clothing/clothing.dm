@@ -606,6 +606,12 @@ BLIND     // can't see anything
 /obj/item/clothing/proc/spawn_shreds()
 	new /obj/effect/decal/cleanable/shreds(get_turf(src), name)
 
+/// Clothing that is destroyed by non-fire/acid damage is shredded rather than deleted, and stays around at 0 integrity. There is nothing left to damage then.
+/obj/item/clothing/take_damage(damage_amount, damage_type = BRUTE, damage_flag = "", sound_effect = TRUE, attack_dir, armour_penetration = 0)
+	if(!QDELETED(src) && get_integrity() <= 0)
+		return 0
+	return ..()
+
 /obj/item/clothing/atom_destruction(damage_flag)
 	if(damage_flag in list(ACID, FIRE))
 		return ..()
