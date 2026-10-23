@@ -132,7 +132,7 @@
 
 	return GENERIC_JOB_UNAVAILABLE_ERROR
 
-/mob/dead/new_player/proc/IsJobUnavailable(rank, latejoin = FALSE)
+/mob/dead/new_player/proc/IsJobUnavailable(rank, latejoin = FALSE, silent = FALSE)
 	var/datum/job/job = SSjob.get_job(rank)
 	if(!(job.job_flags & JOB_NEW_PLAYER_JOINABLE))
 		return JOB_UNAVAILABLE_GENERIC
@@ -146,7 +146,7 @@
 		else
 			return JOB_UNAVAILABLE_SLOTFULL
 
-	var/eligibility_check = SSjob.check_job_eligibility(src, job, "Mob IsJobUnavailable")
+	var/eligibility_check = SSjob.check_job_eligibility(src, job, "Mob IsJobUnavailable", silent = silent)
 	if(eligibility_check != JOB_AVAILABLE)
 		return eligibility_check
 

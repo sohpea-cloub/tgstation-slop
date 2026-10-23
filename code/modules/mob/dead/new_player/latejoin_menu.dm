@@ -90,7 +90,7 @@ GLOBAL_DATUM_INIT(latejoin_menu, /datum/latejoin_menu, new)
 		departments[initial(department_type.department_name)] = department_data
 
 		for(var/datum/job/job_datum as anything in layout[department_type])
-			var/job_availability = owner.IsJobUnavailable(job_datum.title, latejoin = TRUE)
+			var/job_availability = owner.IsJobUnavailable(job_datum.title, latejoin = TRUE, silent = TRUE)
 
 			var/list/job_data = list(
 				"prioritized" = (job_datum in SSjob.prioritized_jobs),
@@ -129,7 +129,7 @@ GLOBAL_DATUM_INIT(latejoin_menu, /datum/latejoin_menu, new)
 		departments[initial(department_type.department_name)] = department_data
 
 		for(var/datum/job/job_datum as anything in layout[department_type])
-			if((job_datum.job_flags & JOB_HIDE_WHEN_EMPTY) && owner.IsJobUnavailable(job_datum.title, latejoin = TRUE) != JOB_AVAILABLE)
+			if((job_datum.job_flags & JOB_HIDE_WHEN_EMPTY) && owner.IsJobUnavailable(job_datum.title, latejoin = TRUE, silent = TRUE) != JOB_AVAILABLE)
 				continue
 
 			var/list/job_data = list(
@@ -210,7 +210,7 @@ GLOBAL_DATUM_INIT(latejoin_menu, /datum/latejoin_menu, new)
 
 	for(var/datum/job_department/department as anything in SSjob.joinable_departments)
 		for(var/datum/job/job_datum as anything in department.department_jobs)
-			if(owner.IsJobUnavailable(job_datum.title, latejoin = TRUE) != JOB_AVAILABLE)
+			if(owner.IsJobUnavailable(job_datum.title, latejoin = TRUE, silent = TRUE) != JOB_AVAILABLE)
 				continue
 			dept_data += job_datum.title
 
