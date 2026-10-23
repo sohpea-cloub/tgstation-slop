@@ -80,6 +80,14 @@
 	taste_description = "science"
 	full_heal_flags = ~(HEAL_ADMIN|HEAL_BRUTE|HEAL_BURN|HEAL_TOX|HEAL_RESTRAINTS|HEAL_ALL_REAGENTS|HEAL_ORGANS)
 
+/// Used by the wizard Invincibility event: keeps people alive and in one piece, but unlike regular adminordrazine
+/// it doesn't strip away things the wizard (or their spells) did on purpose: brain traumas (Curse of Madness),
+/// mutations (monkification), diseases, and so on.
+/datum/reagent/medicine/adminordrazine/invincibility
+	name = "Invincibility Draught"
+	description = "Pure magic, which patches up anything that threatens to kill you, but leaves everything else about you alone."
+	full_heal_flags = HEAL_DAMAGE|HEAL_LIMBS|HEAL_WOUNDS|HEAL_BLOOD|HEAL_TEMP|HEAL_STATUS|HEAL_CC_STATUS
+
 /datum/reagent/medicine/synaptizine
 	name = "Synaptizine"
 	description = "Increases resistance to stuns as well as reducing drowsiness and hallucinations."
