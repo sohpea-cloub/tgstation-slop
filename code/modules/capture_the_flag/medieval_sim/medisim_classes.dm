@@ -22,11 +22,18 @@
 
 	class_description = "Melee class. Armed with a claymore."
 
+/// Arrows for the medisim: any damage kills in CTF, so they must only hurt when fired from a bow, never when thrown.
+/obj/item/ammo_casing/arrow/medisim
+	throwforce = 0
+
+/obj/item/storage/bag/quiver/full/medisim
+	arrow_path = /obj/item/ammo_casing/arrow/medisim
+
 /datum/outfit/ctf/medisim/archer
 	name = "Redfield Castle Archer"
 	icon_state = "medisim_archer"
 
-	belt = /obj/item/storage/bag/quiver/full
+	belt = /obj/item/storage/bag/quiver/full/medisim
 	suit = /obj/item/clothing/suit/armor/vest/cuirass
 	l_hand = /obj/item/gun/ballistic/bow
 
