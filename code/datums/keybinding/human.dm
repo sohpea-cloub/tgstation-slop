@@ -3,7 +3,7 @@
 	weight = WEIGHT_MOB
 
 /datum/keybinding/human/can_use(client/user)
-	return ishuman(user.mob)
+	return isliving(user.mob)
 
 /datum/keybinding/human/quick_equip
 	hotkey_keys = list("E")
@@ -16,8 +16,8 @@
 	. = ..()
 	if(.)
 		return
-	var/mob/living/carbon/human/H = user.mob
-	H.quick_equip()
+	var/mob/living/living_mob = user.mob
+	living_mob.quick_equip()
 	return TRUE
 
 /datum/keybinding/human/quick_equip_belt
@@ -35,8 +35,8 @@
 	. = ..()
 	if(.)
 		return
-	var/mob/living/carbon/human/H = user.mob
-	H.smart_equip_targeted(slot_type, slot_item_name)
+	var/mob/living/living_mob = user.mob
+	living_mob.smart_equip_targeted(slot_type, slot_item_name)
 	return TRUE
 
 /datum/keybinding/human/quick_equip_belt/quick_equip_bag

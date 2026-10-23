@@ -215,7 +215,7 @@
 /// Return a defib result flag to override default defib heart check
 #define COMSIG_CARBON_DEFIB_HEART_CHECK "carbon_defib_heart_check"
 
-/// From /mob/living/carbon/human/proc/smart_equip_targeted(): (mob/living/carbon/human/user, obj/item/possible_container)
+/// From /mob/living/proc/smart_equip_targeted(): (mob/living/user, obj/item/possible_container)
 #define COMSIG_HUMAN_NON_STORAGE_HOTKEY "human_storage_hotkey"
 	/// Return to prevent the storage fail message
 	#define COMPONENT_STORAGE_HOTKEY_HANDLED (1<<0)

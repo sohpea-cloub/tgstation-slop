@@ -344,50 +344,6 @@
 	for(var/obj/item/held_item as anything in get_held_items())
 		qdel(held_item)
 
-/// take the most recent item out of a slot or place held item in a slot
-
-/mob/living/carbon/human/proc/smart_equip_targeted(slot_type = ITEM_SLOT_BELT, slot_item_name = "belt")
-	if(incapacitated)
-		return
-	var/obj/item/thing = get_active_held_item()
-	var/obj/item/equipped_item = get_item_by_slot(slot_type)
-	var/thing_reject = NONE
-	if(thing)
-		thing_reject = SEND_SIGNAL(thing, COMSIG_HUMAN_NON_STORAGE_HOTKEY, src, equipped_item)
-	if(!equipped_item) // We also let you equip an item like this
-		if(!thing)
-			to_chat(src, span_warning("You have no [slot_item_name] to take something out of!"))
-			return
-		if(equip_to_slot_if_possible(thing, slot_type))
-			update_held_items()
-		return
-	var/datum/storage/storage = equipped_item.atom_storage
-	if(!storage)
-		if(!thing)
-			equipped_item.attack_hand(src)
-		else
-			if(thing_reject & COMPONENT_STORAGE_HOTKEY_HANDLED)
-				return
-			to_chat(src, span_warning("You can't fit [thing] into your [equipped_item.name]!"))
-		return
-	if(!storage.supports_smart_equip)
-		return
-	if (equipped_item.atom_storage.locked) // Determines if container is locked before trying to put something in or take something out so we dont give out information on contents (or lack of)
-		to_chat(src, span_warning("\The [equipped_item] is locked!"))
-		return
-	if(thing) // put thing in storage item
-		if(!equipped_item.atom_storage?.attempt_insert(thing, src))
-			to_chat(src, span_warning("You can't fit [thing] into your [equipped_item.name]!"))
-		return
-	if(!storage.real_location.contents.len) // nothing to take out
-		to_chat(src, span_warning("There's nothing in your [equipped_item.name] to take out!"))
-		return
-	var/obj/item/stored = storage.real_location.contents[storage.real_location.contents.len]
-	if(!stored || stored.on_found(src))
-		return
-	stored.attack_hand(src) // take out thing from item in storage slot
-	return
-
 /// Returns the helmet if an air tank compatible helmet is equipped.
 /mob/living/carbon/human/proc/can_breathe_helmet()
 	if (astype(head, /obj/item/clothing)?.clothing_flags & HEADINTERNALS)
