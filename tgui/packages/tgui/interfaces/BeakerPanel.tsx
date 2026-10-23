@@ -23,9 +23,15 @@ type ContainerType = {
   volume: number;
 };
 
+type GrenadeType = {
+  id: typePath;
+  text: string;
+};
+
 type Data = {
   reagents: Reagent[];
   containers: ContainerType[];
+  grenade_types: GrenadeType[];
 };
 
 type Container = {
@@ -224,11 +230,12 @@ const ContainerSection = (props: ContainerProps) => {
 
 export const BeakerPanel = () => {
   const { act, data } = useBackend<Data>();
-  const { reagents, containers } = data;
+  const { reagents, containers, grenade_types } = data;
 
   const [container_one, setContainerOne] = makeContainerState(containers[0]);
   const [container_two, setContainerTwo] = makeContainerState(containers[0]);
   const [grenadeTimer, setGrenadeTimer] = useState<number>(5.0);
+  const [grenadeType, setGrenadeType] = useState<typePath>(grenade_types[0].id);
 
   const reagentsSorted = reagents.sort((a, b) => (a.text < b.text ? -1 : 1));
   const containersSorted = containers.sort((a, b) =>
@@ -262,6 +269,7 @@ export const BeakerPanel = () => {
                           containerToSpawnInfo(container_two),
                         ],
                         grenade_info: {
+                          grenade_type: grenadeType,
                           detonation_type: 'normal', // to be implemented
                           detonation_timer: grenadeTimer,
                         },
@@ -270,6 +278,19 @@ export const BeakerPanel = () => {
                   >
                     Spawn Grenade
                   </Button>
+                </Stack.Item>
+                <Stack.Item>
+                  <Dropdown
+                    options={grenade_types.map((type) => ({
+                      displayText: capitalizeFirst(type.text),
+                      value: type.id,
+                    }))}
+                    selected={grenadeType}
+                    displayText={capitalizeFirst(
+                      grenade_types.find((t) => t.id === grenadeType)!.text,
+                    )}
+                    onSelected={setGrenadeType}
+                  />
                 </Stack.Item>
                 <Stack.Item grow>
                   Timer:&nbsp;

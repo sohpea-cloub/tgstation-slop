@@ -1,5 +1,15 @@
 /datum/beaker_panel
 
+/// Empty chem grenade casings the panel can spawn, by the type string the UI sends.
+/datum/beaker_panel/proc/grenade_casing_types()
+	return list(
+		/obj/item/grenade/chem_grenade,
+		/obj/item/grenade/chem_grenade/large,
+		/obj/item/grenade/chem_grenade/cryo,
+		/obj/item/grenade/chem_grenade/pyro,
+		/obj/item/grenade/chem_grenade/adv_release,
+	)
+
 /datum/beaker_panel/ui_state(mob/user)
 	return ADMIN_STATE(R_ADMIN)
 
@@ -47,6 +57,10 @@
 			continue
 		data["containers"] += list(list("id" = container_type, "text" = container_type::name, "volume" = container_type::volume))
 
+	data["grenade_types"] = list()
+	for(var/obj/item/grenade/chem_grenade/grenade_type as anything in grenade_casing_types())
+		data["grenade_types"] += list(list("id" = grenade_type, "text" = grenade_type::name))
+
 	return data
 
 /datum/beaker_panel/proc/spawn_container_from_data(mob/user, list/spawn_info)
@@ -73,7 +87,10 @@
 	return spawn_grenade(user, containers, grenade_info)
 
 /datum/beaker_panel/proc/spawn_grenade(mob/user, list/beakers, list/grenade_info)
-	var/obj/item/grenade/chem_grenade/grenade = new(user.drop_location())
+	var/grenade_type = text2path(grenade_info["grenade_type"])
+	if(!(grenade_type in grenade_casing_types()))
+		grenade_type = /obj/item/grenade/chem_grenade
+	var/obj/item/grenade/chem_grenade/grenade = new grenade_type(user.drop_location())
 	grenade.beakers = beakers
 	grenade.stage_change(GRENADE_READY)
 
