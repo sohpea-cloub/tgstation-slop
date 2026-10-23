@@ -833,7 +833,11 @@
 	to_chat(owner, span_notice("You feel more like yourself."))
 	if(ishuman(owner))
 		var/mob/living/carbon/human/human = owner
-		originalDNA.copy_dna(human.dna, COPY_DNA_SE|COPY_DNA_SPECIES|COPY_DNA_MUTATIONS)
+		// Re-setting the same species would replace its datum, which for slimepeople wipes the link to their spare bodies
+		var/copy_flags = COPY_DNA_SE|COPY_DNA_MUTATIONS
+		if(human.dna.species.type != originalDNA.species.type)
+			copy_flags |= COPY_DNA_SPECIES
+		originalDNA.copy_dna(human.dna, copy_flags)
 		human.real_name = originalname
 		human.updateappearance(mutcolor_update=1)
 	originalDNA = null
