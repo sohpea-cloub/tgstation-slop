@@ -115,7 +115,7 @@
 
 /mob/living/simple_animal/hostile/megafauna/dust(just_ash, drop_items, give_moodlet, force)
 	if(!force && health > 0)
-		return
+		return FALSE
 	loot.Cut()
 	return ..()
 

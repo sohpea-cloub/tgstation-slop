@@ -331,8 +331,11 @@
 		var/mob/living/victim = AM
 		if(victim.incorporeal_move || HAS_TRAIT(victim, TRAIT_GODMODE)) //try to keep this in sync with supermatter's consume fail conditions
 			return
+		if(!victim.dust())
+			// Some mobs (living megafauna and bosses) refuse to be dusted, don't claim they were consumed.
+			user?.balloon_alert(user, "unaffected!")
+			return
 		victim.investigate_log("has been dusted by [src].", INVESTIGATE_DEATHS)
-		victim.dust()
 		message_admins("[src] has consumed [key_name_admin(victim)] [ADMIN_JMP(src)].")
 		investigate_log("has consumed [key_name(victim)].", INVESTIGATE_ENGINE)
 	else if(istype(AM, /obj/singularity))

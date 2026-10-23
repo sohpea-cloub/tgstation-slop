@@ -97,12 +97,15 @@
  * * just_ash - If TRUE, ash will spawn where the mob was, as opposed to remains
  * * drop_items - Should the mob drop their items before dusting?
  * * force - Should this mob be FORCABLY dusted?
+ *
+ * Returns TRUE if the atom was dusted, FALSE if it refused (e.g. a living megafauna).
 */
 /atom/movable/proc/dust(just_ash, drop_items, give_moodlet, force)
 	dust_animation()
 	// since this is sometimes called in the middle of movement, allow half a second for movement to finish, ghosting to happen and animation to play.
 	// Looks much nicer and doesn't cause multiple runtimes.
 	QDEL_IN(src, DUST_ANIMATION_TIME)
+	return TRUE
 
 /mob/living/dust(just_ash, drop_items, give_moodlet = TRUE, force)
 	..()
@@ -124,6 +127,7 @@
 	if (!QDELETED(src))
 		addtimer(CALLBACK(src, PROC_REF(spawn_dust), just_ash), DUST_ANIMATION_TIME - 0.3 SECONDS)
 		ghostize()
+	return TRUE
 
 /// Animates turning into dust.
 /// Does not delete src afterwards, BUT it will become invisible (and grey), so ensure you handle that yourself

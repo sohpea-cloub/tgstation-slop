@@ -220,6 +220,7 @@
 
 /mob/living/basic/guardian/dust(just_ash, drop_items, give_moodlet, force)
 	death(TRUE)
+	return TRUE
 
 /// Link up with a summoner mob.
 /mob/living/basic/guardian/proc/set_summoner(mob/living/to_who, different_person = FALSE)

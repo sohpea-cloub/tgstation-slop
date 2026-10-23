@@ -323,6 +323,7 @@
 
 /mob/living/basic/revenant/dust(just_ash, drop_items, give_moodlet, force)
 	death()
+	return TRUE
 
 /mob/living/basic/revenant/gib()
 	death()
