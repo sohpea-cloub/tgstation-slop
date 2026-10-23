@@ -660,6 +660,22 @@ Return to step 11 of normal process."}
 	var/list/tool_list = list()
 	///Which toolset do we have active currently?
 	var/active_toolset = TOOLSET_MEDICAL
+	/// Real multitool we interact through while in multitool mode. Many multitool_act() procs expect a /obj/item/multitool (buffer, etc.)
+	var/obj/item/multitool/internal_multitool
+
+/obj/item/abductor/alien_omnitool/Destroy(force)
+	QDEL_NULL(internal_multitool)
+	return ..()
+
+/obj/item/abductor/alien_omnitool/get_proxy_attacker_for(atom/target, mob/user)
+	if(tool_behaviour != TOOL_MULTITOOL)
+		return src
+	if(QDELETED(internal_multitool))
+		internal_multitool = new(src)
+		internal_multitool.toolspeed = toolspeed
+		internal_multitool.item_flags |= ABSTRACT
+		ADD_TRAIT(internal_multitool, TRAIT_NODROP, INNATE_TRAIT)
+	return internal_multitool
 
 /obj/item/abductor/alien_omnitool/get_all_tool_behaviours()
 	return list(

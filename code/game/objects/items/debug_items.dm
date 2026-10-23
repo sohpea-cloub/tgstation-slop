@@ -43,6 +43,22 @@
 	righthand_file = 'icons/mob/inhands/equipment/tools_righthand.dmi'
 	toolspeed = 0.1
 	tool_behaviour = null
+	/// Real multitool we interact through while in multitool mode. Many multitool_act() procs expect a /obj/item/multitool (buffer, etc.)
+	var/obj/item/multitool/internal_multitool
+
+/obj/item/debug/omnitool/Destroy(force)
+	QDEL_NULL(internal_multitool)
+	return ..()
+
+/obj/item/debug/omnitool/get_proxy_attacker_for(atom/target, mob/user)
+	if(tool_behaviour != TOOL_MULTITOOL)
+		return src
+	if(QDELETED(internal_multitool))
+		internal_multitool = new(src)
+		internal_multitool.toolspeed = toolspeed
+		internal_multitool.item_flags |= ABSTRACT
+		ADD_TRAIT(internal_multitool, TRAIT_NODROP, INNATE_TRAIT)
+	return internal_multitool
 
 /obj/item/debug/omnitool/examine()
 	. = ..()
