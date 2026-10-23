@@ -54,7 +54,7 @@
 
 /obj/item/borg/cleaner_box/on_offered(mob/living/offerer, mob/living/carbon/offered)
 	. = TRUE
-	if(SEND_SIGNAL(src, COMSIG_ITEM_OFFERING, offerer) & COMPONENT_OFFER_INTERRUPT)
+	if(SEND_SIGNAL(src, COMSIG_ITEM_OFFERING, offerer, offered) & COMPONENT_OFFER_INTERRUPT)
 		return
 	if(hose.loc != src && !istype(hose.loc, /mob/living)) // Error handling
 		stack_trace("[src] has been offered with [hose] not present inside its contents or inside a mob's loc variable. Location: [isnull(loc) ? "NULLSPACE" : "[hose.loc], X: [hose.x], Y: [hose.y], Z:[hose.z]"]")

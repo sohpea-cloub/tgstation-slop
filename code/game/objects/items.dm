@@ -1481,7 +1481,7 @@ GAME_VERB_SRC(/obj/item, verb_pickup, oview(1), "Pick up", null)
 			return TRUE
 	else if(!(HAS_TRAIT(offerer, TRAIT_CAN_HOLD_ITEMS) && HAS_TRAIT(offered, TRAIT_CAN_HOLD_ITEMS)))
 		return TRUE // both must be able to hold items for this to make sense
-	if(SEND_SIGNAL(src, COMSIG_ITEM_OFFERING, offerer) & COMPONENT_OFFER_INTERRUPT)
+	if(SEND_SIGNAL(src, COMSIG_ITEM_OFFERING, offerer, offered) & COMPONENT_OFFER_INTERRUPT)
 		return TRUE
 
 /**

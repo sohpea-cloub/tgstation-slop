@@ -18,7 +18,7 @@
 	UnregisterSignal(source, list(COMSIG_ITEM_OFFERING, COMSIG_ITEM_OFFER_TAKEN))
 
 /// Signal proc for [COMSIG_ITEM_OFFERING] to set up the high-five on offer
-/datum/element/high_fiver/proc/on_offer(obj/item/source, mob/living/offerer)
+/datum/element/high_fiver/proc/on_offer(obj/item/source, mob/living/offerer, mob/living/offered)
 	SIGNAL_HANDLER
 
 	offerer.visible_message(
@@ -26,7 +26,7 @@
 		span_notice("You post up, looking for a high-five!"),
 		vision_distance = 2,
 	)
-	offerer.apply_status_effect(/datum/status_effect/offering/no_item_received/high_five, source, /atom/movable/screen/alert/give/highfive)
+	offerer.apply_status_effect(/datum/status_effect/offering/no_item_received/high_five, source, /atom/movable/screen/alert/give/highfive, offered)
 
 	return COMPONENT_OFFER_INTERRUPT
 

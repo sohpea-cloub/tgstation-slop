@@ -169,7 +169,7 @@
 		to_chat(src, span_warning("There's nobody beside you to take it!"))
 		return
 
-	if(offered_item.on_offered(src)) // see if the item interrupts with its own behavior
+	if(offered_item.on_offered(src, offered)) // see if the item interrupts with its own behavior
 		return
 
 	balloon_alert_to_viewers("offers something")

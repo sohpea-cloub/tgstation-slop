@@ -221,7 +221,7 @@
 
 ///Called when an item gets recharged by the ammo powerup
 #define COMSIG_ITEM_RECHARGED "item_recharged"
-///Called when an item is being offered, from [/obj/item/proc/on_offered(mob/living/offerer)]
+///Called when an item is being offered, from [/obj/item/proc/on_offered(mob/living/offerer, mob/living/offered)]: (mob/living/offerer, mob/living/offered)
 #define COMSIG_ITEM_OFFERING "item_offering"
 	///Interrupts the offer proc
 	#define COMPONENT_OFFER_INTERRUPT (1<<0)
