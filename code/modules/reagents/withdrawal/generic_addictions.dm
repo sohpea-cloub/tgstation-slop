@@ -103,6 +103,8 @@
 	symptoms = "Expresses a desire for maintenance drugs, and when in withdrawal, experiences various adaptions \
 		such as light sensitivity, numbness, changes to taste, enhanced hair growth, and greater low light vision."
 	withdrawal_stage_messages = list("", "", "")
+	/// Weakref of an addict's tongue -> list(liked, disliked, toxic) foodtypes it had before withdrawal changed them
+	var/list/saved_tastes = list()
 
 /datum/addiction/maintenance_drugs/withdrawal_enters_stage_1(mob/living/carbon/affected_carbon)
 	. = ..()
@@ -125,6 +127,9 @@
 	var/obj/item/organ/tongue/tongue = affected_carbon.get_organ_slot(ORGAN_SLOT_TONGUE)
 	if(!tongue)
 		return
+	var/datum/weakref/tongue_ref = WEAKREF(tongue)
+	if(!(tongue_ref in saved_tastes)) // remember what the tongue liked before (quirks, species), so we can give it back
+		saved_tastes[tongue_ref] = list(tongue.liked_foodtypes, tongue.disliked_foodtypes, tongue.toxic_foodtypes)
 	tongue.liked_foodtypes = GROSS
 	tongue.disliked_foodtypes = NONE
 	tongue.toxic_foodtypes = ~GROSS
@@ -154,10 +159,16 @@
 	//restore tongue's tastes
 	var/obj/item/organ/tongue/tongue = affected_carbon.get_organ_slot(ORGAN_SLOT_TONGUE)
 	if(tongue)
-		tongue.liked_foodtypes = initial(tongue.liked_foodtypes)
-		tongue.disliked_foodtypes = initial(tongue.disliked_foodtypes)
-		tongue.toxic_foodtypes = initial(tongue.toxic_foodtypes)
+		// only undo what withdrawal changed (this is also called every tick while on the drug), and to what it was before
+		var/datum/weakref/tongue_ref = WEAKREF(tongue)
+		var/list/old_tastes = saved_tastes[tongue_ref]
+		if(old_tastes)
+			tongue.liked_foodtypes = old_tastes[1]
+			tongue.disliked_foodtypes = old_tastes[2]
+			tongue.toxic_foodtypes = old_tastes[3]
+			saved_tastes -= tongue_ref
 	REMOVE_TRAIT(affected_carbon, TRAIT_NIGHT_VISION, type)
+	affected_carbon.clear_mood_event("too_bright")
 
 ///Makes you a hypochondriac - I'd like to call it hypochondria, but "I could use some hypochondria" doesn't work
 /datum/addiction/medicine
