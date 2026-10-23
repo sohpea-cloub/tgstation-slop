@@ -161,6 +161,10 @@
 			for(var/mob/radio_hearer as anything in mob_only_listeners(get_hearers_in_LOS(called_radio.canhear_range, called_radio)))
 				LAZYSET(virt.runechat_anchors, radio_hearer, called_radio)
 	var/list/message_mods = data["mods"]
+	// Custom say emotes ("; *emote*") are shown in place of the spoken message, so they need garbling too
+	if(compression > 0 && LAZYACCESS(message_mods, MODE_CUSTOM_SAY_EMOTE))
+		message_mods = message_mods.Copy() // the list is shared with the original signal and its copies
+		message_mods[MODE_CUSTOM_SAY_EMOTE] = Gibberish(message_mods[MODE_CUSTOM_SAY_EMOTE], compression >= COMPRESSION_REPLACE_CHARACTER_THRESHOLD)
 
 	var/tts_radio_id = LAZYACCESS(message_mods, MODE_TTS_IDENTIFIER)
 	// Flat list of mobs who can hear the message
