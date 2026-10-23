@@ -317,7 +317,7 @@
 #define COMSIG_LIVING_THUD "living_thud"
 ///From /datum/component/happiness()
 #define COMSIG_MOB_HAPPINESS_CHANGE "happiness_change"
-/// From /obj/item/melee/baton/baton_effect(): (datum/source, mob/living/user, /obj/item/melee/baton)
+/// From /obj/item/melee/baton/baton_effect() and /datum/component/stun_n_cuff/proc/stun_target(): (datum/source, atom/movable/user, /obj/item/melee/baton), the baton is null for bots
 #define COMSIG_MOB_BATONED "mob_batoned"
 
 /// From /obj/machinery/gibber/start_gibbing(): (mob/living/user, /obj/machinery/gibber, list/results)

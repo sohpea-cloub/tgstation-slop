@@ -88,8 +88,12 @@
 	if(!COOLDOWN_FINISHED(src, stun_cooldown))
 		return
 	playsound(parent, stun_sound, 50, TRUE)
-	human_target.Paralyze(stun_timer)
-	human_target.set_stutter(40 SECONDS)
+	// Batons skip the knockdown and halve the CNS disruption for the baton resistant (e.g. the shock absorber MOD module), so do we
+	var/baton_resistant = HAS_TRAIT(human_target, TRAIT_BATON_RESISTANCE)
+	if(!baton_resistant)
+		human_target.Paralyze(stun_timer)
+	human_target.set_stutter(40 SECONDS * (baton_resistant ? 0.5 : 1))
+	SEND_SIGNAL(human_target, COMSIG_MOB_BATONED, parent, null)
 	log_combat(parent, human_target, "honked")
 
 	human_target.visible_message(
