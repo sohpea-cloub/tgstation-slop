@@ -110,6 +110,9 @@ GLOBAL_VAR_INIT(glowshrooms, 0)
 			if(WEST)
 				pixel_x = -32
 		icon_state = "[base_icon_state][rand(1,3)]"
+		// Mineral rock is drawn on the game plane at EDGED_TURF_LAYER, above our default layer, so we'd be hidden behind it
+		if(istype(get_step(src, dir), /turf/closed/mineral))
+			layer = ON_EDGED_TURF_LAYER
 	else //if on the floor, glowshroom on-floor sprite
 		icon_state = base_icon_state
 
