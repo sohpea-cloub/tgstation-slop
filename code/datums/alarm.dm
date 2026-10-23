@@ -11,9 +11,12 @@
 //Honestly I'm not sure how much of this is a feature, and how much is just old code
 //But I'm leaving it how I found it
 
+///Every alarm handler that currently has at least one active alarm, so new listeners can catch up on what they missed
+GLOBAL_LIST_EMPTY(active_alarm_handlers)
+
 ///Represents a single source of alarms, one alarm handler will only ever count for one alarm per listener
 /datum/alarm_handler
-	///A list of alarm type -> list of areas we currently have alarms in
+	///A list of alarm type -> list of areas we currently have alarms in -> z level the alarm was sent from
 	var/list/sent_alarms
 	///Our source atom
 	var/atom/source_atom
@@ -54,7 +57,8 @@
 		LAZYSET(sent_alarms, alarm_type, list())
 		existing_alarms = sent_alarms[alarm_type] // List will definitely exist because of previous line, no need for lazy macro
 
-	existing_alarms += our_area
+	existing_alarms[our_area] = our_z_level
+	GLOB.active_alarm_handlers |= src
 
 	our_area.active_alarms[alarm_type] += 1
 
@@ -86,6 +90,8 @@
 	LAZYREMOVE(existing_alarms, our_area)
 	if(!LAZYLEN(existing_alarms))
 		LAZYREMOVE(sent_alarms, alarm_type)
+		if(!length(sent_alarms))
+			GLOB.active_alarm_handlers -= src
 
 	our_area.active_alarms[alarm_type] -= 1
 	if(!length(our_area.active_alarms))
@@ -105,16 +111,39 @@
 	var/list/alarms = list()
 	///Should we allow alarm changes to go through or not
 	var/accepting_alarm_changes = TRUE
+	///The alarm types we were told to listen for
+	var/list/listened_alarm_types
 
 ///Accepts a list of alarm types to pay attention to, a list of valid z levels, and a list of valid areas. areas and zlevels are ignored if null
-/datum/alarm_listener/New(alarms_to_listen_for, allowed_z_levels, allowed_areas)
+/datum/alarm_listener/New(list/alarms_to_listen_for, allowed_z_levels, allowed_areas)
 	src.allowed_z_levels = allowed_z_levels
 	src.allowed_areas = allowed_areas
 	for(var/alarm_type in alarms_to_listen_for)
 		RegisterSignal(SSdcs, COMSIG_GLOB_ALARM_FIRE(alarm_type), PROC_REF(add_alarm))
 		RegisterSignal(SSdcs, COMSIG_GLOB_ALARM_CLEAR(alarm_type), PROC_REF(clear_alarm))
+	listened_alarm_types = alarms_to_listen_for.Copy()
+	sync_alarms()
 
 	return ..()
+
+///Throws away what we know and picks up every alarm that is active right now, without notifying anyone.
+///Alarm handlers only send an alarm once, so a listener created after the fact (or one that wasn't accepting changes for a while) has to catch up.
+/datum/alarm_listener/proc/sync_alarms()
+	for(var/alarm_type in alarms)
+		for(var/area_name in alarms[alarm_type])
+			var/list/alarm_packet = alarms[alarm_type][area_name]
+			var/list/cameras = alarm_packet[2]
+			if(cameras)
+				for(var/obj/machinery/camera/camera as anything in cameras)
+					UnregisterSignal(camera, COMSIG_QDELETING)
+	alarms.Cut()
+	for(var/datum/alarm_handler/handler as anything in GLOB.active_alarm_handlers)
+		for(var/alarm_type in handler.sent_alarms)
+			if(!(alarm_type in listened_alarm_types))
+				continue
+			var/list/sent_areas = handler.sent_alarms[alarm_type]
+			for(var/area/sent_area as anything in sent_areas)
+				register_alarm(handler, alarm_type, sent_area, sent_areas[sent_area], null, notify = FALSE)
 
 ///Adds an alarm to our alarms list, you shouldn't be calling this manually
 ///It should all be handled by the signal listening we do, unless you want to only send an alarm to one listener
@@ -124,6 +153,10 @@
 	if (!accepting_alarm_changes)
 		return
 
+	register_alarm(handler, alarm_type, source_area, source_z, optional_camera)
+
+///Adds an alarm to our list if it passes our z level and area filters, notifying our owner unless notify is false
+/datum/alarm_listener/proc/register_alarm(datum/alarm_handler/handler, alarm_type, area/source_area, source_z, optional_camera, notify = TRUE)
 	if(allowed_z_levels && !(source_z in allowed_z_levels))
 		return
 
@@ -150,7 +183,8 @@
 
 	//This does mean that only the first alarm of that camera type in the area will send a ping, but jesus what else can ya do
 	alarms_of_our_type[source_area.name] = list(source_area, cameras, list(handler))
-	SEND_SIGNAL(src, COMSIG_ALARM_LISTENER_TRIGGERED, alarm_type, source_area)
+	if(notify)
+		SEND_SIGNAL(src, COMSIG_ALARM_LISTENER_TRIGGERED, alarm_type, source_area)
 
 ///Removes an alarm to our alarms list, you probably shouldn't be calling this manually
 ///It should all be handled by the signal listening we do, unless you want to only remove an alarm to one listener
@@ -191,6 +225,8 @@
 /datum/alarm_listener/proc/allow_alarm_changes()
 	SIGNAL_HANDLER
 	accepting_alarm_changes = TRUE
+	//We ignored every alarm that was sent or cleared while we weren't accepting changes
+	sync_alarms()
 
 ///Used to manually clear camera refs if one is ref'd directly
 /datum/alarm_listener/proc/clear_camera_ref(obj/machinery/camera/source)
