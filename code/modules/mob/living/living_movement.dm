@@ -1,11 +1,7 @@
 /mob/living/Moved(atom/old_loc, movement_dir, forced, list/old_locs, momentum_change = TRUE)
 	. = ..()
 	update_turf_movespeed(loc)
-	if(HAS_TRAIT(src, TRAIT_NEGATES_GRAVITY))
-		if(!isgroundlessturf(loc))
-			ADD_TRAIT(src, TRAIT_IGNORING_GRAVITY, IGNORING_GRAVITY_NEGATION)
-		else
-			REMOVE_TRAIT(src, TRAIT_IGNORING_GRAVITY, IGNORING_GRAVITY_NEGATION)
+	update_gravity_negation()
 
 	var/turf/old_turf = get_turf(old_loc)
 	var/turf/new_turf = get_turf(src)
@@ -25,6 +21,14 @@
 	// If the area gravity has changed, then it's possible that our state has changed, so update
 	if(old_area.default_gravity != new_area.default_gravity)
 		refresh_gravity()
+
+/// Magnetizes us to the floor (or releases us) depending on [TRAIT_NEGATES_GRAVITY] and whether the turf we're on has ground.
+/// Call if we moved or if the turf under us changed.
+/mob/living/proc/update_gravity_negation()
+	if(HAS_TRAIT(src, TRAIT_NEGATES_GRAVITY) && !isgroundlessturf(loc))
+		ADD_TRAIT(src, TRAIT_IGNORING_GRAVITY, IGNORING_GRAVITY_NEGATION)
+	else
+		REMOVE_TRAIT(src, TRAIT_IGNORING_GRAVITY, IGNORING_GRAVITY_NEGATION)
 
 /mob/living/on_changed_z_level(turf/old_turf, turf/new_turf, same_z_layer, notify_contents)
 	. = ..()

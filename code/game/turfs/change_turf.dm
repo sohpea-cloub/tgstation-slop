@@ -205,6 +205,7 @@ GLOBAL_LIST_INIT(blacklisted_automated_baseturfs, typecacheof(list(
 
 	// we need to update gravity for any mob on a tile that is being created or destroyed
 	for(var/mob/living/target in new_turf.contents)
+		target.update_gravity_negation() // magboots, drones and cyborgs magnetize to the new ground (or let go of it)
 		target.refresh_gravity()
 
 	return new_turf
