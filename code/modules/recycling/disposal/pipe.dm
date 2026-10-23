@@ -56,6 +56,12 @@
 		var/turf/turf_loc = loc
 		turf_loc.add_blueprints_preround(src)
 
+/// Pipes hidden under an intact floor tile are shielded from most of an explosion's blast, like cables are, instead of being cut while the tile above them survives.
+/obj/structure/disposalpipe/run_atom_armor(damage_amount, damage_type, damage_flag, attack_dir, armour_penetration)
+	if(damage_flag == BOMB && HAS_TRAIT(src, TRAIT_UNDERFLOOR))
+		damage_amount *= 0.25
+	return ..()
+
 /obj/structure/disposalpipe/Destroy()
 	spawn_pipe = FALSE
 	QDEL_NULL(stored)
