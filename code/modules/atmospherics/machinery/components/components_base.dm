@@ -224,7 +224,11 @@
 	return parents[nodes.Find(target_component)]
 
 /obj/machinery/atmospherics/components/replace_pipenet(datum/pipeline/Old, datum/pipeline/New)
-	parents[parents.Find(Old)] = New
+	// A component can have more than one port on the same pipeline (a pump whose output loops back to its input):
+	// replace every one, or the others keep pointing at the merged (deleted) pipeline.
+	for(var/i in 1 to length(parents))
+		if(parents[i] == Old)
+			parents[i] = New
 
 // Helpers
 

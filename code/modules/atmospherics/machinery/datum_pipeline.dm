@@ -182,6 +182,7 @@
 	other_atmos_machines |= parent_pipeline.other_atmos_machines
 	other_airs |= parent_pipeline.other_airs
 	parent_pipeline.members.Cut()
+	parent_pipeline.other_airs.Cut()
 	parent_pipeline.other_atmos_machines.Cut()
 	parent_pipeline.require_custom_reconcilation.Cut()
 	update = TRUE
