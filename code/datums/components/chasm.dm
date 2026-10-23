@@ -173,6 +173,13 @@
 
 	// send to oblivion
 
+	// Sealed vehicles (mechs, cars) don't protect their occupants from the abyss: throw them out so they fall on their own,
+	// rather than being left alive (and still driving) inside a vehicle at the bottom of the chasm.
+	if (istype(dropped_thing, /obj/vehicle/sealed))
+		var/obj/vehicle/sealed/doomed_vehicle = dropped_thing
+		if (LAZYLEN(doomed_vehicle.occupants))
+			doomed_vehicle.dump_mobs(randomstep = FALSE)
+
 	if (isliving(dropped_thing))
 		var/mob/living/falling_mob = dropped_thing
 		ADD_TRAIT(falling_mob, TRAIT_NO_TRANSFORM, REF(src))
