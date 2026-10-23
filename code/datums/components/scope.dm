@@ -62,6 +62,11 @@
 	if(!user_client)
 		stop_zooming(user_mob)
 		return
+	// The pixel offset applies to whatever the client is looking through, so it would also shift a remote view
+	// (camera consoles, remote eyes...) by many tiles. Stop as soon as we're no longer looking from our own eyes.
+	if(user_client.eye != user_mob)
+		stop_zooming(user_mob)
+		return
 	tracker.calculate_params()
 	if(!user_client.intended_direction)
 		user_mob.face_atom(tracker.given_turf)
@@ -163,6 +168,10 @@
 		return
 	if(HAS_TRAIT(user, TRAIT_USER_SCOPED))
 		user.balloon_alert(user, "already zoomed!")
+		return
+	// Zooming offsets the client's view, which would also offset any remote view (e.g. a camera console) we're using.
+	if(user.client.eye != user)
+		user.balloon_alert(user, "can't zoom right now!")
 		return
 	user.playsound_local(parent, 'sound/items/weapons/scope.ogg', 75, TRUE)
 	tracker = user.overlay_fullscreen("scope", /atom/movable/screen/fullscreen/cursor_catcher/scope, isgun(parent))
