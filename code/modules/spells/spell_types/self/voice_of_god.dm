@@ -26,7 +26,8 @@
 		return
 
 	command = tgui_input_text(cast_on, "Speak with the Voice of God", "Command", max_length = MAX_MESSAGE_LEN)
-	if(QDELETED(src) || QDELETED(cast_on) || !can_cast_spell())
+	// Re-check the cooldown too: the spell could have been cast through another input window while this one was open
+	if(QDELETED(src) || QDELETED(cast_on) || !IsAvailable())
 		return . | SPELL_CANCEL_CAST
 	if(!command)
 		reset_spell_cooldown()
