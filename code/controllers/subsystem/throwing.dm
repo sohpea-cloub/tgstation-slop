@@ -198,6 +198,13 @@ SUBSYSTEM_DEF(throwing)
 			finalize()
 			return
 
+/// The angle (clockwise from north) the thrown thing was travelling in, for the momentum it keeps when the throw ends.
+/// dist_x and dist_y are absolute distances (and swapped so x is the longer axis), so they can't be used to get a direction.
+/datum/thrownthing/proc/get_drift_angle()
+	if(starting_turf && target_turf && starting_turf != target_turf && starting_turf.z == target_turf.z)
+		return get_angle(starting_turf, target_turf)
+	return dir2angle(init_dir) || 0
+
 /datum/thrownthing/proc/finalize(hit = FALSE, target=null)
 	set waitfor = FALSE
 	//done throwing, either because it hit something or it finished moving
@@ -221,9 +228,9 @@ SUBSYSTEM_DEF(throwing)
 			thrownthing.throw_impact(get_turf(thrownthing), src)  // we haven't hit something yet and we still must, let's hit the ground.
 			if(QDELETED(thrownthing)) //throw_impact can delete things, such as glasses smashing
 				return //deletion should already be handled by on_thrownthing_qdel()
-			thrownthing.newtonian_move(delta_to_angle(dist_x, dist_y), drift_force = drift_force)
+			thrownthing.newtonian_move(get_drift_angle(), drift_force = drift_force)
 	else
-		thrownthing.newtonian_move(delta_to_angle(dist_x, dist_y), drift_force = drift_force)
+		thrownthing.newtonian_move(get_drift_angle(), drift_force = drift_force)
 
 	if(target)
 		thrownthing.throw_impact(target, src)
