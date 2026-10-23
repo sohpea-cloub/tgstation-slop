@@ -736,10 +736,10 @@
 
 /datum/move_loop/has_target/move_towards/move()
 	//Move our tickers forward a step, we're guaranteed at least one step forward because of how the code is written
-	if(x_rate) //Did you know that rounding by 0 throws a divide by 0 error?
-		x_ticker = FLOOR(x_ticker + x_rate, x_rate)
+	if(x_rate)
+		x_ticker += x_rate
 	if(y_rate)
-		y_ticker = FLOOR(y_ticker + y_rate, y_rate)
+		y_ticker += y_rate
 
 	var/x = moving.x
 	var/y = moving.y
@@ -750,7 +750,7 @@
 	if(x_ticker >= 1)
 		x_ticker = MODULUS(x_ticker, 1) //I swear to god if you somehow go up by one then one in a tick I'm gonna go mad
 	if(y_ticker >= 1)
-		y_ticker = MODULUS(x_ticker, 1)
+		y_ticker = MODULUS(y_ticker, 1)
 	var/atom/old_loc = moving.loc
 	moving.Move(moving_towards, get_dir(moving, moving_towards), FALSE, !(flags & MOVEMENT_LOOP_NO_DIR_UPDATE))
 
