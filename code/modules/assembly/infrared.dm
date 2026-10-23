@@ -258,6 +258,14 @@
 	var/glide_time = ICON_SIZE_ALL / max(glide_size, MIN_GLIDE_SIZE) * world.tick_lag * GLOB.glide_size_multiplier
 	make_beam(glide_seed, glide_time)
 
+/obj/item/assembly/infra/holder_movement()
+	var/prev_dir = dir
+	. = ..()
+	// Our holder moved (picked up, dropped, thrown, pulled...), so the beam we drew from it is stale.
+	// setDir already rebuilds the beam if the direction changed, so only do it when it didn't.
+	if(. && dir == prev_dir)
+		make_beam()
+
 /obj/item/assembly/infra/setDir(newdir)
 	var/prev_dir = dir
 	. = ..()

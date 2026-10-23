@@ -133,6 +133,11 @@
 	for(var/obj/item/assembly/assembly as anything in assemblies)
 		assembly.holder_movement()
 
+/obj/item/assembly_holder/Moved(atom/old_loc, movement_dir, forced, list/old_locs, momentum_change)
+	. = ..()
+	for(var/obj/item/assembly/assembly as anything in assemblies)
+		assembly.holder_movement()
+
 /obj/item/assembly_holder/dropped(mob/user)
 	. = ..()
 	for(var/obj/item/assembly/assembly as anything in assemblies)
