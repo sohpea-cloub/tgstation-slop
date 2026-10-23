@@ -41,6 +41,8 @@
 	)
 	tastes = list("umami" = 2, "dough" = 2, "laziness" = 1)
 	foodtypes = GRAIN
+	// Full purity, otherwise the omnizine's overdose threshold is halved (as it is for the omnizine added by baking or microwaving)
+	starting_reagent_purity = 1
 
 	// Warmed donk pockets will burn if you leave them in the oven or microwave.
 	warm_type = /obj/item/food/badrecipe
