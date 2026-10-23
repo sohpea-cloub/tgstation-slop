@@ -557,7 +557,8 @@ GAME_VERB_CONTEXT(/mob, examinate, "Examine", "", null, /atom)
 	if(QDELETED(examinify)) // since this can run async we might have had the atom get qdeleted already
 		return
 
-	if(isturf(examinify) && !(sight & SEE_TURFS) && !(examinify in view(client ? client.view : world.view, src)))
+	// view() centered on a mob inside a container (a mech, for example) only returns the container's contents, so use the turf the viewer is looking from
+	if(isturf(examinify) && !(sight & SEE_TURFS) && !(examinify in view(client ? client.view : world.view, get_turf(client?.eye || src))))
 		// shift-click catcher may issue examinate() calls for out-of-sight turfs
 		return
 
@@ -615,7 +616,7 @@ GAME_VERB_CONTEXT(/mob, examinate, "Examine", "", null, /atom)
 	if(href_list["run_examinate"])
 		var/atom/examined_atom = locate(href_list["run_examinate"])
 		//run_examinate only early returns this check for turfs for some reason.
-		if(examined_atom in view(client ? client.view : world.view, src))
+		if(examined_atom in view(client ? client.view : world.view, get_turf(client?.eye || src)))
 			run_examinate(examined_atom, force_examinate_more = TRUE)
 
 /mob/proc/blind_examine_check(atom/examined_thing)
