@@ -387,6 +387,11 @@
 		return FALSE
 	if(is_type_in_typecache(user, mob_type_blacklist_typecache))
 		return FALSE
+	// mobs that never had hands (e.g. positronic brains) can't use emotes that need them, even when only listing emotes with *help
+	if((can_use_flags & EMOTE_CANUSE_REQUIRE_HANDS) && isliving(user))
+		var/mob/living/living_user = user
+		if(!living_user.default_num_hands)
+			return FALSE
 	if(status_check && !is_type_in_typecache(user, mob_type_ignore_stat_typecache))
 		if(IS_UNCONSCIOUS(user) && !(can_use_flags & EMOTE_CANUSE_UNCONSCIOUS))
 			if(intentional)

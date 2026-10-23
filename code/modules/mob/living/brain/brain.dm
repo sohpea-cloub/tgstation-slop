@@ -5,6 +5,7 @@
 	stat = DEAD //we start dead by default
 	see_invisible = SEE_INVISIBLE_LIVING
 	speech_span = SPAN_ROBOT
+	default_num_hands = 0
 
 /mob/living/brain/Initialize(mapload)
 	. = ..()
