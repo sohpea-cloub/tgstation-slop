@@ -346,7 +346,7 @@
 		role_name_text = "a shade",
 		chat_text_border_icon = /mob/living/basic/shade,
 	)
-	on_poll_concluded(user, victim, chosen_one)
+	on_poll_concluded(user, victim, chosen_one, forced)
 	return TRUE //it'll probably get someone ;)
 
 ///captures a shade that was previously released from a soulstone.
@@ -415,7 +415,8 @@
 	soulstone_spirit.name = "Shade of [victim.real_name]"
 	soulstone_spirit.real_name = "Shade of [victim.real_name]"
 	soulstone_spirit.PossessByPlayer(shade_controller.key)
-	soulstone_spirit.copy_languages(victim, LANGUAGE_MIND)//Copies the old mobs languages into the new mob holder.
+	if(!QDELETED(victim)) // can't read the languages of a victim that was gibbed while we waited for a ghost
+		soulstone_spirit.copy_languages(victim, LANGUAGE_MIND)//Copies the old mobs languages into the new mob holder.
 	if(user)
 		soulstone_spirit.copy_languages(user, LANGUAGE_MASTER)
 	soulstone_spirit.get_language_holder().omnitongue = TRUE //Grants omnitongue
@@ -440,7 +441,8 @@
 			to_chat(user, "[span_info("<b>Capture successful!</b>:")] [victim.real_name]'s soul has been ripped \
 				from [victim.p_their()] body and stored within [src].")
 
-	victim.dust(drop_items = TRUE)
+	if(!QDELETED(victim)) // a sacrifice rune gibs the victim while we wait for a ghost
+		victim.dust(drop_items = TRUE)
 
 /**
  * Assigns the bearer as the new master of a shade.
@@ -465,16 +467,21 @@
 	shade_datum.update_master(user.real_name)
 
 /// Called when a ghost is chosen to become a shade.
-/obj/item/soulstone/proc/on_poll_concluded(mob/living/master, mob/living/victim, mob/dead/observer/ghost)
-	if(isnull(victim) || master.incapacitated || !master.is_holding(src) || !victim.IsReachableBy(master, reach))
+/// If forced (the capture didn't depend on the user holding the stone next to the victim, like a sacrifice rune
+/// that gibs the victim and leaves the stone on the floor), the user's hands and reach are not checked.
+/obj/item/soulstone/proc/on_poll_concluded(mob/living/master, mob/living/victim, mob/dead/observer/ghost, forced = FALSE)
+	if(isnull(victim))
+		return FALSE
+	if(!forced && (isnull(master) || master.incapacitated || !master.is_holding(src) || !victim.IsReachableBy(master, reach)))
 		return FALSE
 	if(isnull(ghost?.client))
 		to_chat(master, span_danger("There were no spirits willing to become a shade."))
 		return FALSE
 	if(length(contents)) //If they used the soulstone on someone else in the meantime
 		return FALSE
-	to_chat(master, "[span_info("<b>Capture successful!</b>:")] A spirit has entered [src], \
-		taking upon the identity of [victim].")
+	if(master)
+		to_chat(master, "[span_info("<b>Capture successful!</b>:")] A spirit has entered [src], \
+			taking upon the identity of [victim].")
 	init_shade(victim, master, shade_controller = ghost)
 
 	return TRUE
