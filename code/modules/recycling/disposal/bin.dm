@@ -716,6 +716,13 @@ GLOBAL_VAR_INIT(disposals_animals_spawned, 0)
 /obj/machinery/disposal/delivery_chute/Bumped(atom/movable/AM) //Go straight into the chute
 	if(QDELETED(AM) || !AM.CanEnterDisposals())
 		return
+	// Anything with someone riding it (vehicles, chairs) or anyone buckled to something would leave the other half behind
+	if(AM.has_buckled_mobs())
+		return
+	if(ismob(AM))
+		var/mob/buckled_check = AM
+		if(buckled_check.buckled)
+			return
 	switch(dir)
 		if(NORTH)
 			if(AM.loc.y != loc.y+1)
