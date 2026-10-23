@@ -13,6 +13,10 @@
 	var/real_hits = FALSE
 	/// how it looks by default.
 	var/default_look = /obj/item/gun/energy/laser
+	/// The examine hint of the deep lore copied from the gun we're mimicking, if it has any.
+	var/chameleon_lore_hint
+	/// The deep lore copied from the gun we're mimicking, if it has any.
+	var/chameleon_lore
 
 /obj/item/gun/energy/laser/chameleon/Initialize(mapload)
 	. = ..()
@@ -20,6 +24,10 @@
 	// Init order shenanigans dictate we have to do this last so we can't just use `active_type`
 	var/datum/action/item_action/chameleon/change/gun/gun_action = locate() in actions
 	gun_action?.update_look(default_look)
+
+// Our lore is whatever the gun we're mimicking has, set by set_chameleon_lore().
+/obj/item/gun/energy/laser/chameleon/add_deep_lore()
+	return
 
 /**
  * Description: Resets the currently loaded chameleon variables, essentially resetting it to brand new.
@@ -85,6 +93,8 @@
 	else if(gun_to_set.chambered?.projectile_type)
 		casing_to_dupe = new gun_to_set.chambered.type(src)
 
+	set_chameleon_lore(gun_to_set)
+
 	if(casing_to_dupe?.loaded_projectile)
 		set_chameleon_ammo(casing_to_dupe)
 		qdel(casing_to_dupe)
@@ -101,6 +111,24 @@
 		template_projectile = new /obj/projectile/beam/practice(src)
 	set_chameleon_projectile(template_projectile)
 	return TRUE
+
+/**
+ * Description: Copies the deep lore (the examine_lore element) of the gun we're mimicking, or drops ours if it has none.
+ * Arguments: [obj/item/gun/gun_to_set (the gun we're trying to mimic)]
+ */
+/obj/item/gun/energy/laser/chameleon/proc/set_chameleon_lore(obj/item/gun/gun_to_set)
+	if(chameleon_lore)
+		RemoveElement(/datum/element/examine_lore, chameleon_lore_hint, chameleon_lore)
+	chameleon_lore_hint = null
+	chameleon_lore = null
+
+	// Elements keep no list of what they're attached to: find the gun's lore among what listens to its examines.
+	var/listeners = gun_to_set._listen_lookup?[COMSIG_ATOM_EXAMINE_MORE]
+	for(var/datum/element/examine_lore/lore_element in (islist(listeners) ? listeners : list(listeners)))
+		chameleon_lore_hint = lore_element.lore_hint
+		chameleon_lore = lore_element.lore
+		AddElement(/datum/element/examine_lore, chameleon_lore_hint, chameleon_lore)
+		return
 
 /**
  * Description: Sets the ammo type our gun should have.
