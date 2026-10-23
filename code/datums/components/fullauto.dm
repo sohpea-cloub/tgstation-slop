@@ -252,7 +252,7 @@
 /datum/component/automatic_fire/proc/process_shot()
 	if(autofire_stat != AUTOFIRE_STAT_FIRING)
 		return FALSE
-	if(!COOLDOWN_FINISHED(src, next_shot_cd))
+	if(!COOLDOWN_FINISHED(src, next_shot_cd) || !COOLDOWN_FINISHED(shooter, next_autofire_shot_cd)) //The shooter's cooldown is shared between guns, so swapping hands doesn't skip the fire rate.
 		return TRUE
 	if(QDELETED(target) || get_turf(target) != target_loc) //Target moved or got destroyed since we last aimed.
 		target = target_loc //So we keep firing on the emptied tile until we move our mouse and find a new target.
@@ -271,6 +271,7 @@
 	if(HAS_TRAIT(shooter, TRAIT_DOUBLE_TAP))
 		next_delay = round(next_delay * 0.5, SSprojectiles.wait)
 	COOLDOWN_START(src, next_shot_cd, next_delay)
+	COOLDOWN_START(shooter, next_autofire_shot_cd, next_delay)
 	if(SEND_SIGNAL(parent, COMSIG_AUTOFIRE_SHOT, target, shooter, allow_akimbo, mouse_parameters) & COMPONENT_AUTOFIRE_SHOT_SUCCESS)
 		return TRUE
 	stop_autofiring()

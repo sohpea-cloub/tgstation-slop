@@ -148,6 +148,8 @@
 	var/datum/cell_tracker/pipetracker
 	/// Cooldown for welded vent movement messages to prevent spam
 	COOLDOWN_DECLARE(welded_vent_message_cd)
+	/// Shared by every full auto gun this mob holds, so swapping hands can't reset the fire rate (see /datum/component/automatic_fire).
+	COOLDOWN_DECLARE(next_autofire_shot_cd)
 
 	var/smoke_delay = 0 ///used to prevent spam with smoke reagent reaction on mob.
 
