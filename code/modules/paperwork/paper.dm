@@ -319,11 +319,23 @@
 	. = ..()
 
 /obj/item/paper/update_icon_state()
-	if(LAZYLEN(raw_text_inputs) && show_written_words)
+	if(show_written_words && has_visible_text())
 		icon_state = "[initial(icon_state)]_words"
 	else
 		icon_state = initial(icon_state)
 	return ..()
+
+/// Whether the paper has any text that can be seen at a glance: written in a colour other than white (invisible ink), or on paper that isn't white.
+/obj/item/paper/proc/has_visible_text()
+	if(!LAZYLEN(raw_text_inputs))
+		return FALSE
+	// white ink shows up on coloured paper (and so does the icon's tint)
+	if(color && lowertext(color) != lowertext(COLOR_WHITE))
+		return TRUE
+	for(var/datum/paper_input/text_input as anything in raw_text_inputs)
+		if(!text_input.colour || lowertext(text_input.colour) != lowertext(COLOR_WHITE))
+			return TRUE
+	return FALSE
 
 GAME_VERB_SRC(/obj/item/paper, rename, usr, "Rename paper", null)
 
