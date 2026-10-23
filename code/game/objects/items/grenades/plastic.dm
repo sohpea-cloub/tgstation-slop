@@ -51,8 +51,23 @@
 	set_wires(new /datum/wires/explosive/c4(src))
 
 /obj/item/grenade/c4/Destroy()
+	if(target)
+		UnregisterSignal(target, COMSIG_PREQDELETED)
 	target = null
 	return ..()
+
+/// The thing we are stuck to is being deleted: the charge falls off onto its turf and keeps ticking, instead of vanishing with it.
+/obj/item/grenade/c4/proc/on_target_deleting(atom/source, force)
+	SIGNAL_HANDLER
+	UnregisterSignal(source, COMSIG_PREQDELETED)
+	target = null
+	if(QDELETED(src))
+		return
+	var/turf/drop_turf = get_turf(source)
+	RemoveInvisibility(type)
+	if(drop_turf)
+		forceMove(drop_turf)
+		visible_message(span_warning("[src] falls off [source]!"))
 
 /obj/item/grenade/c4/screwdriver_act(mob/living/user, obj/item/tool)
 	to_chat(user, span_notice("The wire panel can be accessed without a screwdriver."))
@@ -79,6 +94,7 @@
 		if(!QDELETED(target))
 			location = get_turf(target)
 			target_density = target.density // We're about to blow target up, so need to save this value for later
+			UnregisterSignal(target, COMSIG_PREQDELETED)
 			target.cut_overlay(plastic_overlay, TRUE)
 			if(!ismob(target) || full_damage_on_mobs)
 				EX_ACT(target, EXPLODE_HEAVY, target)
@@ -122,6 +138,7 @@
 	if(!user.temporarilyRemoveItemFromInventory(src))
 		return FALSE
 	target = bomb_target
+	RegisterSignal(target, COMSIG_PREQDELETED, PROC_REF(on_target_deleting))
 	active = TRUE
 
 	message_admins("[ADMIN_LOOKUPFLW(user)] planted [name] on [target.name] at [ADMIN_VERBOSEJMP(target)] with [det_time] second fuse")
