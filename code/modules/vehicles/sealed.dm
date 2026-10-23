@@ -34,6 +34,9 @@
 	. = ..()
 	if(ismob(gone))
 		remove_occupant(gone)
+		// Occupants dragged out without going through mob_exit() (meat hooks, MOD tethers...) would keep their camera on us
+		var/mob/leaver = gone
+		leaver.reset_perspective()
 
 // so that we can check the access of the vehicle's occupants. Ridden vehicles do this in the riding component, but these don't have that
 /obj/vehicle/sealed/Bump(atom/A)
