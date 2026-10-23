@@ -77,7 +77,10 @@ ADMIN_VERB(log_viewer_new, R_ADMIN, "View Round Logs", "View the rounds logs.", 
 		var/list/category_data = list()
 
 		var/list/entries = list()
-		for(var/datum/log_entry/entry as anything in category.entries)
+		// only send the newest CONFIG_MAX_CACHED_LOG_ENTRIES, the category may hold up to twice that
+		var/list/category_entries = category.entries
+		for(var/entry_index in max(1, length(category_entries) - CONFIG_MAX_CACHED_LOG_ENTRIES + 1) to length(category_entries))
+			var/datum/log_entry/entry = category_entries[entry_index]
 			entries += list(list(
 				"id" = entry.id,
 				"message" = entry.message,

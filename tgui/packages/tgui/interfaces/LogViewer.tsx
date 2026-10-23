@@ -167,7 +167,11 @@ const CategoryViewer = (props: CategoryViewerProps) => {
     <Section
       title={`Category Viewer${
         props.activeCategory
-          ? ` - ${props.activeCategory}[${props.data?.entry_count}]`
+          ? ` - ${props.activeCategory}[${props.data?.entry_count}${
+            props.data && props.data.entries.length < props.data.entry_count
+              ? `, showing newest ${props.data.entries.length}`
+              : ''
+          }]`
           : ' - Select a category'
       }`}
       buttons={

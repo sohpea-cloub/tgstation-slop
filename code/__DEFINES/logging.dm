@@ -1,4 +1,4 @@
-/// The number of entries to store per category, don't make this too large or you'll start to see performance issues
+/// The number of (newest) entries to show per category, don't make this too large or you'll start to see performance issues
 #define CONFIG_MAX_CACHED_LOG_ENTRIES 1000
 
 /// The number of *minimum* ticks between each log re-render, making this small will cause performance issues

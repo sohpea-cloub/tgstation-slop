@@ -49,8 +49,10 @@ GENERAL_PROTECT_DATUM(/datum/log_category)
 
 	write_entry(entry)
 	entry_count += 1
-	if(entry_count <= CONFIG_MAX_CACHED_LOG_ENTRIES)
-		entries += entry
+	entries += entry
+	// keep the newest entries, trimming in batches so we don't shift the whole list on every log
+	if(length(entries) > CONFIG_MAX_CACHED_LOG_ENTRIES * 2)
+		entries.Cut(1, length(entries) - CONFIG_MAX_CACHED_LOG_ENTRIES + 1)
 
 /// Allows for category specific file splitting. Needs to accept a null entry for the default file.
 /// If master_category it will always return the output of master_category.get_output_file(entry)
