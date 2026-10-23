@@ -76,12 +76,16 @@
 	return wayout
 
 
-/// Locates any turfs with forges on them, returns a random one
-/obj/machinery/quantum_server/proc/get_random_nearby_forge()
+/// Locates any forges within range of the server, returns a random one (or null if there are none)
+/obj/machinery/quantum_server/proc/get_random_nearby_forge() as /obj/machinery/byteforge
 	var/list/nearby_forges = list()
 
-	for(var/obj/machinery/byteforge/forge in oview(MAX_DISTANCE, src))
+	// Not oview(): line of sight (smoke, an opaque object between server and forge) shouldn't decide whether the reward is delivered
+	for(var/obj/machinery/byteforge/forge in range(MAX_DISTANCE, src))
 		nearby_forges += forge
+
+	if(!length(nearby_forges))
+		return null
 
 	return pick(nearby_forges)
 

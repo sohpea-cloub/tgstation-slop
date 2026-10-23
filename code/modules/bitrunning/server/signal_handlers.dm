@@ -33,26 +33,31 @@
 /obj/machinery/quantum_server/proc/on_goal_turf_entered(datum/source, atom/movable/arrived, atom/old_loc, list/atom/old_locs)
 	SIGNAL_HANDLER
 
-	var/obj/machinery/byteforge/chosen_forge = get_random_nearby_forge()
-	if(isnull(chosen_forge))
-		return
-
+	var/is_cache = istype(arrived, /obj/structure/closet/crate/secure/bitrunning/encrypted)
+	var/is_curiosity = istype(arrived, /obj/item/storage/lockbox/bitrunning/encrypted)
+	var/is_glitch = FALSE
 	if((obj_flags & EMAGGED) && isliving(arrived))
 		var/mob/living/creature = arrived
+		is_glitch = !!creature.mind?.has_antag_datum(/datum/antagonist/bitrunning_glitch, check_subtypes = TRUE)
 
-		if(!creature.mind?.has_antag_datum(/datum/antagonist/bitrunning_glitch, check_subtypes = TRUE))
-			return
+	if(!is_cache && !is_curiosity && !is_glitch)
+		return
 
+	var/obj/machinery/byteforge/chosen_forge = get_random_nearby_forge()
+	if(isnull(chosen_forge))
+		if(!is_glitch)
+			arrived.balloon_alert_to_viewers("no byteforge linked!")
+		return
+
+	if(is_glitch)
 		INVOKE_ASYNC(src, PROC_REF(station_spawn), arrived, chosen_forge, source)
 		return
 
-	if(istype(arrived, /obj/structure/closet/crate/secure/bitrunning/encrypted))
+	if(is_cache)
 		generate_loot(arrived, chosen_forge)
 		return
 
-	if(istype(arrived, /obj/item/storage/lockbox/bitrunning/encrypted))
-		generate_secondary_loot(arrived, chosen_forge, generated_domain)
-		return
+	generate_secondary_loot(arrived, chosen_forge, generated_domain)
 
 
 /// Handles examining the server. Shows cooldown time and efficiency.
