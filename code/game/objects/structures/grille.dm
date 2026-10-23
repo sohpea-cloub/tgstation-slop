@@ -41,6 +41,15 @@
 	. = ..()
 	update_appearance()
 
+/obj/structure/grille/run_atom_armor(damage_amount, damage_type, damage_flag, attack_dir, armour_penetration)
+	// A grille under an intact fulltile window is shielded from the blast by it
+	if(damage_flag == BOMB)
+		for(var/obj/structure/window/shield in loc)
+			if(shield.fulltile && !QDELETED(shield))
+				damage_amount *= 0.25
+				break
+	return ..()
+
 /obj/structure/grille/update_appearance(updates)
 	if(QDELETED(src))
 		return
