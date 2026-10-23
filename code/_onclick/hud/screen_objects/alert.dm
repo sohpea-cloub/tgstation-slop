@@ -598,7 +598,7 @@
 	if(!.)
 		return
 	var/mob/living/living_owner = owner
-	if(!CAN_SUCCUMB(living_owner) && !HAS_TRAIT(living_owner, TRAIT_SUCCUMB_OVERRIDE)) //checked again in [mob/living/verb/succumb()]
+	if(!CAN_SUCCUMB_OR_OVERRIDE(living_owner)) //checked again in [mob/living/verb/succumb()]
 		return
 
 	var/title = pick(death_titles)

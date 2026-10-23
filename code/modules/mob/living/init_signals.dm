@@ -44,6 +44,7 @@
 	RegisterSignal(src, SIGNAL_REMOVETRAIT(TRAIT_STASIS), PROC_REF(on_stasis_trait_loss))
 
 	RegisterSignals(src, list(SIGNAL_ADDTRAIT(TRAIT_NODEATH), SIGNAL_REMOVETRAIT(TRAIT_NODEATH)), PROC_REF(on_nodeath))
+	RegisterSignals(src, list(SIGNAL_ADDTRAIT(TRAIT_SUCCUMB_OVERRIDE), SIGNAL_REMOVETRAIT(TRAIT_SUCCUMB_OVERRIDE)), PROC_REF(on_succumb_override))
 
 	RegisterSignal(src, COMSIG_MOVETYPE_FLAG_ENABLED, PROC_REF(on_movement_type_flag_enabled))
 	RegisterSignal(src, COMSIG_MOVETYPE_FLAG_DISABLED, PROC_REF(on_movement_type_flag_disabled))
@@ -257,13 +258,18 @@
 	update_succumb_action()
 	update_stat()
 
+/// Called when [TRAIT_SUCCUMB_OVERRIDE] is added or removed from the mob
+/mob/living/proc/on_succumb_override()
+	SIGNAL_HANDLER
+	update_succumb_action()
+
 /**
  * Called when traits that alter succumbing are added/removed.
  *
  * Will show or hide the succumb alert prompt.
  */
 /mob/living/proc/update_succumb_action()
-	if (CAN_SUCCUMB(src) || HAS_TRAIT(src, TRAIT_SUCCUMB_OVERRIDE))
+	if (CAN_SUCCUMB_OR_OVERRIDE(src))
 		throw_alert(ALERT_SUCCUMB, /atom/movable/screen/alert/succumb)
 	else
 		clear_alert(ALERT_SUCCUMB)

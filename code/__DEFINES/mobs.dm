@@ -659,6 +659,9 @@
 /// Returns whether or not the given mob can succumb
 #define CAN_SUCCUMB(target) ((target.stat == SOFT_CRIT || target.stat == HARD_CRIT) && !HAS_TRAIT(target, TRAIT_NODEATH))
 
+/// Returns whether or not the given mob can succumb, including mobs that would normally be unable to (TRAIT_NODEATH) but have TRAIT_SUCCUMB_OVERRIDE. Both need the mob to be in crit.
+#define CAN_SUCCUMB_OR_OVERRIDE(target) ((target.stat == SOFT_CRIT || target.stat == HARD_CRIT) && (!HAS_TRAIT(target, TRAIT_NODEATH) || HAS_TRAIT(target, TRAIT_SUCCUMB_OVERRIDE)))
+
 // Body position defines.
 /// Mob is standing up, usually associated with lying_angle value of 0.
 #define STANDING_UP 0

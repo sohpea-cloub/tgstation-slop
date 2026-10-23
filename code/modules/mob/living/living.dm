@@ -555,14 +555,12 @@ GAME_VERB_CONTEXT_RANGE(/mob/living, pulled, "Pull", "", null, /atom/movable, ov
 
 GAME_VERB_HIDDEN(/mob/living, succumb, "succumb")
 	VERB_ARG(whispered, VERB_ARG_TYPE_NUM, VERB_ARG_SOURCE_INPUT)
-	if (!CAN_SUCCUMB(src))
-		if(HAS_TRAIT(src, TRAIT_SUCCUMB_OVERRIDE))
-			if(whispered)
-				to_chat(src, span_notice("Your immortal body is keeping you alive! Unless you just press the UI button."), type=MESSAGE_TYPE_INFO)
-				return
-		else
-			to_chat(src, span_warning("You are unable to succumb to death! This life continues."), type=MESSAGE_TYPE_INFO)
-			return
+	if (!CAN_SUCCUMB_OR_OVERRIDE(src))
+		to_chat(src, span_warning("You are unable to succumb to death! This life continues."), type=MESSAGE_TYPE_INFO)
+		return
+	if (whispered && !CAN_SUCCUMB(src)) // only the UI button can override TRAIT_NODEATH
+		to_chat(src, span_notice("Your immortal body is keeping you alive! Unless you just press the UI button."), type=MESSAGE_TYPE_INFO)
+		return
 	log_message("Has [whispered ? "whispered his final words" : "succumbed to death"] with [round(health, 0.1)] points of health!", LOG_ATTACK)
 	adjust_oxy_loss(health - dead_threshold)
 	updatehealth()
