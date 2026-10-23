@@ -242,6 +242,13 @@
 					tooltip_bool = TRUE
 			data["reagent_mode_recipe"]["catalysts"] += list(list("name" = reagent::name, "id" = reagent, "ratio" = reaction.required_catalysts[reagent], "color" = color_r, "tooltipBool" = tooltip_bool, "tooltip" = tooltip))
 		data["reagent_mode_recipe"]["isColdRecipe"] = reaction.is_cold_recipe
+		//Some reactions have a randomized temperature that players are meant to discover, so don't leak it (or the graph built from it)
+		if(reaction.reaction_flags & REACTION_HIDE_TEMPERATURE)
+			data["reagent_mode_recipe"]["hideTemperature"] = TRUE
+			data["reagent_mode_recipe"]["thermodynamics"] = null
+			data["reagent_mode_recipe"]["explosive"] = null
+			data["reagent_mode_recipe"]["tempMin"] = null
+			data["reagent_mode_recipe"]["explodeTemp"] = null
 	else
 		data["reagent_mode_recipe"] = null
 

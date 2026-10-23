@@ -120,6 +120,7 @@
 	required_reagents = list(/datum/reagent/acetone_oxide = 1, /datum/reagent/toxin/acid/nitracid = 1, /datum/reagent/pentaerythritol = 1 )
 	required_temp = 450
 	strengthdiv = 3
+	reaction_flags = REACTION_HIDE_TEMPERATURE // required_temp is randomized in New(), players are meant to find it out
 
 /datum/chemical_reaction/reagent_explosion/tatp/New()
 	. = ..()
@@ -135,6 +136,7 @@
 	required_reagents = list(/datum/reagent/tatp = 1)
 	required_temp = 550 // this makes making tatp before pyro nades, and extreme pain in the ass to make
 	strengthdiv = 3
+	reaction_flags = REACTION_HIDE_TEMPERATURE // required_temp is randomized in New(), players are meant to find it out
 
 /datum/chemical_reaction/reagent_explosion/tatp_explosion/on_reaction(datum/reagents/holder, datum/equilibrium/reaction, created_volume)
 	var/strengthdiv_adjust = created_volume / ( 2100 / initial(strengthdiv))

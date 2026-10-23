@@ -25,9 +25,10 @@ type Pairs = [
 
 export type Recipe = {
   catalysts: Reagent[];
-  explodeTemp: number;
-  explosive: Pairs;
+  explodeTemp: number | null;
+  explosive: Pairs | null;
   hasProduct: BooleanLike;
+  hideTemperature?: BooleanLike;
   id: string;
   inversePurity: string;
   isColdRecipe: BooleanLike;
@@ -39,9 +40,9 @@ export type Recipe = {
   reqContainer: string | null;
   subReactIndex: number;
   subReactLen: number;
-  tempMin: number;
+  tempMin: number | null;
   thermics: string;
-  thermodynamics: Pairs;
+  thermodynamics: Pairs | null;
   thermoUpper: number;
   upperpH: number;
 };
