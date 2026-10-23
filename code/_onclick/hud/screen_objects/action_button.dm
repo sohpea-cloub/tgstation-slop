@@ -39,6 +39,10 @@
 
 
 /atom/movable/screen/movable/action_button/proc/can_use(mob/user)
+	// A deleted button can still be clicked or dropped by a client that was mid-drag when it went away
+	if(QDELETED(src) || !our_hud || !linked_action)
+		return FALSE
+
 	if(isobserver(user))
 		var/mob/dead/observer/dead_mob = user
 		if(allow_observer_click)
@@ -46,12 +50,9 @@
 		if(dead_mob.observetarget) // Observers can only click on action buttons if they're not observing something
 			return FALSE
 
-	if(linked_action)
-		if(linked_action.viewers[user.hud_used])
-			return TRUE
-		return FALSE
-
-	return TRUE
+	if(linked_action.viewers[user.hud_used])
+		return TRUE
+	return FALSE
 
 /atom/movable/screen/movable/action_button/Click(location,control,params)
 	if(!can_use(usr))
@@ -147,7 +148,7 @@
 	our_hud.hide_landings()
 
 /atom/movable/screen/movable/action_button/proc/save_position()
-	var/mob/user = our_hud.mymob
+	var/mob/user = our_hud?.mymob
 	if(!user?.client)
 		return
 	var/position_info = ""
@@ -162,14 +163,14 @@
 	user.client.prefs.action_buttons_screen_locs["[name]_[id]"] = position_info
 
 /atom/movable/screen/movable/action_button/proc/load_position()
-	var/mob/user = our_hud.mymob
+	var/mob/user = our_hud?.mymob
 	if(!user)
 		return
 	var/position_info = user.client?.prefs?.action_buttons_screen_locs["[name]_[id]"] || SCRN_OBJ_DEFAULT
 	user.hud_used.position_action(src, position_info)
 
 /atom/movable/screen/movable/action_button/proc/dump_save()
-	var/mob/user = our_hud.mymob
+	var/mob/user = our_hud?.mymob
 	if(!user?.client)
 		return
 	user.client.prefs.action_buttons_screen_locs -= "[name]_[id]"
