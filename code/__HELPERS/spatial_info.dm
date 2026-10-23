@@ -517,8 +517,9 @@
  * @params center - The center of the circle to pull from, can be an atom (we'll apply get_turf() to it within circle_x_turfs procs.)
  * @params view_based - If TRUE, we'll use circle_view_turfs instead of circle_range_turfs procs.
  * @params reject_dense - If TRUE, ignore picked turfs in this selection that have density.
+ * @params reachable - If TRUE, only turfs that something could walk to from the center (not walled off by dense turfs, windows, doors...) are picked.
  */
-/proc/turf_peel(outer_range, inner_range, center, view_based = FALSE, reject_dense = TRUE)
+/proc/turf_peel(outer_range, inner_range, center, view_based = FALSE, reject_dense = TRUE, reachable = FALSE)
 	if(inner_range > outer_range) // If the inner range is larger than the outer range, you're using this wrong.
 		CRASH("Turf peel inner range is larger than outer range!")
 	var/list/peel = list()
@@ -530,16 +531,57 @@
 	else
 		outer = circle_range_turfs(center, outer_range)
 		inner = circle_range_turfs(center, inner_range)
+	var/list/reachable_turfs
+	if(reachable)
+		// walk further than the peel itself, so a gap in the walls just outside of it still counts
+		reachable_turfs = circle_reachable_turfs(center, outer_range * 2)
 	for(var/turf/possible_spawn as anything in outer)
 		if(possible_spawn in inner)
 			continue
 		if(possible_spawn.density && reject_dense)
+			continue
+		if(reachable && !reachable_turfs[possible_spawn])
 			continue
 		peel += possible_spawn
 
 	if(!length(peel))
 		peel += center //Offer the center only as a default case when we don't have a valid circle.
 	return peel
+
+/**
+ * Returns an associative list (turf = TRUE) of the turfs within radius of the center that something could walk to from it,
+ * moving one step at a time and being stopped by dense turfs, dense objects (windows, closed doors, ...) and one-way blockers.
+ * Unlike circle_view_turfs(), transparent obstacles like windows do not make the turfs behind them count.
+ * The center itself is always included.
+ *
+ * @params center - The atom to start from, we apply get_turf() to it.
+ * @params radius - How far from the center the walk may go.
+ */
+/proc/circle_reachable_turfs(center, radius = 3)
+	var/turf/center_turf = get_turf(center)
+	var/list/reached = list()
+	if(!center_turf)
+		return reached
+	var/rsq = radius * (radius + 0.5)
+	var/datum/can_pass_info/pass_info = new(null, null, TRUE)
+	reached[center_turf] = TRUE
+	var/list/frontier = list(center_turf)
+	var/head = 1
+	while(head <= length(frontier))
+		var/turf/current = frontier[head++]
+		for(var/direction in GLOB.alldirs)
+			var/turf/next = get_step(current, direction)
+			if(!next || reached[next] || next.density)
+				continue
+			var/dx = next.x - center_turf.x
+			var/dy = next.y - center_turf.y
+			if(dx * dx + dy * dy > rsq)
+				continue
+			if(current.LinkBlockedWithAccess(next, pass_info))
+				continue
+			reached[next] = TRUE
+			frontier += next
+	return reached
 
 ///check if 2 diagonal turfs are blocked by dense objects
 /proc/diagonally_blocked(turf/our_turf, turf/dest_turf)

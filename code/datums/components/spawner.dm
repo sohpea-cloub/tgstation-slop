@@ -169,7 +169,7 @@
 	if(spawn_distance == 1)
 		picked_spot = spawner.loc
 	else if(spawn_distance >= 1 && spawn_distance_exclude >= 1)
-		picked_spot = pick(turf_peel(spawn_distance, spawn_distance_exclude, spawner.loc, view_based = TRUE, reject_dense = TRUE))
+		picked_spot = pick(turf_peel(spawn_distance, spawn_distance_exclude, spawner.loc, view_based = TRUE, reject_dense = TRUE, reachable = TRUE))
 		if(!picked_spot)
 			picked_spot = pick(circle_range_turfs(spawner.loc, spawn_distance))
 		if(picked_spot == spawner.loc)
