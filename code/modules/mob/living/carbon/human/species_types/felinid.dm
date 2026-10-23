@@ -25,12 +25,6 @@
 	species_cookie = /obj/item/food/nugget
 
 /datum/species/human/felinid/on_species_gain(mob/living/carbon/human/human_who_gained_species, datum/species/old_species, pref_load, regenerate_icons = TRUE, replace_missing = TRUE)
-	if(!pref_load) //Hah! They got forcefully purrbation'd. Force default felinid parts on them if they have no mutant parts in those areas!
-		if(human_who_gained_species.dna.features[FEATURE_TAIL_CAT] == SPRITE_ACCESSORY_NONE)
-			human_who_gained_species.dna.features[FEATURE_TAIL_CAT] = get_consistent_feature_entry(SSaccessories.feature_list[FEATURE_TAIL_CAT])
-		if(human_who_gained_species.dna.features[FEATURE_EARS] == SPRITE_ACCESSORY_NONE)
-			human_who_gained_species.dna.features[FEATURE_EARS] = get_consistent_feature_entry(SSaccessories.feature_list[FEATURE_EARS])
-
 	// Swapping out feline ears for normal ol' human ears if they have invisible cat ears.
 	if(human_who_gained_species.dna.features[FEATURE_EARS] == SPRITE_ACCESSORY_NONE)
 		mutantears = /obj/item/organ/ears
@@ -60,6 +54,12 @@
 	if(!ishuman(soon_to_be_felinid) || isfelinid(soon_to_be_felinid))
 		return
 	if(ishumanbasic(soon_to_be_felinid))
+		// Forcefully purrbation'd humans get default felinid parts if they have no mutant parts in those areas.
+		// This used to live in on_species_gain, where it also stopped any felinid from ever having "None" ears or tail.
+		if(soon_to_be_felinid.dna.features[FEATURE_TAIL_CAT] == SPRITE_ACCESSORY_NONE)
+			soon_to_be_felinid.dna.features[FEATURE_TAIL_CAT] = get_consistent_feature_entry(SSaccessories.feature_list[FEATURE_TAIL_CAT])
+		if(soon_to_be_felinid.dna.features[FEATURE_EARS] == SPRITE_ACCESSORY_NONE)
+			soon_to_be_felinid.dna.features[FEATURE_EARS] = get_consistent_feature_entry(SSaccessories.feature_list[FEATURE_EARS])
 		soon_to_be_felinid.set_species(/datum/species/human/felinid)
 		var/datum/species/human/felinid/cat_species = soon_to_be_felinid.dna.species
 		cat_species.original_felinid = FALSE
