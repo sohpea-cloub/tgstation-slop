@@ -1118,6 +1118,14 @@
 	var/expected_amount_to_full_heal = round(max_health / healing_per_reagent_unit, DAMAGE_PRECISION) / excess_healing_ratio
 	return amount_needed_to_revive + expected_amount_to_full_heal
 
+/datum/reagent/medicine/strange_reagent/expose_obj(obj/exposed_obj, reac_volume, methods = TOUCH, show_message = TRUE)
+	. = ..()
+	// bees turn into trash when they die, so they can't be exposed as mobs
+	if(!istype(exposed_obj, /obj/item/trash/bee) || (methods & (INGEST|INHALE)) || reac_volume < 1)
+		return
+	var/obj/item/trash/bee/dead_bee = exposed_obj
+	dead_bee.strange_reagent_revive(instant)
+
 /datum/reagent/medicine/strange_reagent/expose_mob(mob/living/exposed_mob, methods=TOUCH, reac_volume)
 	if(exposed_mob.stat != DEAD || !(exposed_mob.mob_biotypes & MOB_ORGANIC))
 		return ..()

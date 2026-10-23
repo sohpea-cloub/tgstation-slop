@@ -347,15 +347,31 @@
 	body_overlay.color = beegent ? beegent.color : BEE_DEFAULT_COLOUR
 	. += body_overlay
 
+/// Replaces this corpse with a living bee of the same type and reagent.
+/obj/item/trash/bee/proc/spawn_revived_bee()
+	var/mob/living/basic/bee/revived_bee = new bee_type(drop_location())
+	if(beegent)
+		revived_bee.assign_reagent(beegent)
+	return revived_bee
+
+/// Called by strange reagent: the bee comes back to life after the same delay as other mobs (immediately if instant).
+/obj/item/trash/bee/proc/strange_reagent_revive(instant = FALSE)
+	if(!instant)
+		visible_message(span_warning("[src] starts twitching!"))
+		addtimer(CALLBACK(src, PROC_REF(strange_reagent_revive), TRUE), 7 SECONDS)
+		return
+	if(QDELETED(src))
+		return
+	spawn_revived_bee()
+	qdel(src)
+
 ///Spawn a new bee from this trash item when hit by a lazarus injector and conditions are met.
 /obj/item/trash/bee/proc/use_lazarus(datum/source, obj/item/lazarus_injector/injector, mob/user)
 	SIGNAL_HANDLER
 	if(injector.revive_type != SENTIENCE_ORGANIC)
 		balloon_alert(user, "invalid creature!")
 		return
-	var/mob/living/basic/bee/revived_bee = new bee_type (drop_location())
-	if(beegent)
-		revived_bee.assign_reagent(beegent)
+	var/mob/living/basic/bee/revived_bee = spawn_revived_bee()
 	revived_bee.lazarus_revive(user, injector.malfunctioning)
 	injector.expend(revived_bee, user)
 	qdel(src)
