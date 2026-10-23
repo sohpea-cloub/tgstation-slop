@@ -452,6 +452,8 @@ GLOBAL_LIST_EMPTY(antagonists)
 	message_admins("[key_name_admin(user)] has removed [name] antagonist status from [key_name_admin(owner)].")
 	log_admin("[key_name(user)] has removed [name] antagonist status from [key_name(owner)].")
 	on_removal()
+	// on_removal() only strips the effects; delete the datum too so it leaves GLOB.antagonists (check antagonists, roundend report)
+	qdel(src)
 
 //gamemode/proc/is_mode_antag(antagonist/A) => TRUE/FALSE
 
