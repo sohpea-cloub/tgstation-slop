@@ -299,6 +299,10 @@ GLOBAL_DATUM_INIT(orbit_menu, /datum/orbit_menu, new)
  */
 /datum/orbit_menu/proc/validate_mob_poi(datum/point_of_interest/mob_poi/potential_poi)
 	var/mob/potential_mob_poi = potential_poi.target
+	// Split personalities are just backseats of the body they share, which is orbitable already.
+	if(istype(potential_mob_poi, /mob/living/split_personality))
+		return FALSE
+
 	if(!potential_mob_poi.mind && !potential_mob_poi.ckey)
 		if(!mob_allowed_typecache)
 			mob_allowed_typecache = typecacheof(list(
