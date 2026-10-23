@@ -567,7 +567,20 @@
 	if(isliving(arrived))
 		var/mob/living/L = arrived
 		L.ventcrawl_layer = piping_layer
+		// however they got in (forceMove, teleport, shapeshifting...), a mob inside crawlable pipes is ventcrawling
+		if((vent_movement & VENTCRAWL_ALLOWED) && !HAS_TRAIT_FROM(L, TRAIT_MOVE_VENTCRAWLING, VENTCRAWLING_TRAIT))
+			ADD_TRAIT(L, TRAIT_MOVE_VENTCRAWLING, VENTCRAWLING_TRAIT)
+			L.update_pipe_vision()
 	return ..()
+
+/obj/machinery/atmospherics/Exited(atom/movable/gone, direction)
+	. = ..()
+	// moving from pipe to pipe keeps the trait; leaving the pipes any other way (forceMove, teleport, gib...) drops it
+	if(isliving(gone) && !istype(gone.loc, /obj/machinery/atmospherics))
+		var/mob/living/L = gone
+		if(HAS_TRAIT_FROM(L, TRAIT_MOVE_VENTCRAWLING, VENTCRAWLING_TRAIT))
+			REMOVE_TRAIT(L, TRAIT_MOVE_VENTCRAWLING, VENTCRAWLING_TRAIT)
+			L.update_pipe_vision()
 
 /obj/machinery/atmospherics/singularity_pull(atom/singularity, current_size)
 	if(current_size >= STAGE_FIVE)
