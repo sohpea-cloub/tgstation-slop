@@ -230,7 +230,18 @@
 	orbit_target = null
 
 
-/atom/proc/transfer_observers_to(atom/target)
+/// Moves everything orbiting us to target. With observer_type, only the orbiters of that type are moved,
+/// each keeping its orbit parameters, and the rest keep orbiting us.
+/atom/proc/transfer_observers_to(atom/target, observer_type)
 	if(!orbiters || !istype(target) || !get_turf(target) || target == src)
 		return
-	target.TakeComponent(orbiters)
+	if(!observer_type)
+		target.TakeComponent(orbiters)
+		return
+	var/datum/component/orbiter/old_orbiters = orbiters
+	for(var/atom/movable/orbiter as anything in old_orbiters.orbiter_list.Copy())
+		if(!istype(orbiter, observer_type))
+			continue
+		var/list/params = old_orbiters.orbiter_params[orbiter]
+		// params is begin_orbit()'s args after the orbiter: radius, clockwise, rotation_speed, rotation_segments, pre_rotation
+		orbiter.orbit(target, params[1], params[2], params[3], params[4], params[5])

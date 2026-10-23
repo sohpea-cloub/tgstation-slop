@@ -133,7 +133,7 @@
 	var/list/contents = cur_turf.get_all_contents()
 	var/mob/dead/observer/current_spirits = list()
 	for(var/atom/random_thing in contents)
-		random_thing.transfer_observers_to(src)
+		random_thing.transfer_observers_to(src, /mob/dead/observer)
 
 	for(var/mob/dead/observer/ghost in orbiters?.orbiter_list)
 		ghost.SetInvisibility(INVISIBILITY_NONE, id = type, priority = INVISIBILITY_PRIORITY_BASIC_ANTI_INVISIBILITY)
