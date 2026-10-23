@@ -55,7 +55,10 @@
 		// and link ourselves to the first law rack if possible
 		else
 			lawupdate = FALSE
-			link_to_first_rack()
+			// can fail if we're not on the same z-level as a rack yet (e.g. latejoining on the arrivals shuttle in transit),
+			// so keep trying whenever we change z-levels
+			if(!link_to_first_rack())
+				RegisterSignal(src, COMSIG_MOVABLE_Z_CHANGED, PROC_REF(retry_rack_link))
 
 	if(!scrambledcodes && !builtInCamera)
 		builtInCamera = new(src)
@@ -990,6 +993,15 @@
 	if(repairs)
 		heal_bodypart_damage(repairs, repairs)
 	charge_cell.Invoke(cell, seconds_per_tick)
+
+/// Retries linking to a law rack after changing z-levels, if we failed to when we were created
+/mob/living/silicon/robot/proc/retry_rack_link(datum/source, turf/old_turf, turf/new_turf)
+	SIGNAL_HANDLER
+	if(connected_ai || no_law_rack_link || get_law_rack())
+		UnregisterSignal(src, COMSIG_MOVABLE_Z_CHANGED)
+		return
+	if(link_to_first_rack(announce = TRUE))
+		UnregisterSignal(src, COMSIG_MOVABLE_Z_CHANGED)
 
 /mob/living/silicon/robot/proc/set_connected_ai(mob/living/silicon/ai/new_ai)
 	if(!isnull(new_ai) && QDELING(new_ai))

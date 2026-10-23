@@ -47,12 +47,12 @@
 	laws.name = "Inherent Laws"
 
 /// Find the first law rack we can link to and link to it
-/mob/living/silicon/proc/link_to_first_rack()
+/mob/living/silicon/proc/link_to_first_rack(announce = FALSE)
 	for(var/obj/machinery/ai_law_rack/base/core/law_rack as anything in SSmachines.get_machines_by_type_and_subtypes(/obj/machinery/ai_law_rack/base/core))
 		if(!law_rack.can_link_to(src))
 			continue
 
-		law_rack.link_silicon(src, announce = FALSE)
+		law_rack.link_silicon(src, announce = announce)
 		return law_rack
 
 /// Returns the law rack this silicon is linked to, or null if not linked.
