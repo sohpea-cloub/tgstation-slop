@@ -427,10 +427,12 @@
 	if(!(obscured_slots & HIDEEYES))
 		if(glasses  && !HAS_TRAIT(glasses, TRAIT_EXAMINE_SKIP))
 			. += "[t_He] [t_has] [glasses.examine_title(user)] covering [t_his] eyes."
-		else if(HAS_TRAIT(src, TRAIT_UNNATURAL_RED_GLOWY_EYES))
-			. += span_warning("<B>[t_His] eyes are glowing with an unnatural red aura!</B>")
-		else if(HAS_TRAIT(src, TRAIT_BLOODSHOT_EYES))
-			. += span_warning("<B>[t_His] eyes are bloodshot!</B>")
+		// glasses that leave the eyes uncovered (e.g. a HUD monocle) don't hide the state of the eyes
+		if(!glasses || !(glasses.flags_cover & GLASSESCOVERSEYES))
+			if(HAS_TRAIT(src, TRAIT_UNNATURAL_RED_GLOWY_EYES))
+				. += span_warning("<B>[t_His] eyes are glowing with an unnatural red aura!</B>")
+			else if(HAS_TRAIT(src, TRAIT_BLOODSHOT_EYES))
+				. += span_warning("<B>[t_His] eyes are bloodshot!</B>")
 	//ears
 	if(ears && !(obscured_slots & HIDEEARS) && !HAS_TRAIT(ears, TRAIT_EXAMINE_SKIP))
 		. += "[t_He] [t_has] [ears.examine_title(user)] on [t_his] ears."
