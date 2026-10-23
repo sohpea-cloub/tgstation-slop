@@ -199,6 +199,8 @@
  */
 /mob/living/basic/proc/look_dead()
 	icon_state = icon_dead
+	if(layer == initial(layer) && layer > LYING_MOB_LAYER) // so corpses appear behind living mobs, like mobs lying down
+		layer = LYING_MOB_LAYER
 	if(basic_mob_flags & FLIP_ON_DEATH)
 		transform = transform.Turn(180)
 	if(!(basic_mob_flags & REMAIN_DENSE_WHILE_DEAD))
@@ -214,6 +216,8 @@
 /// Apply the appearance and properties this mob has when it is alive
 /mob/living/basic/proc/look_alive()
 	icon_state = icon_living
+	if(layer == LYING_MOB_LAYER)
+		layer = initial(layer)
 	if(basic_mob_flags & FLIP_ON_DEATH)
 		transform = transform.Turn(180)
 	if(!(basic_mob_flags & REMAIN_DENSE_WHILE_DEAD))
