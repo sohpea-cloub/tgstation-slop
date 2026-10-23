@@ -67,14 +67,25 @@
 	hitsound = 'sound/items/weapons/blade1.ogg'
 	START_PROCESSING(SSobj, src)
 	set_light_on(TRUE)
+	if(user)
+		RegisterSignal(user, SIGNAL_ADDTRAIT(TRAIT_HULK), PROC_REF(on_wielder_hulk))
 
 /// Triggered on unwield of two handed item
 /// switch hitsounds
 /obj/item/dualsaber/proc/on_unwield(obj/item/source, mob/living/carbon/user)
+	if(user)
+		UnregisterSignal(user, SIGNAL_ADDTRAIT(TRAIT_HULK))
 	update_weight_class(initial(w_class))
 	hitsound = SFX_SWING_HIT
 	STOP_PROCESSING(SSobj, src)
 	set_light_on(FALSE)
+
+/// The wielder became a hulk while wielding us: they lack the grace to keep it wielded.
+/obj/item/dualsaber/proc/on_wielder_hulk(mob/living/carbon/source)
+	SIGNAL_HANDLER
+	to_chat(source, span_warning("You lack the grace to wield this!"))
+	var/datum/component/two_handed/twohanded = GetComponent(/datum/component/two_handed)
+	twohanded?.unwield(source)
 
 /obj/item/dualsaber/get_sharpness()
 	if (!HAS_TRAIT(src, TRAIT_WIELDED))
