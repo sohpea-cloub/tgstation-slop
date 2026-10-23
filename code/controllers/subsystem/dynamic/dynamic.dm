@@ -111,13 +111,19 @@ SUBSYSTEM_DEF(dynamic)
 	SSjob.divide_occupations(pure = TRUE, allow_all = TRUE)
 
 	var/list/antag_candidates = list()
-	// anyone who was readied up and NOT unassigned is a potential candidate (even those who have no antag preferences)
-	for(var/mob/dead/new_player/player as anything in GLOB.new_player_list - SSjob.unassigned)
-		if(player.ready == PLAYER_READY_TO_PLAY && player.mind)
+	var/list/jobless_players = list()
+	// anyone who was readied up and got a job in the dry run is a potential candidate (even those who have no antag preferences)
+	// (players the dry run would send back to the lobby are taken out of SSjob.unassigned, so look at the role they got instead)
+	for(var/mob/dead/new_player/player as anything in GLOB.new_player_list)
+		if(player.ready != PLAYER_READY_TO_PLAY || !player.mind)
+			continue
+		if(is_unassigned_job(player.mind.assigned_role))
+			jobless_players += player
+		else
 			antag_candidates += player
 
-	// anyone unassigned are potential antag rollers, so we need to warn them
-	for(var/mob/dead/new_player/player as anything in SSjob.unassigned)
+	// anyone without a job are potential antag rollers, so we need to warn them
+	for(var/mob/dead/new_player/player as anything in jobless_players)
 		var/list/job_data = list()
 		var/job_prefs = player.client?.prefs.job_preferences
 		for(var/job in job_prefs)
@@ -129,7 +135,7 @@ SUBSYSTEM_DEF(dynamic)
 			Increase the number of roles set to medium or low priority to reduce the chances of this happening."))
 		log_admin("[player.ckey] failed to qualify for any roundstart antagonist role \
 			because their job preferences presented a high chance of all of their selected jobs being unavailable, \
-			along with 'return to lobby if job is unavailable' enabled and has [player.client.prefs.be_special.len] antag preferences enabled. \
+			along with 'return to lobby if job is unavailable' enabled and has [length(player.client?.prefs.be_special)] antag preferences enabled. \
 			They will be unable to qualify for any roundstart antagonist role. These are their job preferences - [job_data.Join(" | ")]")
 
 	var/num_real_players = length(antag_candidates)
