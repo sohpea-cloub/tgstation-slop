@@ -6,10 +6,12 @@
 		damageoverlaytemp = 0
 		update_damage_hud()
 
-	for(var/datum/wound/wound as anything in all_wounds)
-		if(!wound.processes) // meh
-			continue
-		wound.handle_process(seconds_per_tick)
+	// the dead don't clot, heal, get infected or react to their wounds
+	if(stat != DEAD)
+		for(var/datum/wound/wound as anything in all_wounds)
+			if(!wound.processes) // meh
+				continue
+			wound.handle_process(seconds_per_tick)
 
 	if(HAS_TRAIT(src, TRAIT_STASIS))
 		. = ..()
