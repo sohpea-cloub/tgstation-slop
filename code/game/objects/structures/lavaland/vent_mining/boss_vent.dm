@@ -56,7 +56,9 @@
 		return
 	// Completely override the normal wave defense, and just spawn the boss.
 	var/mob/living/simple_animal/hostile/megafauna/boss = new summoned_boss(loc)
-	RegisterSignal(boss, COMSIG_VENT_WAVE_CONCLUDED, PROC_REF(handle_wave_conclusion))
+	// The boss never sends COMSIG_VENT_WAVE_CONCLUDED (only the spawner component does), so listen for its death.
+	RegisterSignal(boss, COMSIG_LIVING_DEATH, PROC_REF(handle_wave_conclusion))
+	COOLDOWN_START(src, wave_cooldown, INFINITY) // The boss fight is in progress: don't let the vent be scanned again until it ends.
 	SSblackbox.record_feedback("tally", "ore_vent_mobs_spawned", 1, summoned_boss)
 	boss.say(boss.summon_line, language = /datum/language/common, forced = "summon line") //Pull their specific summon line to say. Default is meme text so make sure that they have theirs set already.
 
