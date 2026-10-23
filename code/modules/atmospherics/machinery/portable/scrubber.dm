@@ -240,7 +240,10 @@
 	return ..()
 
 /obj/machinery/portable_atmospherics/scrubber/huge/wrench_act(mob/living/user, obj/item/tool)
-	. = ..()
+	// On a connector port (or already connected to one) the wrench connects/disconnects it like any portable,
+	// without also toggling the anchoring on top of that, which left a connected scrubber unanchored.
+	if(connected_port || (locate(/obj/machinery/atmospherics/components/unary/portables_connector) in loc))
+		return ..()
 	if(default_unfasten_wrench(user, tool))
 		if(!movable)
 			on = FALSE
