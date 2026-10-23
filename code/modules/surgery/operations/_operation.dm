@@ -982,7 +982,8 @@ GLOBAL_DATUM_INIT(operations, /datum/operation_holder, new)
 		message = detailed_message,
 		self_message = self_message,
 		vision_distance = 1,
-		ignored_mobs = target_detailed ? null : target
+		ignored_mobs = target_detailed ? null : target,
+		visible_message_flags = ALWAYS_SHOW_SELF_MESSAGE, // the surgeon feels what they're doing, even when blind
 	)
 
 	if(target_detailed)
