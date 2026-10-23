@@ -104,8 +104,9 @@
 
 /// Checks if the heart is beating.
 /// Can be overridden to add more conditions for more complex hearts.
+/// A failing heart doesn't pump blood, even if it is robotic and so immune to heart attacks (which is what normally stops `beating`).
 /obj/item/organ/heart/proc/is_beating()
-	return beating
+	return beating && !(organ_flags & ORGAN_FAILING)
 
 /obj/item/organ/heart/get_status_text(scanpower, add_tooltips, colored)
 	if(owner.has_status_effect(/datum/status_effect/heart_attack))
