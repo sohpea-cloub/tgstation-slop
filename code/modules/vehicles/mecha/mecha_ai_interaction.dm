@@ -78,6 +78,9 @@
 			return
 
 		if(AI_MECH_HACK) //Called by AIs on the mech
+			if(!AI.can_dominate_mechs && LAZYLEN(occupants) >= max_occupants) //only domination can evict a pilot
+				to_chat(AI, span_warning("Unable to take control of [src]: it is currently occupied."))
+				return
 			AI.create_core_link(new /obj/structure/ai_core(AI.loc, CORE_STATE_FINISHED, AI.make_mmi()))
 			if(AI.can_dominate_mechs && LAZYLEN(occupants)) //Oh, I am sorry, were you using that?
 				to_chat(AI, span_warning("Occupants detected! Forced ejection initiated!"))
