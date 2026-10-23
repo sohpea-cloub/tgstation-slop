@@ -597,6 +597,21 @@
 			'sound/mobs/humanoids/plasmaman/plasmeme_scream_2.ogg',
 			'sound/mobs/humanoids/plasmaman/plasmeme_scream_3.ogg',
 		),
+		// Plasmamen have no sexes, so their gasps shouldn't depend on the body type of the bones they're attached to
+		/datum/emote/living/gasp::key = list(
+			'sound/mobs/humanoids/human/gasp/gasp_male1.ogg',
+			'sound/mobs/humanoids/human/gasp/gasp_male2.ogg',
+			'sound/mobs/humanoids/human/gasp/gasp_female1.ogg',
+			'sound/mobs/humanoids/human/gasp/gasp_female2.ogg',
+			'sound/mobs/humanoids/human/gasp/gasp_female3.ogg',
+		),
+		/datum/emote/living/gasp/shock::key = list(
+			'sound/mobs/humanoids/human/gasp/gasp_male1.ogg',
+			'sound/mobs/humanoids/human/gasp/gasp_male2.ogg',
+			'sound/mobs/humanoids/human/gasp/gasp_female1.ogg',
+			'sound/mobs/humanoids/human/gasp/gasp_female2.ogg',
+			'sound/mobs/humanoids/human/gasp/gasp_female3.ogg',
+		),
 	)
 
 /obj/item/organ/tongue/robot
