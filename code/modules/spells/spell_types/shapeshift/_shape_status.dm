@@ -220,7 +220,14 @@
 	if(QDELETED(source_spell) || !source_spell.convert_damage)
 		return
 
-	caster_mob.fully_heal(HEAL_DAMAGE) // Remove all of our damage before setting our health to a proportion of the former transformed mob's health
+	// Remove all of our damage before setting our health to a proportion of the former transformed mob's health
+	// We don't use fully_heal() for this as it also cures husking, which would undo things like a ghoul's appearance
+	caster_mob.set_tox_loss(0, updating_health = FALSE, forced = TRUE)
+	caster_mob.set_oxy_loss(0, updating_health = FALSE, forced = TRUE)
+	caster_mob.set_brute_loss(0, updating_health = FALSE, forced = TRUE)
+	caster_mob.set_fire_loss(0, updating_health = FALSE, forced = TRUE)
+	caster_mob.set_stamina_loss(0, updating_stamina = FALSE, forced = TRUE)
+	caster_mob.updatehealth()
 	var/damage_to_apply = caster_mob.maxHealth * (owner.get_total_damage() / owner.maxHealth)
 	caster_mob.apply_damage(damage_to_apply, source_spell.convert_damage_type, forced = TRUE, spread_damage = TRUE, wound_bonus = CANT_WOUND)
 	// Only transfer blood if both mobs are supposed to have a blood volume
