@@ -759,7 +759,7 @@ GAME_VERB_PROC(/mob/living, mob_sleep, "Sleep", null)
 	if(HAS_TRAIT(src, TRAIT_UNDENSE))
 		set_density(FALSE)
 	else
-		set_density(TRUE)
+		set_density(initial(density))
 
 /mob/living/update_rest_hud_icon()
 	. = ..()
