@@ -176,7 +176,9 @@
 		source_spell.Grant(owner)
 
 		if(source_spell.convert_damage)
-			var/damage_to_apply = owner.maxHealth * (caster_mob.get_total_damage() / caster_mob.maxHealth)
+			// A caster who is still alive but past the point where they'd normally die (kept up by tenacity, mood or similar)
+			// must not die from the conversion: that would leave their mind stuck in a dead shape which never reverts
+			var/damage_to_apply = min(owner.maxHealth * (caster_mob.get_total_damage() / caster_mob.maxHealth), owner.maxHealth - 1)
 
 			owner.apply_damage(damage_to_apply, source_spell.convert_damage_type, forced = TRUE, spread_damage = TRUE, wound_bonus = CANT_WOUND)
 			// Only transfer blood if both mobs are supposed to have a blood volume
