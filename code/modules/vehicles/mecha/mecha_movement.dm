@@ -112,8 +112,12 @@
 
 	//if we're not facing the way we're going rotate us
 	// if we're not strafing or if we are forced to rotate or if we are holding down the key
-	if(dir != direction && (!strafe || forcerotate || keyheld))
-		setDir(direction)
+	var/turn_dir = direction
+	if(strafe && ISDIAGONALDIR(direction))
+		// strafing mechs may only face the four cardinal directions, keep our facing if it is one of the two components
+		turn_dir = (dir & direction) ? dir : (direction & (NORTH|SOUTH))
+	if(dir != turn_dir && (!strafe || forcerotate || keyheld))
+		setDir(turn_dir)
 		if(!(mecha_flags & QUIET_TURNS))
 			playsound(src, turnsound, 40, TRUE)
 		if(keyheld || !pivot_step) //If we pivot step, we don't return here so we don't just come to a stop

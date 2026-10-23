@@ -113,6 +113,8 @@
 		return
 
 	strafe = !strafe
+	if(strafe && ISDIAGONALDIR(dir))
+		setDir(dir & (NORTH|SOUTH))
 
 	for(var/mob/occupant in occupants)
 		balloon_alert(occupant, "strafing [strafe?"on":"off"]")
