@@ -130,6 +130,8 @@ GLOBAL_LIST_EMPTY_TYPED(air_alarms, /obj/machinery/airalarm)
 		), only_root_path = TRUE) \
 	)
 
+	RegisterSignal(SSdcs, COMSIG_GLOB_ALARM_FIRE(ALARM_ATMOS), PROC_REF(on_area_atmos_alarm_changed))
+	RegisterSignal(SSdcs, COMSIG_GLOB_ALARM_CLEAR(ALARM_ATMOS), PROC_REF(on_area_atmos_alarm_changed))
 	GLOB.air_alarms += src
 	if(mapload)
 		find_and_mount_on_atom()
@@ -155,6 +157,16 @@ GLOBAL_LIST_EMPTY_TYPED(air_alarms, /obj/machinery/airalarm)
 	QDEL_NULL(alarm_manager)
 	GLOB.air_alarms -= src
 	return ..()
+
+/// Any air alarm in an area can set off or clear the area's atmos alarm, so every air alarm in that area has to refresh its view of it.
+/obj/machinery/airalarm/proc/on_area_atmos_alarm_changed(datum/source, datum/alarm_handler/handler, alarm_type, area/changed_area)
+	SIGNAL_HANDLER
+	if(QDELETED(src) || isnull(my_area) || changed_area != my_area)
+		return
+	var/old_area_danger = area_danger
+	area_danger = my_area.active_alarms[ALARM_ATMOS]
+	if(!!old_area_danger != !!area_danger)
+		update_appearance()
 
 /obj/machinery/airalarm/proc/check_enviroment()
 	var/turf/our_turf = connected_sensor ? get_turf(connected_sensor) : get_turf(src)
