@@ -2,6 +2,11 @@
 	if(check_click_intercept(params, A))
 		return
 
+	// Jumping over a secret cordon would defeat its whole point
+	if(jump_crosses_secret_cordon(get_turf(A)))
+		to_chat(src, span_warning("Something blocks the way."))
+		return
+
 	// Things you might plausibly want to follow
 	if(ismovable(A))
 		ManualFollow(A)
@@ -9,6 +14,18 @@
 	// Otherwise jump
 	else if(A.loc)
 		abstract_move(get_turf(A))
+
+/// Returns TRUE if a non-admin ghost's straight line to the destination crosses a secret cordon turf
+/mob/dead/observer/proc/jump_crosses_secret_cordon(turf/destination)
+	if(client?.holder || !destination)
+		return FALSE
+	var/turf/start = get_turf(src)
+	if(!start || start.z != destination.z)
+		return FALSE
+	for(var/turf/line_turf as anything in get_line(start, destination))
+		if(istype(line_turf, /turf/cordon/secret))
+			return TRUE
+	return FALSE
 
 /mob/dead/observer/ClickOn(atom/A, params)
 	if(check_click_intercept(params,A))
