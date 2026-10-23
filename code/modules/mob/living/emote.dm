@@ -162,6 +162,11 @@
 	can_use_flags = EMOTE_CANUSE_REQUIRE_HANDS
 	var/wing_time = 0.35 SECONDS
 
+/datum/emote/living/flap/can_run_emote(mob/user, status_check = TRUE, intentional, params)
+	if(!istype(user.get_organ_slot(ORGAN_SLOT_EXTERNAL_WINGS), /obj/item/organ/wings))
+		return FALSE
+	return ..()
+
 /datum/emote/living/flap/run_emote(mob/user, params, type_override, intentional)
 	. = ..()
 	if(!ishuman(user))
