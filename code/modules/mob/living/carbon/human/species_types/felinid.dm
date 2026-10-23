@@ -105,10 +105,14 @@
 				if(ispath(external_organ, /obj/item/organ/tail))
 					var/obj/item/organ/tail/new_tail = new external_organ()
 					new_tail.Insert(purrbated_human, special = TRUE, movement_flags = DELETE_IF_REPLACED)
-				// Don't forget the spines we removed earlier
-				else if(ispath(external_organ, /obj/item/organ/spines))
-					var/obj/item/organ/spines/new_spines = new external_organ()
-					new_spines.Insert(purrbated_human, special = TRUE, movement_flags = DELETE_IF_REPLACED)
+
+		// Don't forget the spines we removed when applying purrbation, whether or not they got a cat tail
+		if(!purrbated_human.get_organ_slot(ORGAN_SLOT_EXTERNAL_SPINES))
+			for(var/external_organ in target_species.mutant_organs)
+				if(!ispath(external_organ, /obj/item/organ/spines) || !should_visual_organ_apply_to(external_organ, purrbated_human))
+					continue
+				var/obj/item/organ/spines/new_spines = new external_organ()
+				new_spines.Insert(purrbated_human, special = TRUE, movement_flags = DELETE_IF_REPLACED)
 
 		var/obj/item/organ/ears/old_ears = purrbated_human.get_organ_slot(ORGAN_SLOT_EARS)
 		if(istype(old_ears, /obj/item/organ/ears/cat))
