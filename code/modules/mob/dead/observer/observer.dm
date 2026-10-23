@@ -830,7 +830,7 @@ GAME_VERB_HIDDEN(/mob/dead/observer, add_view_range, "Add View Range")
 	if(!client?.prefs)
 		return
 
-	client.prefs.apply_character_randomization_prefs()
+	var/list/original_values = client.prefs.apply_character_randomization_prefs()
 
 	var/species_type = client.prefs.read_preference(/datum/preference/choiced/species)
 	var/datum/species/species = GLOB.species_prototypes[species_type]
@@ -842,6 +842,7 @@ GAME_VERB_HIDDEN(/mob/dead/observer, add_view_range, "Add View Range")
 		facial_hairstyle = client.prefs.read_preference(/datum/preference/choiced/facial_hairstyle)
 		facial_hair_color = ghostify_color(client.prefs.read_preference(/datum/preference/color/facial_hair_color))
 
+	client.prefs.restore_character_randomization(original_values)
 	update_appearance()
 
 /mob/dead/observer/can_perform_action(atom/movable/target, action_bitflags)

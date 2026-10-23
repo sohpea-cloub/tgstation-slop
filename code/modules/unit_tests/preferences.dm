@@ -75,3 +75,30 @@
 				errored = TRUE
 
 			TEST_ASSERT(errored, "[preference_type] implemented icon_for, but does not have should_generate_icons = TRUE")
+
+/// Randomizing a character for an antagonist/ghost spawn must not change the player's saved character.
+/datum/unit_test/preferences_randomization_not_persisted
+
+/datum/unit_test/preferences_randomization_not_persisted/Run()
+	var/datum/preferences/preferences = new(new /datum/client_interface)
+	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human/consistent)
+
+	var/original_name = "Original Name"
+	preferences.write_preference(GLOB.preference_entries[/datum/preference/name/real_name], original_name)
+	preferences.write_preference(GLOB.preference_entries[/datum/preference/choiced/random_name], RANDOM_ANTAG_ONLY)
+	preferences.write_preference(GLOB.preference_entries[/datum/preference/choiced/random_body], RANDOM_ANTAG_ONLY)
+	var/original_hair_color = preferences.read_preference(/datum/preference/color/hair_color)
+	var/original_species = preferences.read_preference(/datum/preference/choiced/species)
+
+	// Not an antagonist: nothing is randomized.
+	preferences.safe_transfer_prefs_to(human, TRUE, FALSE)
+	TEST_ASSERT_EQUAL(human.real_name, original_name, "A non-antagonist's name was randomized")
+
+	// An antagonist gets a random character...
+	preferences.safe_transfer_prefs_to(human, TRUE, TRUE)
+	TEST_ASSERT_NOTEQUAL(human.real_name, original_name, "An antagonist's name was not randomized")
+
+	// ...but the saved character is untouched.
+	TEST_ASSERT_EQUAL(preferences.read_preference(/datum/preference/name/real_name), original_name, "Randomizing for an antagonist changed the saved name")
+	TEST_ASSERT_EQUAL(preferences.read_preference(/datum/preference/color/hair_color), original_hair_color, "Randomizing for an antagonist changed the saved hair color")
+	TEST_ASSERT_EQUAL(preferences.read_preference(/datum/preference/choiced/species), original_species, "Randomizing for an antagonist changed the saved species")

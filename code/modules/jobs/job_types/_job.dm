@@ -581,9 +581,15 @@
 			fully_replace_character_name(null, GLOB.current_anonymous_theme.anonymous_name(src), log_new_name = TRUE)
 	else
 		var/is_antag = (player_client.mob.mind in GLOB.pre_setup_antags)
+		var/original_species_randomise = player_client.prefs.randomise["species"]
 		if(require_human)
 			player_client.prefs.randomise["species"] = FALSE
 		player_client.prefs.safe_transfer_prefs_to(src, TRUE, is_antag)
+		if(require_human) // only for this spawn, the player's setting is theirs to keep
+			if(isnull(original_species_randomise))
+				player_client.prefs.randomise -= "species"
+			else
+				player_client.prefs.randomise["species"] = original_species_randomise
 		if(require_human && !ishumanbasic(src))
 			set_species(/datum/species/human)
 			dna.species.roundstart_changed = TRUE

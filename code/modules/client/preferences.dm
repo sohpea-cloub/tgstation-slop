@@ -511,9 +511,11 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	return preferences.chat_toggles
 
 /// Sanitizes the preferences, applies the randomization prefs, and then applies the preference to the human mob.
+/// The randomization only lasts for this call: the player's saved character is left as it was.
 /datum/preferences/proc/safe_transfer_prefs_to(mob/living/carbon/human/character, icon_updates = TRUE, is_antag = FALSE)
-	apply_character_randomization_prefs(is_antag)
+	var/list/original_values = apply_character_randomization_prefs(is_antag)
 	apply_prefs_to(character, icon_updates)
+	restore_character_randomization(original_values)
 
 /**
  * Applies the given preferences to a human mob.

@@ -10,19 +10,37 @@
 		if (preference.is_randomizable())
 			write_preference(preference, preference.create_random_value(src))
 
-/// Randomizes the character according to preferences.
+/**
+ * Randomizes the character according to preferences.
+ * This only changes the preferences temporarily: the randomized values must never end up in the player's
+ * saved character, so call restore_character_randomization() with the returned list once you are done reading them.
+ *
+ * Returns an associative list of preference type -> the value the preference had before it was randomized.
+ */
 /datum/preferences/proc/apply_character_randomization_prefs(antag_override = FALSE)
+	var/list/original_values = list()
+
 	switch (read_preference(/datum/preference/choiced/random_body))
 		if (RANDOM_ANTAG_ONLY)
 			if (!antag_override)
-				return
+				return original_values
 
 		if (RANDOM_DISABLED)
-			return
+			return original_values
 
 	for (var/datum/preference/preference as anything in get_preferences_in_priority_order())
 		if (should_randomize(preference, antag_override))
+			original_values[preference.type] = read_preference(preference.type)
 			write_preference(preference, preference.create_random_value(src))
+
+	return original_values
+
+/// Puts back the values that apply_character_randomization_prefs() replaced, so the randomized character isn't saved over the player's own.
+/datum/preferences/proc/restore_character_randomization(list/original_values)
+	// Inserted in priority order, so things like the species are restored before what depends on them.
+	for (var/preference_type in original_values)
+		var/datum/preference/preference = GLOB.preference_entries[preference_type]
+		write_preference(preference, preference.serialize(original_values[preference_type]))
 
 ///Setup the random hardcore quirks and give the character the new score prize.
 /datum/preferences/proc/hardcore_random_setup(mob/living/carbon/human/character)
