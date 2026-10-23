@@ -1606,6 +1606,18 @@ GAME_VERB_NATIVE(/mob, DisDblClick, ".dblclick", null, argu = null as anything, 
 	for(var/datum/callback/CB as anything in persistent_client.post_logout_callbacks)
 		CB.Invoke()
 
+	// Pointed spells and similar click abilities set a custom cursor on the client itself, which outlives this mob.
+	// We have lost the client by now, so their unset procs can't clean it up: do it here, or the next mob keeps the cursor.
+	var/ranged_cursor
+	if(istype(click_intercept, /datum/action/cooldown))
+		var/datum/action/cooldown/ranged_cooldown = click_intercept
+		ranged_cursor = ranged_cooldown.ranged_mousepointer
+	else if(istype(click_intercept, /datum/action/innate))
+		var/datum/action/innate/ranged_innate = click_intercept
+		ranged_cursor = ranged_innate.ranged_mousepointer
+	if(ranged_cursor && canon_client.mouse_override_icon == ranged_cursor)
+		canon_client.mouse_override_icon = initial(canon_client.mouse_override_icon)
+
 	clear_important_client_contents()
 	canon_client = null
 
