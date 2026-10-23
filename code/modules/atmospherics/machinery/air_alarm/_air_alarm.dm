@@ -604,28 +604,20 @@ GLOBAL_LIST_EMPTY_TYPED(air_alarms, /obj/machinery/airalarm)
 
 		if(is_low_pressure && is_low_temp)
 			warning_message = "Danger! Low pressure and temperature detected."
-			return
-		if(is_low_pressure && is_high_temp)
+		else if(is_low_pressure && is_high_temp)
 			warning_message = "Danger! Low pressure and high temperature detected."
-			return
-		if(is_high_pressure && is_high_temp)
+		else if(is_high_pressure && is_high_temp)
 			warning_message = "Danger! High pressure and temperature detected."
-			return
-		if(is_high_pressure && is_low_temp)
+		else if(is_high_pressure && is_low_temp)
 			warning_message = "Danger! High pressure and low temperature detected."
-			return
-		if(is_low_pressure)
+		else if(is_low_pressure)
 			warning_message = "Danger! Low pressure detected."
-			return
-		if(is_high_pressure)
+		else if(is_high_pressure)
 			warning_message = "Danger! High pressure detected."
-			return
-		if(is_low_temp)
+		else if(is_low_temp)
 			warning_message = "Danger! Low temperature detected."
-			return
-		if(is_high_temp)
+		else if(is_high_temp)
 			warning_message = "Danger! High temperature detected."
-			return
 		else
 			warning_message = null
 
