@@ -83,9 +83,11 @@
 
 /datum/component/haunted_item/RegisterWithParent()
 	RegisterSignal(parent, COMSIG_ATOM_ATTACKBY, PROC_REF(on_hit_by_holy_tool))
+	// Storage items would otherwise insert the holy tool in item interaction, before attackby is ever reached
+	RegisterSignal(parent, COMSIG_ATOM_ITEM_INTERACTION, PROC_REF(on_item_interacted_by_holy_tool))
 
 /datum/component/haunted_item/UnregisterFromParent()
-	UnregisterSignal(parent, COMSIG_ATOM_ATTACKBY)
+	UnregisterSignal(parent, list(COMSIG_ATOM_ATTACKBY, COMSIG_ATOM_ITEM_INTERACTION))
 
 /// Removes the haunting, showing any despawn message we have and qdeling our component
 /datum/component/haunted_item/proc/clear_haunting()
@@ -100,6 +102,20 @@
 /datum/component/haunted_item/proc/on_hit_by_holy_tool(obj/item/source, obj/item/attacking_item, mob/living/attacker, params)
 	SIGNAL_HANDLER
 
+	if(!try_dispell(source, attacking_item, attacker))
+		return
+	return COMPONENT_NO_AFTERATTACK
+
+/// Signal proc for [COMSIG_ATOM_ITEM_INTERACTION], so holy stuff dispells us before a storage item tries to insert it.
+/datum/component/haunted_item/proc/on_item_interacted_by_holy_tool(obj/item/source, mob/living/user, obj/item/tool, list/modifiers)
+	SIGNAL_HANDLER
+
+	if(!try_dispell(source, tool, user))
+		return NONE
+	return ITEM_INTERACT_SUCCESS
+
+/// Checks if the passed item can dispell us, and if so, dispells us. Returns TRUE if we were dispelled.
+/datum/component/haunted_item/proc/try_dispell(obj/item/source, obj/item/attacking_item, mob/living/attacker)
 	if(!is_type_in_list(attacking_item, types_which_dispell_us))
 		var/has_trait = FALSE
 		for(var/dispell_trait in traits_which_dispell_us)
@@ -108,11 +124,11 @@
 				break
 
 		if(!has_trait)
-			return
+			return FALSE
 
 	attacker.visible_message(span_warning("[attacker] dispells the ghostly energy from [source]!"), span_warning("You dispel the ghostly energy from [source]!"))
 	clear_haunting()
-	return COMPONENT_NO_AFTERATTACK
+	return TRUE
 
 /**
  * Takes a given area and chance, applying the haunted_item component to objects in the area.
