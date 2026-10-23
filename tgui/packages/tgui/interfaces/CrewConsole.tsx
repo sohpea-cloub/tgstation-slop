@@ -17,7 +17,7 @@ const HEALTH_COLOR_BY_LEVEL = [
 ];
 
 const STAT_LIVING = 0;
-const STAT_DEAD = 4;
+const STAT_DEAD = 3;
 
 const jobIsHead = (jobId: number) => jobId % 10 === 0;
 
