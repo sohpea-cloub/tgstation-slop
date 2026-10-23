@@ -62,6 +62,9 @@ SUBSYSTEM_DEF(overlays)
 /atom/proc/cut_overlays()
 	STAT_START_STOPWATCH
 	overlays = null
+	// Everything we were managing is gone with the rest. If we kept the stale list, update_icon() would later think it
+	// still has full control of `overlays` (same length) and wipe any overlay added by hand since (e.g. a slime's face).
+	managed_overlays = null
 	POST_OVERLAY_CHANGE(src)
 	STAT_STOP_STOPWATCH
 	STAT_LOG_ENTRY(SSoverlays.stats, type)
