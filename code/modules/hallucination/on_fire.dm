@@ -29,6 +29,8 @@
 	var/time_spent = 0
 
 	var/fake_firestacks = 0
+	/// Set if we were refused because our mob is already hallucinating fire, so our Destroy doesn't clear the existing one's alerts and moodlet
+	var/duplicate = FALSE
 
 /datum/hallucination/fire/proc/make_overlay()
 	var/mutable_appearance/real_overlay = hallucinator.get_fire_overlay(fake_firestacks)
@@ -42,6 +44,13 @@
 	return new_overlay
 
 /datum/hallucination/fire/start()
+	// Only one fire hallucination at a time: a second one would replace the alert that stops the first,
+	// so rolling around would never end it
+	for(var/datum/hallucination/fire/other in GLOB.all_ongoing_hallucinations)
+		if(other != src && other.hallucinator == hallucinator && other.active && !QDELETED(other))
+			duplicate = TRUE
+			return FALSE
+
 	fake_firestacks = rand(5, 15)
 	fire_overlay = make_overlay()
 	if(!fire_overlay)
@@ -57,6 +66,8 @@
 	return TRUE
 
 /datum/hallucination/fire/Destroy()
+	if(duplicate)
+		return ..()
 	hallucinator.clear_alert(ALERT_FIRE, clear_override = TRUE)
 	hallucinator.clear_alert(ALERT_TEMPERATURE, clear_override = TRUE)
 	if(!hallucinator.on_fire)
