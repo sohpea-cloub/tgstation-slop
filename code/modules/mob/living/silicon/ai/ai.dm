@@ -822,6 +822,10 @@ GAME_VERB_PROC_DESC(/mob/living/silicon/ai, set_automatic_say_channel, "Set Auto
 		return FALSE
 	return can_see(target) && ..() //stop AIs from leaving windows open and using then after they lose vision
 
+/// An AI can't see where a radio speaker is unless the speaker is on camera (or near the AI), so no runechat over them
+/mob/living/silicon/ai/can_see_runechat_source(atom/movable/source)
+	return can_see(source)
+
 /mob/living/silicon/ai/proc/can_see(atom/A)
 	if(isturf(loc)) //AI in core, check if on cameras
 		//get_turf_pixel() is because APCs in maint aren't actually in view of the inner camera

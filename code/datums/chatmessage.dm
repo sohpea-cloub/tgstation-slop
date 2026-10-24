@@ -315,6 +315,10 @@
 	SIGNAL_HANDLER
 	SET_PLANE(message, RUNECHAT_PLANE, new_turf)
 
+/// Whether this mob may see runechat floating over a radio speaker's real location (no radio anchor)
+/mob/proc/can_see_runechat_source(atom/movable/source)
+	return TRUE
+
 /**
  * Creates a message overlay at a defined location for a given speaker
  *
@@ -337,6 +341,9 @@
 	if (!(runechat_flags & EMOTE_MESSAGE) && istype(speaker, /atom/movable/virtualspeaker))
 		var/atom/movable/virtualspeaker/virtual_speaker = speaker
 		var/atom/movable/runechat_anchor = LAZYACCESS(virtual_speaker.runechat_anchors, src) // radio runechat
+		// Without an anchor the message would show over the real speaker, wherever they are
+		if(!runechat_anchor && !can_see_runechat_source(virtual_speaker.source))
+			return
 		speaker = runechat_anchor || virtual_speaker.source
 		classes |= "virtual-speaker"
 
