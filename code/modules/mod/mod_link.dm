@@ -1,6 +1,20 @@
+/// The hologram shown at the other end of a MODlink call. It speaks with the voice of the user it mirrors, rather than as "holocall (id)".
+/obj/effect/overlay/modlink_hologram
+	/// The link this hologram shows the user of
+	var/datum/mod_link/mod_link
+
+/obj/effect/overlay/modlink_hologram/Destroy()
+	mod_link = null
+	return ..()
+
+/obj/effect/overlay/modlink_hologram/get_voice(add_id_name = FALSE)
+	var/mob/living/user = mod_link?.get_user_callback?.Invoke()
+	return user?.get_voice(add_id_name) || ..()
+
 /proc/make_link_visual_generic(datum/mod_link/mod_link, proc_path)
 	var/mob/living/user = mod_link.get_user_callback.Invoke()
-	var/obj/effect/overlay/link_visual = new()
+	var/obj/effect/overlay/modlink_hologram/link_visual = new()
+	link_visual.mod_link = mod_link
 	link_visual.name = "holocall ([mod_link.id])"
 	link_visual.mouse_opacity = MOUSE_OPACITY_TRANSPARENT
 	LAZYADD(mod_link.holder.update_on_z, link_visual)
