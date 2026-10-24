@@ -677,6 +677,8 @@
 	if(LAZYACCESS(modifiers, MIDDLE_CLICK))
 		set_safety(user)
 		return COMSIG_MOB_CANCEL_CLICKON
+	if(HAS_TRAIT(src, TRAIT_NO_TRANSFORM)) // Mirrors mob/ClickOn: no using equipment while stuck out of reality (immortality talisman, void invocation)
+		return COMSIG_MOB_CANCEL_CLICKON
 	if(weapons_safety)
 		return
 	if(isAI(user)) //For AIs: If safeties are off, use mech functions. If safeties are on, use AI functions.
