@@ -216,7 +216,7 @@
 						"decorator": "/datum/bt_node/decorator/cooldown",
 						"vars": {
 							"cooldown_key": "BB_BATTLE_SCREECH_COOLDOWN",
-							"cooldown_duration": 5
+							"cooldown_duration": "5 SECONDS"
 						},
 						"child": {
 							"type": "decorator",
