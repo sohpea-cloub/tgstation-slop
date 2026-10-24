@@ -181,6 +181,11 @@
 	if(is_creating)
 		real_name = owner.real_name
 		copy_appearance_from(owner)
+		// Hair-coloured organs (cat ears, tails...) were coloured before our hair colour was known
+		for(var/obj/item/bodypart/part as anything in owner.bodyparts)
+			for(var/datum/bodypart_overlay/mutant/overlay in part.bodypart_overlays)
+				if(overlay.color_source == ORGAN_COLOR_HAIR)
+					overlay.inherit_color(part, force = TRUE)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
