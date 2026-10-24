@@ -770,6 +770,9 @@ SUBSYSTEM_DEF(job)
 		var/list/turf/available_turfs = list()
 		for (var/list/zlevel_turfs as anything in arrivals_area.get_zlevel_turf_lists())
 			for (var/turf/arrivals_turf as anything in zlevel_turfs)
+				// The shuttle may have been (partially) destroyed: never spawn people into space or a hole
+				if(isspaceturf(arrivals_turf) || !isopenturf(arrivals_turf))
+					continue
 				var/obj/structure/chair/shuttle_chair = locate() in arrivals_turf
 				if(!isnull(shuttle_chair))
 					return shuttle_chair
@@ -779,6 +782,18 @@ SUBSYSTEM_DEF(job)
 
 		if(length(available_turfs))
 			return pick(available_turfs)
+
+	// The arrivals shuttle is gone or has no safe floor left (eaten by a singularity, etc): use the arrivals hallway on the station
+	var/area/station/hallway/secondary/entry/entry_area = GLOB.areas_by_type[/area/station/hallway/secondary/entry]
+	if(!isnull(entry_area))
+		var/list/turf/entry_turfs = list()
+		for (var/list/zlevel_turfs as anything in entry_area.get_zlevel_turf_lists())
+			for (var/turf/entry_turf as anything in zlevel_turfs)
+				if(isspaceturf(entry_turf) || !isopenturf(entry_turf) || entry_turf.is_blocked_turf(TRUE))
+					continue
+				entry_turfs += entry_turf
+		if(length(entry_turfs))
+			return pick(entry_turfs)
 
 	stack_trace("Unable to find last resort spawn point.")
 	return GET_ERROR_ROOM
