@@ -79,6 +79,20 @@
 
 	return to_add
 
+// The generic Undead perk claims the undead don't eat or breathe, but spirits still do (see get_physical_attributes)
+/datum/species/spirit/create_pref_biotypes_perks()
+	var/list/to_add = list()
+
+	to_add += list(list(
+		SPECIES_PERK_TYPE = SPECIES_POSITIVE_PERK,
+		SPECIES_PERK_ICON = "skull",
+		SPECIES_PERK_NAME = "Undead",
+		SPECIES_PERK_DESC = "[plural_form] are of the undead, so most viruses will not be able to infect them. \
+			Unlike other undead, they still need to eat and breathe.",
+	))
+
+	return to_add
+
 /**
  * Ghost subtype
  * This is the type of ghost that can actually phase through walls,
