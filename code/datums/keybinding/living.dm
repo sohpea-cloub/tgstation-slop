@@ -17,9 +17,10 @@
 	if(.)
 		return
 	var/mob/living/owner = user.mob
-	owner.resist()
+	// Light the button before resisting: resist() can sleep (do_after), and keyUp would reset the icon before we got back here, leaving it stuck on
 	if (owner.hud_used?.screen_objects[HUD_MOB_RESIST])
 		owner.hud_used.screen_objects[HUD_MOB_RESIST].icon_state = "[owner.hud_used.screen_objects[HUD_MOB_RESIST].base_icon_state]_on"
+	owner.resist()
 	return TRUE
 
 /datum/keybinding/living/resist/up(client/user, turf/target)
