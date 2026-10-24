@@ -67,6 +67,8 @@
 	maptext_height = 480
 	maptext_width = 480
 	maptext = ""
+	// Belongs to the client, not a mob's HUD: must survive HUD refreshes
+	clear_with_screen = FALSE
 
 	var/static/list/colors = list(
 		COLOR_RED,

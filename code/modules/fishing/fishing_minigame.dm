@@ -803,6 +803,7 @@ GLOBAL_LIST_EMPTY(fishing_challenges_by_user)
 	icon = 'icons/hud/fishing_hud.dmi'
 	screen_loc = "CENTER+1:8,CENTER:2"
 	name = "fishing minigame"
+	clear_with_screen = FALSE
 	appearance_flags = APPEARANCE_UI|KEEP_TOGETHER
 	///The fish as shown in the minigame
 	var/atom/movable/screen/hud_fish/hud_fish

@@ -25,6 +25,8 @@
 	icon_state = "station_intact"
 	plane = SPLASHSCREEN_PLANE
 	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
+	// Shown to the client, not part of a HUD: must survive HUD refreshes
+	clear_with_screen = FALSE
 	screen_loc = "BOTTOM,LEFT+50%"
 	appearance_flags = APPEARANCE_UI | TILE_BOUND
 

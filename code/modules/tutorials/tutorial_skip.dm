@@ -4,6 +4,7 @@
 	screen_loc = "TOP,LEFT"
 	color = COLOR_NEARLY_ALL_BLACK
 	alpha = 0
+	clear_with_screen = FALSE
 	mouse_opacity = MOUSE_OPACITY_OPAQUE
 	layer = TUTORIAL_INSTRUCTIONS_LAYER
 	mouse_over_pointer = MOUSE_HAND_POINTER

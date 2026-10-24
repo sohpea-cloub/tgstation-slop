@@ -4,6 +4,8 @@
 	var/datum/buildmode/bd
 	// If we don't do this, we get occluded by item action buttons
 	plane = ABOVE_HUD_PLANE
+	// Belongs to the admin client, not a mob's HUD: must survive HUD refreshes (e.g. changing UI style)
+	clear_with_screen = FALSE
 
 /atom/movable/screen/buildmode/New(bld)
 	bd = bld

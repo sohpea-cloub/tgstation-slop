@@ -3,6 +3,7 @@
 	icon_state = "white"
 	color = COLOR_NEARLY_ALL_BLACK
 	alpha = 0
+	clear_with_screen = FALSE
 	screen_loc = "TOP-2,CENTER"
 	layer = TUTORIAL_INSTRUCTIONS_LAYER
 	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
