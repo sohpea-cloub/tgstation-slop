@@ -133,16 +133,16 @@
  */
 /datum/component/takes_reagent_appearance/proc/update_icon(datum/glass_style/style)
 	var/obj/item/item_parent = parent
-	if(isnull(style))
-		// no style (reset)
-		item_parent.icon = icon_pre_change
-		item_parent.icon_state = icon_state_pre_change
-	else if(style.icon && style.icon_state)
+	if(style?.icon && style.icon_state)
 		// style
 		style.set_appearance(item_parent)
 		on_icon_changed?.InvokeAsync(style)
 		return COMSIG_ATOM_NO_UPDATE_ICON_STATE
 
+	// no style, or a style that only changes the name / description (reset),
+	// otherwise the icon of a previous style would linger
+	item_parent.icon = icon_pre_change
+	item_parent.icon_state = icon_state_pre_change
 	// Reset gets invoked regardless, as further updates may "reset" the icon yet
 	on_icon_reset?.InvokeAsync()
 	return NONE
