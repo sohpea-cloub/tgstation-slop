@@ -295,7 +295,13 @@ GLOBAL_LIST_INIT(blacklisted_automated_baseturfs, typecacheof(list(
 
 	var/list/successful_replacement_callbacks = list()
 	SEND_SIGNAL(src, COMSIG_TURF_ATTEMPT_LATTICE_REPLACEMENT, successful_replacement_callbacks)
-	var/turf/new_turf = ScrapeAway(amount, flags = CHANGETURF_INHERIT_AIR)
+	// Scrape one layer at a time and stop at the first non-floor turf (space, openspace, asteroid...):
+	// scraping further would dig through it into whatever lies under it (e.g. the z-level's baseturf, asteroid rock on Tramstation)
+	var/turf/new_turf = src
+	for (var/layer in 1 to amount)
+		new_turf = new_turf.ScrapeAway(1, flags = CHANGETURF_INHERIT_AIR)
+		if (!istype(new_turf, /turf/open/floor))
+			break
 	if (istype(new_turf, /turf/open/floor))
 		return
 
