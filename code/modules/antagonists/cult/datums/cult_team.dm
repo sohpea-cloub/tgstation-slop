@@ -134,7 +134,8 @@
 	return "<div class='panel redborder'>[parts.Join("<br>")]</div>"
 
 /datum/team/cult/proc/is_sacrifice_target(datum/mind/mind)
-
+	if(isnull(mind)) // mindless mobs (sheep) must not match an objective whose target was already cleared
+		return FALSE
 	for(var/datum/objective/sacrifice/sac_objective in objectives)
 		if(mind == sac_objective.target)
 			return TRUE
