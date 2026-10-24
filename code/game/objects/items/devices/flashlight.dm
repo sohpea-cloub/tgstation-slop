@@ -1223,8 +1223,9 @@
 			QDEL_NULL(space_bubble)
 		bubble_timer = addtimer(CALLBACK(src, PROC_REF(start_bubble_close), "dies down..."), bubble_duration, TIMER_UNIQUE|TIMER_OVERRIDE|TIMER_STOPPABLE|TIMER_DELETE_ME)
 		space_bubble = new(src, 4, FALSE, src)
-		slowdown = SLOWDOWN_ON
-		drag_slowdown = SLOWDOWN_ON
+		if(!HAS_TRAIT(src, TRAIT_SPEED_POTIONED))
+			slowdown = SLOWDOWN_ON
+			drag_slowdown = SLOWDOWN_ON
 		user.update_equipment_speed_mods()
 		return
 	close_bubble(user)
@@ -1241,8 +1242,9 @@
 	QDEL_NULL(space_bubble)
 	if(bubble_timer)
 		deltimer(bubble_timer)
-	slowdown = initial(slowdown)
-	drag_slowdown = initial(drag_slowdown)
+	if(!HAS_TRAIT(src, TRAIT_SPEED_POTIONED))
+		slowdown = initial(slowdown)
+		drag_slowdown = initial(drag_slowdown)
 	if(user)
 		user.update_equipment_speed_mods()
 
