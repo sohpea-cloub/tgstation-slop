@@ -23,6 +23,8 @@
 	var/bin_overlay_string = "paper_bin_overlay"
 	///Overlay that goes over the paper overlays.
 	var/mutable_appearance/bin_overlay
+	///A paper of papertype, only used to draw the not-yet-generated paper in the bin (so its colour, e.g. construction paper's random one, is shown).
+	var/obj/item/paper/reference_paper
 
 /obj/item/paper_bin/Initialize(mapload)
 	. = ..()
@@ -37,6 +39,7 @@
 
 /obj/item/paper_bin/Destroy()
 	QDEL_LIST(paper_stack)
+	QDEL_NULL(reference_paper)
 	return ..()
 
 /// Returns a fresh piece of paper
@@ -168,9 +171,8 @@
 /obj/item/paper_bin/update_overlays()
 	. = ..()
 
-	var/static/obj/item/paper/reference_paper
 	if (isnull(reference_paper))
-		reference_paper = new /obj/item/paper
+		reference_paper = new papertype
 
 	if(bin_pen)
 		pen_overlay = mutable_appearance(bin_pen.icon, bin_pen.icon_state)
@@ -191,12 +193,7 @@
 				: reference_paper
 
 			var/mutable_appearance/paper_overlay = mutable_appearance(current_paper.icon, current_paper.icon_state)
-			if(current_paper == reference_paper)
-				paper_overlay.color = initial(papertype.color)
-				if(initial(papertype.show_written_words) && initial(papertype.default_raw_text))
-					paper_overlay.icon_state += "_words"
-			else
-				paper_overlay.color = current_paper.color
+			paper_overlay.color = current_paper.color
 			paper_overlay.pixel_z = paper_number/PAPERS_PER_OVERLAY - PAPER_OVERLAY_PIXEL_SHIFT //gives the illusion of stacking
 			. += paper_overlay
 			if(paper_number == total_paper) //this is our top paper
