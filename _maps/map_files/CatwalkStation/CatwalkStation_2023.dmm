@@ -7713,7 +7713,9 @@
 /obj/item/radio/intercom/directional/south,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
-/obj/machinery/door/window/right/directional/west,
+/obj/machinery/door/window/right/directional/west{
+	req_access = list("virology")
+	},
 /turf/open/floor/iron/dark/textured_large,
 /area/station/medical/virology)
 "bZt" = (
@@ -45024,7 +45026,9 @@
 /obj/effect/turf_decal/trimline/green/filled/mid_joiner{
 	dir = 8
 	},
-/obj/machinery/door/window/brigdoor/left,
+/obj/machinery/door/window/brigdoor/left{
+	req_access = list("virology")
+	},
 /obj/machinery/airalarm/directional/west,
 /turf/open/floor/iron/dark/textured_large,
 /area/station/medical/virology)
