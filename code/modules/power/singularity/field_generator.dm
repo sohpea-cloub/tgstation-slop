@@ -49,6 +49,8 @@ no power level overlay is currently in the overlays list.
 	var/list/obj/machinery/field/containment/fields = list()
 	///List of every field generators connected to this one
 	var/list/obj/machinery/field/generator/connected_gens = list()
+	///The floor shields this generator has placed (or found) under the box of fields it is a part of
+	var/list/obj/effect/shield/floor_shields = list()
 	///Check for asynk cleanups for this and the connected gens
 	var/clean_up = FALSE
 	/// we warm up and cool down instantly
@@ -372,44 +374,61 @@ no power level overlay is currently in the overlays list.
 	move_resist = initial(move_resist)
 	set_explosion_block(0)
 
+/// Follows the chain of connected generators from this one in a cardinal direction, through any mid-way generators, and returns the furthest one (or null if none is connected that way)
+/obj/machinery/field/generator/proc/get_furthest_connected_gen(direction)
+	var/obj/machinery/field/generator/furthest
+	var/obj/machinery/field/generator/current = src
+	var/list/obj/machinery/field/generator/visited = list(src)
+	while(current)
+		var/obj/machinery/field/generator/next
+		for(var/obj/machinery/field/generator/candidate as anything in current.connected_gens)
+			if(candidate.z != z || (candidate in visited))
+				continue
+			if(get_dir(current, candidate) != direction)
+				continue
+			next = candidate
+			break
+		if(next)
+			visited += next
+			furthest = next
+		current = next
+	return furthest
+
 /obj/machinery/field/generator/proc/shield_floor(create)
-	if(connected_gens.len < 2)
+	if(!create)
+		for(var/obj/effect/shield/created_shield as anything in floor_shields)
+			if(!QDELETED(created_shield))
+				qdel(created_shield)
+		floor_shields.Cut()
 		return
-	var/connected_gen_counter
-	for(connected_gen_counter = 1; connected_gen_counter < connected_gens.len; connected_gen_counter++)
+	// A floor shield fills the rectangle spanned by this generator and the opposite corner of a closed box,
+	// no matter how many mid-way generators sit on the edges of the box
+	for(var/horizontal_dir in list(EAST, WEST))
+		var/obj/machinery/field/generator/horizontal_end = get_furthest_connected_gen(horizontal_dir)
+		if(!horizontal_end)
+			continue
+		for(var/vertical_dir in list(NORTH, SOUTH))
+			var/obj/machinery/field/generator/vertical_end = get_furthest_connected_gen(vertical_dir)
+			if(!vertical_end)
+				continue
+			// the box is only closed if the far corner is connected to both ends
+			var/obj/machinery/field/generator/opposite_corner = horizontal_end.get_furthest_connected_gen(vertical_dir)
+			if(!opposite_corner || opposite_corner.y != vertical_end.y)
+				continue
+			var/obj/machinery/field/generator/opposite_corner_check = vertical_end.get_furthest_connected_gen(horizontal_dir)
+			if(!opposite_corner_check || opposite_corner_check.x != horizontal_end.x)
+				continue
+			for(var/x_step in min(x, horizontal_end.x) to max(x, horizontal_end.x))
+				for(var/y_step in min(y, vertical_end.y) to max(y, vertical_end.y))
+					place_floor(locate(x_step, y_step, z), TRUE)
 
-		var/list/connected_gen_list = ((connected_gens[connected_gen_counter].connected_gens & connected_gens[connected_gen_counter+1].connected_gens)^src)
-		if(!connected_gen_list.len)
-			return
-		var/obj/machinery/field/generator/considered_generator = connected_gen_list[1]
-
-		var/x_step
-		var/y_step
-		if(considered_generator.x > x && considered_generator.y > y)
-			for(x_step=x; x_step <= considered_generator.x; x_step++)
-				for(y_step=y; y_step <= considered_generator.y; y_step++)
-					place_floor(locate(x_step,y_step,z),create)
-		else if(considered_generator.x > x && considered_generator.y < y)
-			for(x_step=x; x_step <= considered_generator.x; x_step++)
-				for(y_step=y; y_step >= considered_generator.y; y_step--)
-					place_floor(locate(x_step,y_step,z),create)
-		else if(considered_generator.x < x && considered_generator.y > y)
-			for(x_step=x; x_step >= considered_generator.x; x_step--)
-				for(y_step=y; y_step <= considered_generator.y; y_step++)
-					place_floor(locate(x_step,y_step,z),create)
-		else
-			for(x_step=x; x_step >= considered_generator.x; x_step--)
-				for(y_step=y; y_step >= considered_generator.y; y_step--)
-					place_floor(locate(x_step,y_step,z),create)
-
-
-/obj/machinery/field/generator/proc/place_floor(Location,create)
-	if(create && !locate(/obj/effect/shield) in Location)
-		new/obj/effect/shield(Location)
-	else if(!create)
-		var/obj/effect/shield/created_shield = locate(/obj/effect/shield) in Location
-		if(created_shield)
-			qdel(created_shield)
+/obj/machinery/field/generator/proc/place_floor(turf/location, create)
+	if(!create)
+		return
+	var/obj/effect/shield/floor_shield = locate(/obj/effect/shield) in location
+	if(!floor_shield)
+		floor_shield = new(location)
+	floor_shields |= floor_shield
 
 /obj/machinery/field/generator/proc/block_singularity_if_active()
 	SIGNAL_HANDLER
