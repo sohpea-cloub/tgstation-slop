@@ -159,6 +159,9 @@
 	return NONE
 
 /obj/structure/displaycase/welder_act(mob/living/user, obj/item/tool)
+	if(accepts_showpiece_tool())
+		return NONE // let item_interaction put the welder on display
+
 	if(user.combat_mode || broken)
 		return ITEM_INTERACT_SKIP_TO_ATTACK
 
@@ -179,6 +182,9 @@
 	return ITEM_INTERACT_SUCCESS
 
 /obj/structure/displaycase/crowbar_act(mob/living/user, obj/item/tool)
+	if(accepts_showpiece_tool())
+		return NONE // let item_interaction put the crowbar on display
+
 	if(alert) //Only applies to the lab cage and player made display cases
 		return ITEM_INTERACT_SKIP_TO_ATTACK
 
@@ -199,6 +205,10 @@
 	toggle_lock(user)
 	return ITEM_INTERACT_SUCCESS
 
+
+///Whether this case is open and empty, so a tool used on it should be put on display instead of acting as a tool
+/obj/structure/displaycase/proc/accepts_showpiece_tool()
+	return open && !showpiece && !broken
 
 ///Handles placing an item into the display case. Returns TRUE if the item failed to be placed inside the container, useful for descendants
 /obj/structure/displaycase/proc/insert_showpiece(obj/item/new_showpiece, mob/user)
