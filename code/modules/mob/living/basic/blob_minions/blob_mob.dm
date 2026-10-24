@@ -44,7 +44,7 @@
 /// Called when our blob overmind changes their variant, update some of our mob properties
 /mob/living/basic/blob_minion/proc/on_strain_updated(mob/eye/blob/overmind, datum/blobstrain/new_strain)
 	//revert independent blob mobs to the pale sprite so they can be recoloured
-	if(new_strain)
+	if(new_strain && stat != DEAD)
 		icon_state = base_icon_state
 
 /// Associates this mob with a specific blob factory node

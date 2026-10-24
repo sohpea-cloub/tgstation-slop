@@ -74,6 +74,8 @@
 		//revert independent blobbernauts to the pale sprite so they can be recoloured
 		icon_dead = "[base_icon_state]_dead"
 		icon_living = base_icon_state
+		if(stat == DEAD)
+			icon_state = icon_dead
 		new_strain.RegisterSignal(src, COMSIG_HOSTILE_POST_ATTACKINGTARGET, TYPE_PROC_REF(/datum/blobstrain/, blobbernaut_attack))
 	else
 		attack_verb_continuous = initial(attack_verb_continuous)
