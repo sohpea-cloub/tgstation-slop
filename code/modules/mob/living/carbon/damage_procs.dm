@@ -267,6 +267,9 @@
 
 		parts -= picked
 
+	// stamina isn't tied to bodyparts
+	. += adjust_stamina_loss(-abs(stamina), updating_stamina = FALSE, forced = forced)
+
 	if(!.) // no change? no need to update anything
 		return
 
@@ -303,6 +306,9 @@
 		burn = round(burn - (picked.burn_dam - burn_was), DAMAGE_PRECISION)
 
 		parts -= picked
+
+	// stamina isn't tied to bodyparts
+	. += adjust_stamina_loss(abs(stamina), updating_stamina = FALSE, forced = forced)
 
 	if(!.) // no change? no need to update anything
 		return
