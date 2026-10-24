@@ -1,3 +1,32 @@
+/// Shared right-click multitool behaviour of MODlink devices: copy the device's frequency into the multitool's buffer, or imprint the buffered frequency onto the device.
+/proc/mod_link_multitool_act(datum/mod_link/mod_link, mob/living/user, obj/item/multitool/tool)
+	var/datum/mod_link/buffer_link = istype(tool.buffer, /datum/mod_link) ? tool.buffer : null
+	var/tool_frequency = buffer_link?.frequency
+	if(!tool_frequency)
+		if(!mod_link.frequency)
+			mod_link.holder.balloon_alert(user, "no frequency!")
+			return ITEM_INTERACT_BLOCKING
+		tool.set_buffer(mod_link)
+		mod_link.holder.balloon_alert(user, "frequency copied")
+		return ITEM_INTERACT_SUCCESS
+	if(!mod_link.frequency)
+		mod_link.frequency = tool_frequency
+		mod_link.holder.balloon_alert(user, "frequency set")
+		return ITEM_INTERACT_SUCCESS
+	var/response = tgui_alert(user, "Would you like to copy or imprint the frequency?", "MODlink Frequency", list("Copy", "Imprint"))
+	if(!user.is_holding(tool))
+		return ITEM_INTERACT_BLOCKING
+	switch(response)
+		if("Copy")
+			tool.set_buffer(mod_link)
+			mod_link.holder.balloon_alert(user, "frequency copied")
+			return ITEM_INTERACT_SUCCESS
+		if("Imprint")
+			mod_link.frequency = tool_frequency
+			mod_link.holder.balloon_alert(user, "frequency set")
+			return ITEM_INTERACT_SUCCESS
+	return ITEM_INTERACT_BLOCKING
+
 /// The hologram shown at the other end of a MODlink call. It speaks with the voice of the user it mirrors, rather than as "holocall (id)".
 /obj/effect/overlay/modlink_hologram
 	/// The link this hologram shows the user of
@@ -90,34 +119,7 @@
 	)
 
 /obj/item/mod/control/multitool_act_secondary(mob/living/user, obj/item/multitool/tool)
-	. = NONE
-
-	var/tool_frequency = null
-	if(istype(tool.buffer, /datum/mod_link))
-		var/datum/mod_link/buffer_link = tool.buffer
-		tool_frequency = buffer_link.frequency
-		balloon_alert(user, "frequency set")
-		. = ITEM_INTERACT_SUCCESS
-	if(!tool_frequency && mod_link.frequency)
-		tool.set_buffer(mod_link)
-		balloon_alert(user, "frequency copied")
-		. = ITEM_INTERACT_SUCCESS
-	else if(tool_frequency && !mod_link.frequency)
-		mod_link.frequency = tool_frequency
-		. = ITEM_INTERACT_SUCCESS
-	else if(tool_frequency && mod_link.frequency)
-		var/response = tgui_alert(user, "Would you like to copy or imprint the frequency?", "MODlink Frequency", list("Copy", "Imprint"))
-		if(!user.is_holding(tool))
-			return ITEM_INTERACT_BLOCKING
-		switch(response)
-			if("Copy")
-				tool.set_buffer(mod_link)
-				balloon_alert(user, "frequency copied")
-				. = ITEM_INTERACT_SUCCESS
-			if("Imprint")
-				mod_link.frequency = tool_frequency
-				balloon_alert(user, "frequency set")
-				. = ITEM_INTERACT_SUCCESS
+	return mod_link_multitool_act(mod_link, user, tool)
 
 /obj/item/mod/control/proc/can_call()
 	return get_charge() && wearer && wearer.stat != DEAD
@@ -248,34 +250,7 @@
 	return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 
 /obj/item/clothing/neck/link_scryer/multitool_act_secondary(mob/living/user, obj/item/multitool/tool)
-	. = NONE
-
-	var/tool_frequency = null
-	if(istype(tool.buffer, /datum/mod_link))
-		var/datum/mod_link/buffer_link = tool.buffer
-		tool_frequency = buffer_link.frequency
-		balloon_alert(user, "frequency set")
-		. = ITEM_INTERACT_SUCCESS
-	if(!tool_frequency && mod_link.frequency)
-		tool.set_buffer(mod_link)
-		balloon_alert(user, "frequency copied")
-		. = ITEM_INTERACT_SUCCESS
-	else if(tool_frequency && !mod_link.frequency)
-		mod_link.frequency = tool_frequency
-		. = ITEM_INTERACT_SUCCESS
-	else if(tool_frequency && mod_link.frequency)
-		var/response = tgui_alert(user, "Would you like to copy or imprint the frequency?", "MODlink Frequency", list("Copy", "Imprint"))
-		if(!user.is_holding(tool))
-			return ITEM_INTERACT_BLOCKING
-		switch(response)
-			if("Copy")
-				tool.set_buffer(mod_link)
-				balloon_alert(user, "frequency copied")
-				. = ITEM_INTERACT_SUCCESS
-			if("Imprint")
-				mod_link.frequency = tool_frequency
-				balloon_alert(user, "frequency set")
-				. = ITEM_INTERACT_SUCCESS
+	return mod_link_multitool_act(mod_link, user, tool)
 
 /obj/item/clothing/neck/link_scryer/worn_overlays(mutable_appearance/standing, isinhands, icon_file, bodyshape = NONE)
 	. = ..()
