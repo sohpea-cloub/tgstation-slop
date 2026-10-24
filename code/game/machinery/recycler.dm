@@ -121,12 +121,16 @@
 
 /// Dead mobs with something to butcher are left to the butchering component instead of being eaten.
 /obj/machinery/recycler/proc/can_butcher(mob/living/victim)
-	if(!isliving(victim) || safety_mode || (machine_stat & (BROKEN|NOPOWER)))
+	if(!isliving(victim) || !can_recycle())
 		return FALSE
 	return victim.stat == DEAD && (victim.butcher_results || victim.guaranteed_butcher_results)
 
+/// Whether the grinder is currently running: it needs power, no safety shutdown and a closed maintenance panel (the panel-open sprite shows it as stopped).
+/obj/machinery/recycler/proc/can_recycle()
+	return !(machine_stat & (BROKEN|NOPOWER)) && !safety_mode && !panel_open
+
 /obj/machinery/recycler/proc/eat(atom/movable/morsel, sound=TRUE)
-	if(machine_stat & (BROKEN|NOPOWER) || safety_mode)
+	if(!can_recycle())
 		return
 	if(!isturf(morsel.loc))
 		stack_trace("on_entered() called with invalid location: [morsel.loc]") // I don't know how you called Entered() but stop it.
