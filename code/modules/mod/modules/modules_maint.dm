@@ -370,9 +370,9 @@
 	if(you_fucked_up || mod.wearer.has_gravity() > NEGATIVE_GRAVITY)
 		return
 
-	// Prevent infinite loops when being fireman carried - Stack trace if it does
+	// A buckled wearer (carried by someone else, in a chair...) moves with what they're buckled to: nothing to do.
+	// Being carried is allowed, only carrying is blocked, so this is a normal case and not a bug.
 	if(mod.wearer.buckled)
-		stack_trace("Atrocinator user is buckled despite protections - this shouldn't happen!")
 		return
 
 	// Prevent infinite loops when carrying someone - Stack trace if it does
