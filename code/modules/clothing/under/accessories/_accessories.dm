@@ -206,7 +206,17 @@
 	if(user.can_perform_action(src, NEED_DEXTERITY))
 		above_suit = !above_suit
 		balloon_alert(user, "wearing [above_suit ? "above" : "below"] suits")
+		update_worn_layer()
 		return TRUE
+
+/// Redraws the uniform and suit of whoever is wearing the uniform we're attached to, so a change to [above_suit] shows right away
+/obj/item/clothing/accessory/proc/update_worn_layer()
+	var/obj/item/clothing/under/attached_to = loc
+	if(!istype(attached_to))
+		return
+	var/mob/living/carbon/human/wearer = attached_to.loc
+	if(istype(wearer) && wearer.get_item_by_slot(ITEM_SLOT_ICLOTHING) == attached_to)
+		wearer.update_clothing(ITEM_SLOT_ICLOTHING | ITEM_SLOT_OCLOTHING | ITEM_SLOT_NECK)
 
 /obj/item/clothing/accessory/examine(mob/user)
 	. = ..()
