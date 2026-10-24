@@ -267,7 +267,7 @@
 		. += "No Cell Inserted!"
 
 	if(connected_ai)
-		. += "Master AI: [connected_ai.name]"
+		. += "Master AI: [connected_ai.real_name]"
 
 /mob/living/silicon/robot/proc/alarm_triggered(datum/source, alarm_type, area/source_area)
 	SIGNAL_HANDLER
