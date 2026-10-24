@@ -35,3 +35,12 @@
 		return TRUE
 	return the_target.stat == DEAD || the_target.health >= the_target.maxHealth
 
+
+/datum/targeting_strategy/basic/legion/is_valid_target(mob/living/living_mob, atom/target, vision_range, datum/ai_controller/controller = null)
+	// We want to heal hurt friendlies, not break the mech they are sitting in to get to them
+	if (ismecha(target))
+		var/obj/vehicle/sealed/mecha/mech = target
+		for (var/mob/occupant as anything in mech.occupants)
+			if (living_mob.faction_check_atom(occupant, exact_match = check_factions_exactly))
+				return FALSE
+	return ..()
