@@ -930,6 +930,15 @@
 	if(!the_window.fulltile)
 		return FALSE
 
+	// Merge into the splatter already on the window instead of stacking another one on top of it.
+	for(var/obj/effect/decal/cleanable/blood/splatter/over_window/existing in the_window.vis_contents)
+		if(QDELETED(existing) || existing.dried)
+			continue
+		existing.add_blood_DNA(GET_ATOM_BLOOD_DNA(src))
+		existing.adjust_bloodiness(bloodiness)
+		expire()
+		return TRUE
+
 	// Spawn in the window so we don't merge with a floor splatter and delete ourselves before attaching.
 	var/obj/effect/decal/cleanable/final_splatter = new /obj/effect/decal/cleanable/blood/splatter/over_window(the_window, null, GET_ATOM_BLOOD_DNA(src))
 	the_window.vis_contents += final_splatter
