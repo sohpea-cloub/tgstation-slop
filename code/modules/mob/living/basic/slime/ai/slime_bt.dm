@@ -60,6 +60,11 @@
 	if(QDELETED(target))
 		return AI_BEHAVIOR_DELAY | AI_BEHAVIOR_FAILED
 
+	if(slime_pawn.has_ally(REF(target))) //we made friends with them (stabilized grey, etc), let go
+		slime_pawn.stop_feeding()
+		controller.clear_blackboard_key(target_key)
+		return AI_BEHAVIOR_DELAY | AI_BEHAVIOR_FAILED
+
 	if(slime_pawn.buckled)
 		if(slime_pawn.buckled == target) //we got em boys
 			return AI_BEHAVIOR_DELAY

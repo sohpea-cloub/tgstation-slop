@@ -90,3 +90,17 @@
 	INVOKE_ASYNC(buckled, TYPE_PROC_REF(/atom/movable, unbuckle_mob), src, force=TRUE)
 
 #undef FEEDING_OFFSET
+
+/// A slime that becomes friends with someone must stop eating them and forget them as a target
+/mob/living/basic/slime/befriend(mob/living/new_friend)
+	. = ..()
+	if(!.)
+		return
+	if(buckled == new_friend)
+		stop_feeding()
+	if(!ai_controller)
+		return
+	for(var/target_key in list(BB_CURRENT_TARGET, BB_SLIME_EAT_TARGET, BB_CURRENT_PET_TARGET))
+		if(ai_controller.blackboard[target_key] == new_friend)
+			ai_controller.clear_blackboard_key(target_key)
+	ai_controller.remove_from_blackboard_lazylist_key(BB_BASIC_MOB_RETALIATE_LIST, new_friend)
