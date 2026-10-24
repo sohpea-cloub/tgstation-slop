@@ -26,7 +26,9 @@
 	if(ispath(job))
 		job = SSjob.get_job_type(job)
 		if (isnull(job))
-			// Not a valid job. Maybe removed by the map.
+			// Not a valid job. Maybe removed by the map. The trim is still usable (e.g. mapped ID cards),
+			// it just has no job to take map access changes from.
+			refresh_trim_access()
 			return
 
 	if(isnull(job_changes))
