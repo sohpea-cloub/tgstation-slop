@@ -16,5 +16,8 @@
 	client.set_right_click_menu_mode(FALSE)
 	lighting_cutoff = default_lighting_cutoff()
 	update_sight()
+	var/mob/living/former_body = mind?.current
+	if(isliving(former_body))
+		former_body.med_hud_set_status()
 
 
