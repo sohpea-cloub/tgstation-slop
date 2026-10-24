@@ -397,8 +397,31 @@
 		qdel(src)
 
 /obj/item/carried_repairbot/Destroy()
-	. = ..()
+	//release the bot before the parent deletes our contents
 	release_bot(bypass_delete = TRUE)
+	return ..()
+
+/// The bot inside wants out: drop us if we are held, otherwise (a bin, a locker...) just pop out where we are
+/obj/item/carried_repairbot/proc/wriggle_free()
+	if(isliving(loc))
+		var/mob/living/captor = loc
+		to_chat(captor, span_warning("[our_bot] wriggles free!"))
+		captor.dropItemToGround(src)
+	if(!QDELETED(src))
+		release_bot()
+
+/obj/item/carried_repairbot/relaymove(mob/living/user, direction)
+	if(user != our_bot)
+		return ..()
+	wriggle_free()
+
+/obj/item/carried_repairbot/container_resist_act(mob/living/user)
+	if(user != our_bot)
+		return ..()
+	//the bot AI resists whenever it is inside an object; it shouldn't squirm out of the hands that scooped it up on purpose
+	if(isliving(loc) && isnull(user.client))
+		return
+	wriggle_free()
 
 /obj/item/carried_repairbot/Entered(atom/movable/arrived, atom/old_loc, list/atom/old_locs)
 	. = ..()
