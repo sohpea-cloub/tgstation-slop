@@ -26,6 +26,8 @@
 	var/random_gain = TRUE
 	/// How hard is this to cure?
 	var/resilience = TRAUMA_RESILIENCE_BASIC
+	/// If FALSE, this trauma can't be given with TRAUMA_RESILIENCE_ABSOLUTE (used for traumas that remove themselves on their own, like when the owner dies)
+	var/can_be_permanent = TRUE
 	/// If FALSE, hide the trauma in medical guides
 	var/known_trauma = TRUE
 

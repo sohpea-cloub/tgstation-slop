@@ -627,6 +627,8 @@
 		return FALSE
 	if(!resilience)
 		resilience = initial(trauma.resilience)
+	if(resilience == TRAUMA_RESILIENCE_ABSOLUTE && !initial(trauma.can_be_permanent))
+		return FALSE
 
 	var/resilience_tier_count = 0
 	for(var/X in traumas)

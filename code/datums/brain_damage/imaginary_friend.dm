@@ -13,6 +13,8 @@
 		leading to social withdrawal, altered perceptions of reality, or atypical activities."
 	gain_text = span_notice("You feel in good company, for some reason.")
 	lose_text = span_warning("You feel lonely again.")
+	// the friend goes away when the owner dies, so it can't be permanent
+	can_be_permanent = FALSE
 	var/mob/eye/imaginary_friend/friend
 	var/friend_initialized = FALSE
 
