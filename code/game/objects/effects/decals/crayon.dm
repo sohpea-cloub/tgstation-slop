@@ -5,7 +5,6 @@
 	icon_state = "rune1"
 	gender = NEUTER
 	mergeable_decal = FALSE
-	flags_1 = ALLOW_DARK_PAINTS_1
 	var/do_icon_rotate = TRUE
 	var/rotation = 0
 	var/paint_colour = COLOR_WHITE

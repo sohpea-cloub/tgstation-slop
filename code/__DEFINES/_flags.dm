@@ -35,8 +35,6 @@ GLOBAL_LIST_INIT(bitflags, list(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 204
 #define ADMIN_SPAWNED_1 (1<<6)
 /// should not get harmed if this gets caught by an explosion?
 #define PREVENT_CONTENTS_EXPLOSION_1 (1<<7)
-/// Should this object be paintable with very dark colors?
-#define ALLOW_DARK_PAINTS_1 (1<<8)
 /// Should this object be unpaintable?
 #define UNPAINTABLE_1 (1<<9)
 /// Is this atom immune to being dusted by the supermatter?
