@@ -520,6 +520,10 @@
 	if(attack_type == OVERWHELMING_ATTACK)
 		return FALSE
 
+	// The shield is an abstract item, so it's allowed in an open-cockpit mech, but it shouldn't shield the pilot there
+	if(ismecha(owner.loc))
+		return FALSE
+
 	if(remaining_uses < 1)
 		if(ishuman(loc))
 			var/mob/living/carbon/human/H = loc
