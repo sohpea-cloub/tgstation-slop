@@ -26,14 +26,20 @@
 	return ..() + list("the patient must be deceased", "the patient must be in a revivable state")
 
 /datum/surgery_operation/basic/revival/state_check(mob/living/patient)
-	if(patient.stat != DEAD)
-		return FALSE
-	if(HAS_TRAIT(patient, TRAIT_SUICIDED) || HAS_TRAIT(patient, TRAIT_HUSK) || HAS_TRAIT(patient, TRAIT_DEFIB_BLACKLISTED))
+	if(!revivable_state(patient))
 		return FALSE
 	if(patient.has_limbs)
 		var/obj/item/organ/brain/brain = patient.get_organ_slot(ORGAN_SLOT_BRAIN)
 		return !isnull(brain) && brain_check(brain)
 	return mob_check(patient)
+
+/// Checks the patient is dead and not barred from being revived
+/datum/surgery_operation/basic/revival/proc/revivable_state(mob/living/patient)
+	if(patient.stat != DEAD)
+		return FALSE
+	if(HAS_TRAIT(patient, TRAIT_SUICIDED) || HAS_TRAIT(patient, TRAIT_HUSK) || HAS_TRAIT(patient, TRAIT_DEFIB_BLACKLISTED))
+		return FALSE
+	return TRUE
 
 /datum/surgery_operation/basic/revival/proc/brain_check(obj/item/organ/brain/brain)
 	return !IS_ROBOTIC_ORGAN(brain)
@@ -110,7 +116,24 @@
 
 /datum/surgery_operation/basic/revival/mechanic
 	name = "full system reboot"
-	required_biotype = MOB_ROBOTIC
+	// Robotic heads (augmentation) are handled here too, so we can't filter on biotype or bodytype: see state_check
+	required_biotype = NONE
+	required_bodytype = NONE
+
+/datum/surgery_operation/basic/revival/mechanic/all_required_strings()
+	return ..() + list("the patient's head or brain must be cybernetic")
+
+/datum/surgery_operation/basic/revival/mechanic/state_check(mob/living/patient)
+	if(!revivable_state(patient))
+		return FALSE
+	if(!patient.has_limbs)
+		return mob_check(patient)
+	var/obj/item/organ/brain/brain = patient.get_organ_slot(ORGAN_SLOT_BRAIN)
+	if(isnull(brain))
+		return FALSE
+	// an augmented head with an organic brain still needs a system reboot (the organic version doesn't work on robotic heads)
+	var/obj/item/bodypart/head = patient.get_bodypart(target_zone)
+	return IS_ROBOTIC_LIMB(head) || brain_check(brain)
 
 /datum/surgery_operation/basic/revival/mechanic/brain_check(obj/item/organ/brain/brain)
 	return !..()
