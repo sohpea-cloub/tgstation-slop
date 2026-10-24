@@ -2334,6 +2334,9 @@
 /obj/machinery/door/airlock/external/try_safety_unlock(mob/user)
 	if(space_dir && density)
 		if(!hasPower())
+			// forcing it open takes bare hands, which someone sealed inside a vehicle doesn't have
+			if(HAS_TRAIT(user, TRAIT_HANDS_BLOCKED))
+				return FALSE
 			to_chat(user, span_notice("You begin unlocking the airlock safety mechanism..."))
 			if(do_after(user, 15 SECONDS, target = src))
 				try_to_crowbar(null, user, TRUE)
