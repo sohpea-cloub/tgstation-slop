@@ -12,6 +12,7 @@
 	network = "ss13",
 	emp_proof = FALSE,
 	camera_update_time = 0.5 SECONDS,
+	ai_coverage = TRUE,
 )
 	if(!isliving(parent))
 		return COMPONENT_INCOMPATIBLE
@@ -22,6 +23,7 @@
 	bodycam.network = list(network)
 	bodycam.name = camera_name
 	bodycam.c_tag = c_tag
+	bodycam.ai_coverage = ai_coverage
 	if(emp_proof)
 		bodycam.AddElement(/datum/element/empprotection, EMP_PROTECT_ALL)
 
@@ -45,6 +47,7 @@
 	network = "ss13",
 	emp_proof,
 	camera_update_time,
+	ai_coverage,
 )
 	// Dupes are only allowed if we don't have a camera on that network already
 	return (network in bodycam.network)

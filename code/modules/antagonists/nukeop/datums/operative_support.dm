@@ -22,6 +22,7 @@
 			camera_name = "operative bodycam", \
 			c_tag = "[our_teammate.real_name]", \
 			network = OPERATIVE_CAMERA_NET, \
+			ai_coverage = FALSE, \
 			emp_proof = FALSE, \
 		)
 		our_teammate.playsound_local(get_turf(owner.current), 'sound/items/weapons/egloves.ogg', 100, 0)
@@ -46,6 +47,7 @@
 		camera_name = "operative bodycam", \
 		c_tag = "[new_teammate.real_name]", \
 		network = OPERATIVE_CAMERA_NET, \
+		ai_coverage = FALSE, \
 		emp_proof = FALSE, \
 	)
 	to_chat(new_teammate, span_notice("You have been equipped with a bodycam, viewable by your Overwatch Intelligence Agent. Make sure to show them a good performance!"))

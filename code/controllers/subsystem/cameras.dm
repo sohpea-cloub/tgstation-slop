@@ -127,7 +127,7 @@ SUBSYSTEM_DEF(cameras)
 
 /// Add a camera to a chunk.
 /datum/controller/subsystem/cameras/proc/add_camera_to_chunk(obj/machinery/camera/new_cam)
-	if(new_cam.can_use())
+	if(new_cam.can_provide_coverage())
 		major_chunk_change(new_cam, ADD_CAMERA)
 
 /**
@@ -156,7 +156,7 @@ SUBSYSTEM_DEF(cameras)
 				chunk.queue_update(updating_camera, update_delay_buffer)
 
 	var/list/new_chunks = list()
-	if(!isnull(new_turf) && updating_camera.can_use())
+	if(!isnull(new_turf) && updating_camera.can_provide_coverage())
 		if(QDELETED(updating_camera))
 			stack_trace("Tried to add a qdeleting camera to the net")
 		else

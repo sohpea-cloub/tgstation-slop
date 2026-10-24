@@ -61,6 +61,8 @@
 
 	///List of all networks that can see this camera through the security console.
 	var/list/network = list(CAMERANET_NETWORK_SS13)
+	/// If FALSE, this camera is only viewable through camera consoles and never clears camera static for AIs (and everything that interacts through it)
+	var/ai_coverage = TRUE
 	///The tag the camera has, which is essentially its name to security camera consoles.
 	var/c_tag = null
 	///Boolean on whether the camera is activated, so can be seen on camera consoles or will just be static.
@@ -410,6 +412,10 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/machinery/camera/xray, 0)
 	if(machine_stat & EMPED)
 		return FALSE
 	return TRUE
+
+/// Whether this camera lets camera eyes (AIs) and camera static see through it: it must be usable and give coverage
+/obj/machinery/camera/proc/can_provide_coverage()
+	return ai_coverage && can_use()
 
 /// Returns an alist of turfs in this camera's view. This includes turfs that are "obscured by darkness" from the camera's POV.
 /// Format is "alist[turf] = null", if you need to check individual objects use "length(can_see & list(turf))". Only "&" and "in" work for checking contents, but "in" is much slower.
