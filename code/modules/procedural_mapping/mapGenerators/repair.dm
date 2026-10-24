@@ -22,6 +22,9 @@
 	if(!istype(mother, /datum/map_generator/repair/reload_station_map))
 		return
 	var/datum/map_generator/repair/reload_station_map/mother1 = mother
+	// Reloading only makes sense inside the station map: the region must have been defined on station z-levels
+	if(!mother1.z)
+		return
 	GLOB.reloading_map = TRUE
 	// This is kind of finicky on multi-Z maps but the reader would need to be
 	// changed to allow Z cropping and that's a mess
@@ -41,6 +44,10 @@
 			y_upper = mother1.y_high,
 		)
 		bounds = parsed?.bounds
+		// Nothing was loaded (the crop region is outside the map): the bounds are still infinite, don't use them
+		if(!bounds || bounds[MAP_MINZ] > bounds[MAP_MAXZ])
+			GLOB.reloading_map = FALSE
+			return
 		z_offset += bounds[MAP_MAXZ] - bounds[MAP_MINZ] + 1
 
 	var/list/obj/machinery/atmospherics/atmos_machines = list()
@@ -107,7 +114,8 @@
 
 /datum/map_generator/repair/reload_station_map/defineRegion(turf/start, turf/end)
 	. = ..()
-	if(!is_station_level(start.z) || !is_station_level(end.z))
+	z = 0
+	if(!. || !is_station_level(start.z) || !is_station_level(end.z))
 		return
 	x_low = min(start.x, end.x)
 	y_low = min(start.y, end.y)
@@ -118,6 +126,10 @@
 GLOBAL_VAR_INIT(reloading_map, FALSE)
 
 /datum/map_generator/repair/reload_station_map/generate(clean = cleanload)
+	// The region wasn't defined on station z-levels (see defineRegion): reloading from the station map files would
+	// loop forever on infinite bounds, and the mass deletion would still wipe the region
+	if(!z)
+		return
 	if(!loader)
 		loader = new
 	if(cleanload)

@@ -41,6 +41,13 @@
 				deselect_region()
 				return
 		G.defineRegion(cornerA, cornerB, 1)
+		if(istype(G, /datum/map_generator/repair/reload_station_map))
+			var/datum/map_generator/repair/reload_station_map/reloader = G
+			if(!reloader.z)
+				to_chat(c, span_boldwarning("Reloading a block only works on the station's z-levels, and both corners must be on them!"))
+				qdel(G)
+				deselect_region()
+				return
 		highlight_region(G.map)
 		var/confirm = tgui_alert(usr,"Are you sure you want to run the map generator?", "Run generator", list("Yes", "No"))
 		if(confirm == "Yes")
