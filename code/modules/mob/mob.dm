@@ -967,6 +967,17 @@ GAME_VERB_NATIVE(/mob, DisDblClick, ".dblclick", null, argu = null as anything, 
 	. = perform_hand_swap(held_index)
 	if(.)
 		SEND_SIGNAL(src, COMSIG_MOB_SWAP_HANDS, get_active_held_item(), old_active_held_item)
+		refresh_screentip()
+
+/// Queues a refresh of the screentip of the atom our client last hovered over, for when something the screentip depends on (like our held item) changes.
+/mob/proc/refresh_screentip()
+	var/client/our_client = client
+	if(isnull(our_client) || isnull(hud_used) || !isnull(SSmouse_entered.hovers[our_client]))
+		return
+	var/atom/hovered = hud_used.last_hovered_atom?.resolve()
+	if(isnull(hovered))
+		return
+	SSmouse_entered.hovers[our_client] = hovered
 
 /// Performs the actual ritual of swapping hands, such as setting the held index variables
 /mob/proc/perform_hand_swap(held_index)

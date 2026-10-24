@@ -882,6 +882,8 @@
 	if(!active_hud)
 		return
 
+	active_hud.last_hovered_atom = WEAKREF(src)
+
 	var/screentips_enabled = active_hud.screentips_enabled
 	if(screentips_enabled == SCREENTIP_PREFERENCE_DISABLED || flags_1 & NO_SCREENTIPS_1)
 		active_hud.screentip_text.maptext = ""
