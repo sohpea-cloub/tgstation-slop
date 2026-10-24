@@ -327,7 +327,7 @@
 /datum/component/butchering/proc/start_butcher(obj/item/source, mob/living/target, mob/living/user)
 	to_chat(user, span_notice("You begin to butcher [target]..."))
 	playsound(target.loc, butcher_sound, 50, TRUE, -1)
-	if (do_after(user, speed, target) && target.Adjacent(source))
+	if (do_after(user, speed, target) && target.IsReachableBy(user, source.reach))
 		on_butchering(user, target)
 
 /datum/component/butchering/proc/butcher_human(obj/item/source, mob/living/carbon/human/victim, mob/living/user)
