@@ -83,6 +83,11 @@
 		longest_timer = max(longest_timer, scaled_time)
 
 		if(skip_windups)
+			if(new_parallax_movedir == NONE)
+				// Stopping with no windup: cancel whatever looping animation is running instead of starting a new one
+				layer.transform = matrix()
+				animate(layer, transform = matrix(), time = 0)
+				continue
 			update_parallax_motionblur(layer, new_parallax_movedir, new_transform)
 			continue
 
