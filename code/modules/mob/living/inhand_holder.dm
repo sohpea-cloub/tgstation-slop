@@ -56,6 +56,15 @@
 
 /obj/item/mob_holder/proc/update_visuals(mob/living/held_guy)
 	appearance = held_guy.appearance
+	// Copying the appearance brings over the mob's filters, but not the filter_data/filter_cache we track them with,
+	// so the first add_filter() on us (e.g. the hover outline) would overwrite them and the mob would lose its filters (shiny cytology colouring).
+	filters = null
+	filter_data = null
+	filter_cache = null
+	for(var/list/filter_info as anything in held_guy.filter_data)
+		add_filter(filter_info["name"], filter_info["priority"], filter_info, update = FALSE)
+	if(filter_cache)
+		filters = filter_cache
 
 /obj/item/mob_holder/on_thrown(mob/living/carbon/user, atom/target)
 	if((item_flags & ABSTRACT) || HAS_TRAIT(src, TRAIT_NODROP))
