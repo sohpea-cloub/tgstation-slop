@@ -146,7 +146,7 @@ GAME_VERB_DESC(/mob/living/carbon/human, toggle_hotkey_verbs, "Toggle hotkey but
 /datum/inventory_slot/human/suit_storage
 	name = "suit storage"
 	icon_state = "suit_storage"
-	icon_full = "template"
+	icon_full = "template_small"
 	screen_loc = ui_sstore1
 	slot_id = ITEM_SLOT_SUITSTORE
 
