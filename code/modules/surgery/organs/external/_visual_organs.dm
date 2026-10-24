@@ -93,10 +93,13 @@ Unlike normal organs, we're actually inside a persons limbs at all times
 /obj/item/organ/update_overlays()
 	. = ..()
 
-	if(!use_mob_sprite_as_obj_sprite || isnull(bodypart_owner) || isnull(bodypart_overlay))
+	if(!use_mob_sprite_as_obj_sprite || isnull(bodypart_overlay))
 		return
 
-	. += bodypart_overlay.get_all_overlays(bodypart_owner)
+	// get_all_overlays() returns an assoc list of overlay = flags; only the overlays are wanted here.
+	// The limb can be null (we're a loose item), the overlays handle that.
+	for(var/actual_overlay, actual_overlay_flags in bodypart_overlay.get_all_overlays(bodypart_owner))
+		. += actual_overlay
 
 ///The horns of a lizard!
 /obj/item/organ/horns
