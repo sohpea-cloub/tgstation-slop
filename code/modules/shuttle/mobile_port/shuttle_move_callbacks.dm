@@ -316,6 +316,10 @@ All ShuttleMove procs go here
 /mob/onShuttleMove(turf/newT, turf/oldT, list/movement_force, move_dir, obj/docking_port/stationary/old_dock, obj/docking_port/mobile/moving_dock)
 	if(HAS_TRAIT(src, TRAIT_BLOCK_SHUTTLE_MOVEMENT))
 		return
+	// Camera eyes (blob overmind...) can ride other shuttles, but never the arrivals shuttle: it would hold it
+	// docked while they hover over it, and carry them off to its home dock, away from the blob.
+	if(iseyemob(src) && istype(moving_dock, /obj/docking_port/mobile/arrivals))
+		return
 	. = ..()
 
 /mob/afterShuttleMove(turf/oldT, list/movement_force, shuttle_dir, shuttle_preferred_direction, move_dir, rotation)
