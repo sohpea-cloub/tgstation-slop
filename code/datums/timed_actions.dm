@@ -85,6 +85,10 @@
 		RegisterSignal(user, COMSIG_MOB_SWAP_HANDS, PROC_REF(on_hands_swapped))
 		RegisterSignal(user, COMSIG_MOB_UNEQUIPPED_ITEM, PROC_REF(on_item_dropped))
 
+	// Slamming someone onto a table is an action of its own, even when the victim is already on that table and so never "moves"
+	if (isliving(user))
+		RegisterSignals(user, list(COMSIG_LIVING_TABLE_SLAMMING, COMSIG_LIVING_TABLE_LIMB_SLAMMING), PROC_REF(on_user_table_slam))
+
 	for (var/atom/target as anything in targets)
 		if (target == user)
 			continue
@@ -149,6 +153,10 @@
 	SIGNAL_HANDLER
 	if (next_move > world.time)
 		cancel()
+
+/datum/timed_action/proc/on_user_table_slam(datum/source, mob/living/slammed, obj/structure/table)
+	SIGNAL_HANDLER
+	cancel()
 
 /datum/timed_action/proc/on_item_equipped(mob/source, obj/item/item, slot)
 	SIGNAL_HANDLER
