@@ -250,7 +250,8 @@
 	owner.add_mood_event("exercise", /datum/mood_event/exercise, owner.mind.get_skill_level(/datum/skill/athletics))
 
 /datum/status_effect/exercised/on_apply()
-	if(!owner.mind)
+	// Only carbons can work out (sleeping, which makes use of it, is carbon only): not cyborgs, bots or animals
+	if(!iscarbon(owner) || !owner.mind)
 		return FALSE
 	owner.add_mood_event("exercise", /datum/mood_event/exercise, owner.mind.get_skill_level(/datum/skill/athletics))
 	return TRUE
