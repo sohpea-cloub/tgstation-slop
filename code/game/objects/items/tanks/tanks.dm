@@ -401,6 +401,10 @@
 		var/power = (air_contents.volume * (pressure - TANK_FRAGMENT_PRESSURE)) / TANK_FRAGMENT_SCALE
 		log_atmos("[type] exploded with a power of [power] and a mix of ", air_contents)
 		dyn_explosion(src, power, flash_range = 1.5, ignorecap = FALSE)
+		// A transfer valve that is worn or carried is shielded by whoever holds it (for example a bomb suit stops the
+		// explosion from reaching their contents), so it has to be destroyed along with the tank that burst inside it.
+		if(istype(loc, /obj/item/transfer_valve))
+			qdel(loc)
 	return ..()
 
 /obj/item/tank/proc/merging_information()
