@@ -203,6 +203,16 @@
 		to_chat(user, span_warning("That place is not safe for the specimen."))
 		return
 
+	// Same restrictions as sending someone to a location from the observation console
+	var/area/location_area = get_area(location)
+	if(((location_area.area_flags & NOTELEPORT) && !istype(location_area, /area/centcom/abductor_ship)) || location_area.motion_monitored)
+		to_chat(user, span_warning("This area is too heavily shielded to safely release the specimen there."))
+		return
+
+	if(!SScameras.is_visible_by_cameras(location))
+		to_chat(user, span_warning("That place is not covered by cameras, so the specimen cannot be safely released there."))
+		return
+
 	if(pad)
 		pad.teleport_target = location
 		to_chat(user, span_notice("Location marked as test subject release point."))
