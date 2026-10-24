@@ -48,6 +48,15 @@
 	)
 	AddElement(/datum/element/contextual_screentip_tools, tool_behaviors)
 
+/// Reloads with a custom recharge time after one of our projectiles hit something.
+/// A point blank projectile hits while the gun is still firing, before its charge is spent and before the gun
+/// starts its normal reload (which would replace ours), so wait for the firing to finish in that case.
+/obj/item/gun/energy/recharge/kinetic_accelerator/proc/attempt_reload_after_hit(set_recharge_time)
+	if(!cell || cell.charge < cell.maxcharge)
+		attempt_reload(set_recharge_time)
+		return
+	addtimer(CALLBACK(src, PROC_REF(attempt_reload), set_recharge_time), 0)
+
 /obj/item/gun/energy/recharge/kinetic_accelerator/shoot_with_empty_chamber(mob/living/user)
 	playsound(src, dry_fire_sound, 30, TRUE) //click sound but no to_chat message to cut on spam
 	return
@@ -261,7 +270,8 @@
 			// If there is a mind, check for skill modifier to allow them to reload faster.
 			if(carbon_firer.mind)
 				skill_modifier = carbon_firer.mind.get_skill_modifier(/datum/skill/mining, SKILL_SPEED_MODIFIER)
-			kinetic_gun.attempt_reload(kinetic_gun.recharge_time * skill_modifier) //If you hit a mineral, you might get a quicker reload. epic gamer style.
+			//If you hit a mineral, you might get a quicker reload. epic gamer style.
+			kinetic_gun.attempt_reload_after_hit(kinetic_gun.recharge_time * skill_modifier)
 	var/obj/effect/temp_visual/kinetic_blast/K = new /obj/effect/temp_visual/kinetic_blast(target_turf)
 	K.color = color
 
