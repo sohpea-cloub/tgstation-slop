@@ -68,24 +68,29 @@ GLOBAL_LIST_INIT(floor_diseases, list(
 	deltimer(timer_id)
 	timer_id = null
 
-/datum/component/germ_sensitive/proc/handle_movement()
-	SIGNAL_HANDLER
-
+/// Whether the parent is lying somewhere bacteria can reach it: on an open turf with gravity, not on top of an elevated structure
+/datum/component/germ_sensitive/proc/is_exposed_location()
 	var/obj/parent_object = parent
 	var/turf/open/open_turf = parent_object.loc
 
 	// Is parent on valid open turf?
 	if(!istype(open_turf) || islava(open_turf) || isasteroidturf(open_turf) || !parent_object.has_gravity())
-		remove_timer()
-		SEND_SIGNAL(parent, COMSIG_ATOM_GERM_UNEXPOSED, src)
-		return
+		return FALSE
 
 	// Is parent on an elevated structure?
 	for(var/atom/movable/content as anything in open_turf.contents)
 		if(GLOB.typecache_elevated_structures[content.type])
-			remove_timer()
-			SEND_SIGNAL(parent, COMSIG_ATOM_GERM_UNEXPOSED, src)
-			return
+			return FALSE
+
+	return TRUE
+
+/datum/component/germ_sensitive/proc/handle_movement()
+	SIGNAL_HANDLER
+
+	if(!is_exposed_location())
+		remove_timer()
+		SEND_SIGNAL(parent, COMSIG_ATOM_GERM_UNEXPOSED, src)
+		return
 
 	// Exposed to bacteria, start countdown until becoming infected
 	timer_id = addtimer(CALLBACK(src, PROC_REF(expose_to_germs)), GERM_EXPOSURE_DELAY, TIMER_STOPPABLE | TIMER_UNIQUE)
@@ -105,6 +110,14 @@ GLOBAL_LIST_INIT(floor_diseases, list(
 		examine_list += span_warning("[parent] looks dirty and not safe to consume.")
 
 /datum/component/germ_sensitive/proc/expose_to_germs()
+	timer_id = null
+
+	// The surroundings may have changed since the countdown started (e.g. a shuttle moving the parent
+	// before its table), so check again that the parent is still lying somewhere exposed
+	if(!is_exposed_location())
+		SEND_SIGNAL(parent, COMSIG_ATOM_GERM_UNEXPOSED, src)
+		return
+
 	// Admin spawned items are never exposed
 	var/atom/parent_atom = parent
 	if(parent_atom.flags_1 & ADMIN_SPAWNED_1)
