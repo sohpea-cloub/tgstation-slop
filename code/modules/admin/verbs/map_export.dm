@@ -221,8 +221,10 @@ GLOBAL_LIST_INIT(save_file_chars, list(
 		obj_blacklist = default_blacklist
 
 	//Step 0: Calculate the amount of letters we need (26 ^ n > turf count)
-	var/turfs_needed = width * height
-	var/layers = FLOOR(log(GLOB.save_file_chars.len, turfs_needed) + 0.999,1)
+	// width, height and depth are inclusive spans minus one, so a selection has (n + 1) turfs along each axis.
+	// every header key must be at least one character long, a one turf wide selection has a span of 0.
+	var/turfs_needed = (width + 1) * (height + 1) * (depth + 1)
+	var/layers = max(1, CEILING(log(GLOB.save_file_chars.len, turfs_needed), 1))
 
 	//Step 1: Run through the area and generate file data
 	var/list/header_data = list() //holds the data of a header -> to its key
