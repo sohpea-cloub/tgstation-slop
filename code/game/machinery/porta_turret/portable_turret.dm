@@ -520,9 +520,10 @@ DEFINE_BITFIELD(turret_flags, list(
 				if(!in_faction(C))
 					targets += C
 
-	for(var/A in GLOB.mechas_list)
-		if((get_dist(A, base) < scan_range) && can_see(base, A, scan_range))
-			var/obj/vehicle/sealed/mecha/mech = A
+	for(var/obj/vehicle/sealed/mecha/mech as anything in GLOB.mechas_list)
+		if(!mech.density) // e.g. mid-Skyfall: it's not in the line of fire
+			continue
+		if((get_dist(mech, base) < scan_range) && can_see(base, mech, scan_range))
 			for(var/O in mech.occupants)
 				var/mob/living/occupant = O
 				if(!in_faction(occupant)) //If there is a user and they're not in our faction
@@ -880,10 +881,16 @@ DEFINE_BITFIELD(turret_flags, list(
 	if(target)
 		setDir(get_dir(base, target))//even if you can't shoot, follow the target
 		shootAt(target)
-		addtimer(CALLBACK(src, PROC_REF(shootAt), target), 0.5 SECONDS)
-		addtimer(CALLBACK(src, PROC_REF(shootAt), target), 1 SECONDS)
-		addtimer(CALLBACK(src, PROC_REF(shootAt), target), 1.5 SECONDS)
+		addtimer(CALLBACK(src, PROC_REF(follow_up_shot), target), 0.5 SECONDS)
+		addtimer(CALLBACK(src, PROC_REF(follow_up_shot), target), 1 SECONDS)
+		addtimer(CALLBACK(src, PROC_REF(follow_up_shot), target), 1.5 SECONDS)
 		return TRUE
+
+/// Queued burst shots: the target may have died, hidden or gone untouchable (e.g. a mech in Skyfall) since the first shot.
+/obj/machinery/porta_turret/syndicate/shuttle/proc/follow_up_shot(atom/movable/target)
+	if(QDELETED(target) || !target.density || !can_see(base, target, scan_range))
+		return
+	shootAt(target)
 
 /obj/machinery/porta_turret/ai
 	scan_range = /obj/projectile/energy/electrode/ai_turrets::range + 1
