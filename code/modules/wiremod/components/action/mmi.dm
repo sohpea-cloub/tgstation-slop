@@ -121,11 +121,19 @@
 /obj/item/circuit_component/mmi/register_shell(atom/movable/shell)
 	. = ..()
 	RegisterSignal(shell, COMSIG_ATOM_ITEM_INTERACTION, PROC_REF(handle_interaction))
+	if(ismob(shell))
+		RegisterSignal(shell, COMSIG_MOB_GET_REMOTE_CONTROLLERS, PROC_REF(on_get_remote_controllers))
 
 /obj/item/circuit_component/mmi/unregister_shell(atom/movable/shell)
-	UnregisterSignal(shell, list(COMSIG_ATOM_ITEM_INTERACTION))
+	UnregisterSignal(shell, list(COMSIG_ATOM_ITEM_INTERACTION, COMSIG_MOB_GET_REMOTE_CONTROLLERS))
 	remove_occupant_item()
 	return ..()
+
+/// Lets key_name() show who is behind a mob shell (a drone) in the logs
+/obj/item/circuit_component/mmi/proc/on_get_remote_controllers(atom/movable/shell, list/controllers)
+	SIGNAL_HANDLER
+	if(occupant)
+		controllers += occupant
 
 /obj/item/circuit_component/mmi/proc/handle_interaction(atom/movable/shell, mob/living/user, obj/item/item)
 	SIGNAL_HANDLER

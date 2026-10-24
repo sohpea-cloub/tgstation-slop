@@ -14,6 +14,8 @@
 	#define COMSIG_MOB_STOP_REAGENT_TICK (1<<0)
 	///Allows for most on_life calls BUT metabolize()
 	#define COMSIG_MOB_STOP_REAGENT_METABOLISM (1<<1)
+///from key_name(), on a mob without a key: (list/controllers). Remote controllers (such as the occupant of a circuit shell) add themselves to the list
+#define COMSIG_MOB_GET_REMOTE_CONTROLLERS "mob_get_remote_controllers"
 ///from base of mob/clickon(): (atom/A, list/modifiers)
 #define COMSIG_MOB_CLICKON "mob_clickon"
 ///from base of mob/MiddleClickOn(): (atom/A)

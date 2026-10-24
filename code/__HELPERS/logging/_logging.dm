@@ -238,6 +238,14 @@ GLOBAL_LIST_INIT(testing_global_profiler, list("_PROFILE_NAME" = "Global"))
 		else if(fallback_name)
 			. += "/([fallback_name])"
 
+	// a keyless mob can still be puppeted by someone else, like a circuit shell by the brain in its MMI component
+	if(!key && M)
+		var/list/controllers = list()
+		SEND_SIGNAL(M, COMSIG_MOB_GET_REMOTE_CONTROLLERS, controllers)
+		for(var/mob/controller as anything in controllers)
+			if(controller != M)
+				. += " (controlled by [key_name(controller, include_link, include_name)])"
+
 	return .
 
 /proc/key_name_admin(whom, include_name = TRUE)
