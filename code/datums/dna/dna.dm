@@ -87,8 +87,9 @@ GLOBAL_LIST_INIT(total_uf_len_by_block, populate_total_uf_len_by_block())
 	new_dna.features = features.Copy()
 	new_dna.real_name = real_name
 	if(transfer_flags & COPY_DNA_SE)
-		new_dna.mutation_index = mutation_index
-		new_dna.default_mutation_genes = default_mutation_genes
+		// copies, not references: scrambling or editing one DNA's genes must not change the other's
+		new_dna.mutation_index = mutation_index.Copy()
+		new_dna.default_mutation_genes = default_mutation_genes.Copy()
 	//if the new DNA has a holder, transform them immediately, otherwise save it
 	if(new_dna.holder)
 		if (iscarbon(new_dna.holder))
@@ -277,6 +278,15 @@ GLOBAL_LIST_INIT(total_uf_len_by_block, populate_total_uf_len_by_block())
 	var/datum/dna_block/feature/block = GLOB.dna_feature_blocks[blocktype]
 	unique_features = block.modified_hash(unique_features, block.unique_block(holder))
 
+/// Whether both DNAs hold the same gene sequences, regardless of the order of the blocks
+/datum/dna/proc/same_mutation_index(datum/dna/target_dna)
+	if(length(mutation_index) != length(target_dna.mutation_index))
+		return FALSE
+	for(var/mutation_type in mutation_index)
+		if(mutation_index[mutation_type] != target_dna.mutation_index[mutation_type])
+			return FALSE
+	return TRUE
+
 /**
  * Checks if two DNAs are practically the same by comparing their most defining features
  *
@@ -286,7 +296,7 @@ GLOBAL_LIST_INIT(total_uf_len_by_block, populate_total_uf_len_by_block())
 /datum/dna/proc/is_same_as(datum/dna/target_dna)
 	if( \
 		unique_identity == target_dna.unique_identity \
-		&& mutation_index == target_dna.mutation_index \
+		&& same_mutation_index(target_dna) \
 		&& real_name == target_dna.real_name \
 		&& species.type == target_dna.species.type \
 		&& compare_list(features, target_dna.features) \
