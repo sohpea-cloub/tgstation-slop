@@ -865,20 +865,20 @@
 
 /datum/status_effect/stabilized/pink/on_apply()
 	faction_name = FACTION_PINK_EXTRACT(owner)
-	owner.add_ally(faction_name)
+	owner.add_faction(faction_name)
 	to_chat(owner, span_notice("[linked_extract] pulses, generating a fragile aura of peace."))
 	return ..()
 
 /datum/status_effect/stabilized/pink/tick(seconds_between_ticks)
 	update_nearby_mobs()
-	var/has_ally = owner.has_ally(faction_name)
-	if(has_ally)
+	var/has_peace = owner.has_faction(faction_name)
+	if(has_peace)
 		if(owner.has_status_effect(/datum/status_effect/brokenpeace))
-			owner.remove_ally(faction_name)
+			owner.remove_faction(faction_name)
 			to_chat(owner, span_userdanger("The peace has been broken! Hostile creatures will now react to you!"))
 	else if(!owner.has_status_effect(/datum/status_effect/brokenpeace))
 		to_chat(owner, span_notice("[linked_extract] pulses, generating a fragile aura of peace."))
-		owner.add_ally(faction_name)
+		owner.add_faction(faction_name)
 	return ..()
 
 /// Pacifies mobs you can see and unpacifies mobs you no longer can
@@ -897,7 +897,7 @@
 			return // No point continuing from here if we're going to end the effect
 		if(beast in visible_things)
 			continue
-		beast.remove_ally(faction_name)
+		beast.remove_faction(faction_name)
 		beast.remove_status_effect(/datum/status_effect/pinkdamagetracker)
 		mobs -= weak_mob
 
