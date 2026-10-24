@@ -10,3 +10,6 @@
 #define DOAFTER_SOURCE_REMOVING_HOOK "doafter_removing_hook"
 #define DOAFTER_SOURCE_CHARGING_ESWORD "doafter_charging_esword"
 #define DOAFTER_SOURCE_RIP_HEART "doafter_rip_heart"
+
+/// Pass as `cog_icon` to `do_after()` to hide the cogbar. Not `null`: DM replaces a null argument with the proc's default value.
+#define COGBAR_HIDDEN FALSE

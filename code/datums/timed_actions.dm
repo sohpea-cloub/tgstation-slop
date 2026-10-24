@@ -21,7 +21,7 @@
 	/// Status of the action to pass into the main wait loop
 	var/status = ACTION_WORKING
 
-/datum/timed_action/New(atom/movable/user, list/targets, delay, show_progress = TRUE, timed_action_flags = NONE, datum/callback/extra_checks = null, cog_icon = null, cog_iconstate = null, mob/bar_override = null)
+/datum/timed_action/New(atom/movable/user, list/targets, delay, show_progress = TRUE, timed_action_flags = NONE, datum/callback/extra_checks = null, cog_icon = COGBAR_HIDDEN, cog_iconstate = null, mob/bar_override = null)
 	. = ..()
 	src.user = user
 	src.timed_action_flags = timed_action_flags
@@ -37,7 +37,7 @@
 		if(astype(user, /mob)?.client || bar_override?.client)
 			progressbar = new(bar_override || user, delay, targets[1] || user)
 
-		if(!isnull(cog_icon) && delay >= 1 SECONDS)
+		if(cog_icon && delay >= 1 SECONDS)
 			cogbar = new(user, cog_icon, cog_iconstate)
 
 #ifdef UNIT_TESTS
@@ -204,7 +204,7 @@
  * - extra_checks - Additional checks to perform before the action is executed.
  * - interaction_key - The assoc key under which the do_after is capped, with max_interact_count being the cap. Interaction key will default to target if not set.
  * - max_interact_count - The maximum amount of interactions allowed.
- * - cog_icon - The icon file of the cog. Default: 'icons/effects/progressbar.dmi'
+ * - cog_icon - The icon file of the cog. Default: 'icons/effects/progressbar.dmi'. Pass COGBAR_HIDDEN (not null, which falls back to the default) to hide it.
  * - cog_iconstate - The icon state of the cog. Default: "Cog"
  * - bar_override - Mob which should see the bar instead of the user
  */
