@@ -15,7 +15,7 @@
 
 	uses_filter = _uses_filter
 	emissive_alpha = _emissive
-	. = ..()
+	. = ..(target, _icon, _icon_state, _dir, _plane, _layer, _alpha, _color, _smoothing, _cleanable, _description, _pic)
 	RegisterSignal(as_item, COMSIG_ATOM_GET_EXAMINE_NAME, PROC_REF(get_examine_name), TRUE)
 	RegisterSignal(as_item, COMSIG_ATOM_COLOR_UPDATED, PROC_REF(on_color_update), TRUE)
 

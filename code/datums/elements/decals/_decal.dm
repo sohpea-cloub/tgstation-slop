@@ -37,7 +37,7 @@
 		decal.Detach(source)
 
 	for(var/result in resulting_decals_params)
-		source.AddElement(/datum/element/decal, result["icon"], result["icon_state"], result["dir"], PLANE_TO_TRUE(result["plane"]), result["layer"], result["alpha"], result["color"], result["smoothing"], result["cleanable"], result["desc"])
+		source.AddElement(/datum/element/decal, result["icon"], result["icon_state"], result["dir"], PLANE_TO_TRUE(result["plane"]), result["layer"], result["alpha"], result["color"], result["smoothing"], result["cleanable"], result["desc"], null, result["pixel_x"], result["pixel_y"])
 
 
 /datum/element/decal/proc/get_rotated_parameters(old_dir,new_dir)
@@ -60,12 +60,14 @@
 		"color" = pic_color,
 		"smoothing" = smoothing,
 		"cleanable" = cleanable,
-		"desc" = description
+		"desc" = description,
+		"pixel_x" = pic.pixel_x,
+		"pixel_y" = pic.pixel_y,
 	)
 
 
 
-/datum/element/decal/Attach(atom/target, _icon, _icon_state, _dir, _plane=FLOAT_PLANE, _layer=FLOAT_LAYER, _alpha=255, _color, _smoothing, _cleanable=FALSE, _description, mutable_appearance/_pic)
+/datum/element/decal/Attach(atom/target, _icon, _icon_state, _dir, _plane=FLOAT_PLANE, _layer=FLOAT_LAYER, _alpha=255, _color, _smoothing, _cleanable=FALSE, _description, mutable_appearance/_pic, _pixel_x, _pixel_y)
 	. = ..()
 	if(!isatom(target))
 		return ELEMENT_INCOMPATIBLE
@@ -76,6 +78,10 @@
 		pic = _pic
 	else if(!generate_appearance(_icon, _icon_state, _dir, _plane, _layer, _color, _alpha, _smoothing, target))
 		return ELEMENT_INCOMPATIBLE
+	else if(_pixel_x || _pixel_y)
+		// Mapped decals can be offset with pixel_x/pixel_y; keep that offset on the overlay
+		pic.pixel_x = _pixel_x
+		pic.pixel_y = _pixel_y
 	description = _description
 	cleanable = _cleanable
 	directional = _dir
@@ -169,7 +175,7 @@
 	var/pic_color = pic.color
 	if(islist(pic_color))
 		pic_color = string_list(pic_color)
-	new_turf.AddElement(type, pic.icon, base_icon_state, directional, pic.plane, pic.layer, pic.alpha, pic_color, smoothing, cleanable, description)
+	new_turf.AddElement(type, pic.icon, base_icon_state, directional, pic.plane, pic.layer, pic.alpha, pic_color, smoothing, cleanable, description, null, pic.pixel_x, pic.pixel_y)
 
 /datum/element/decal/proc/shuttle_rotate(datum/source, list/datum/element/decal/rotating)
 	SIGNAL_HANDLER
@@ -191,5 +197,5 @@
 	var/pic_color = pic.color
 	if(islist(pic_color))
 		pic_color = string_list(pic_color)
-	source.AddElement(type, pic.icon, base_icon_state, directional, PLANE_TO_TRUE(pic.plane), pic.layer, pic.alpha, pic_color, smoothing_junction, cleanable, description)
+	source.AddElement(type, pic.icon, base_icon_state, directional, PLANE_TO_TRUE(pic.plane), pic.layer, pic.alpha, pic_color, smoothing_junction, cleanable, description, null, pic.pixel_x, pic.pixel_y)
 	return NONE
