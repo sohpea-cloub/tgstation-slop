@@ -291,8 +291,9 @@
 
 	if(account)
 		if(account.account_balance < threshold - payees[AM])
-			account.adjust_money(-account.account_balance, "Scanner Gate: Entry Fee")
-			payees[AM] += account.account_balance
+			var/amount_paid = account.account_balance
+			account.adjust_money(-amount_paid, "Scanner Gate: Entry Fee")
+			payees[AM] += amount_paid
 		else
 			var/money_owed = threshold - payees[AM]
 			account.adjust_money(-money_owed, "Scanner Gate: Partial Entry Fee")
