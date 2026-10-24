@@ -309,6 +309,11 @@
 
 /mob/living/silicon/robot/update_icons()
 	cut_overlays()
+	// cut_overlays() also removes the typing/thinking bubble, which is added and removed outside of overlay updates
+	if(active_typing_indicator)
+		add_overlay(active_typing_indicator)
+	if(active_thinking_indicator)
+		add_overlay(active_thinking_indicator)
 	SSvis_overlays.remove_vis_overlay(src, managed_vis_overlays)
 	icon_state = model.cyborg_base_icon
 	if(!IS_UNCONSCIOUS(src) && !IsStun() && !IsParalyzed() && !low_power_mode && !is_empty_shell()) //Not dead, not stunned, not an unpiloted AI shell.
