@@ -153,6 +153,9 @@
 
 #define RANDOM_COLOUR (rgb(rand(0,255),rand(0,255),rand(0,255)))
 
+/// The most that color_transition_filter() will pull a target's lightness towards white, so that white paint still leaves the sprite's shading visible
+#define MAX_COLOR_TRANSITION_LIGHTEN 0.75
+
 /* Generates an HSL color transition matrix filter which nicely paints an object
  * without making it a deep fried blob of color
  * saturation_behavior determines how we handle color saturation:
@@ -165,8 +168,13 @@
 	new_color = rgb2num(new_color, COLORSPACE_HSL)
 	var/hue = new_color[1] / 360
 	var/saturation = new_color[2] / 100
+	var/lightness = new_color[3] / 100
 	var/added_saturation = 0
 	var/deducted_light = 0
+	// Pale, unsaturated colors (white, silver) can't be reached by only scaling saturation (that just turns the target grey), so pull the target's lightness towards ours
+	var/added_light = 0
+	if (lightness > 0.5)
+		added_light = min((lightness - 0.5) * 2 * (1 - saturation), MAX_COLOR_TRANSITION_LIGHTEN)
 	if (saturation_behavior == SATURATION_OVERRIDE)
 		added_saturation = saturation * 0.75
 		deducted_light = saturation * 0.5
@@ -175,8 +183,8 @@
 	var/list/new_matrix = list(
 		0, 0, 0, // Ignore original hue
 		0, saturation, 0, // Multiply the saturation by ours
-		0, 0, 1 - deducted_light, // If we're highly saturated then remove a bit of lightness to keep some color in
-		hue, added_saturation, 0, // And apply our preferred hue and some saturation if we're oversaturated
+		0, 0, (1 - deducted_light) * (1 - added_light), // If we're highly saturated then remove a bit of lightness to keep some color in
+		hue, added_saturation, added_light, // And apply our preferred hue and some saturation if we're oversaturated, and lighten if we're pale
 	)
 	return color_matrix_filter(new_matrix, FILTER_COLOR_HSL)
 
