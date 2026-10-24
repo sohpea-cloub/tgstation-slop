@@ -82,7 +82,13 @@
 				cornerA = select_tile(get_turf(object), AREASELECT_CORNERA)
 				return
 			if(cornerA && !cornerB)
-				cornerB = select_tile(get_turf(object), AREASELECT_CORNERB)
+				var/turf/corner_b_turf = get_turf(object)
+				// block() spans every z-level between the corners: a corner clicked on another level (like a space
+				// transition border) would select (and mass delete) all of them
+				if(!corner_b_turf || corner_b_turf.z != cornerA.z)
+					to_chat(c, span_warning("Both corners must be on the same z-level! Pick the second corner on z-level [cornerA.z]."))
+					return
+				cornerB = select_tile(corner_b_turf, AREASELECT_CORNERB)
 				to_chat(c, span_boldwarning("Region selected, if you're happy with your selection left click again, otherwise right click."))
 				return
 			handle_selected_area(c, params)
