@@ -40,22 +40,12 @@
 	RegisterSignal(owner, COMSIG_CARBON_GAIN_TRAUMA, PROC_REF(trauma_added_burden))
 	RegisterSignal(owner, COMSIG_CARBON_LOSE_TRAUMA, PROC_REF(trauma_removed_burden))
 
-	for (var/burden_slot in burden_organ_slots)
-		if (!owner.get_organ_slot(burden_slot) && is_burdensome_organ(owner, burden_slot, null, FALSE))
-			update_burden(TRUE, silent = TRUE)
+	RegisterSignal(owner, COMSIG_LIVING_REVIVE, PROC_REF(owner_revived))
 
-	var/list/missing_limbs = owner.get_missing_limbs()
-	for (var/i in 1 to length(missing_limbs) + length(owner.mind?.active_addictions))
+	for (var/i in 1 to count_burden())
 		update_burden(TRUE, silent = TRUE)
 
-	if (owner.dna)
-		for (var/datum/mutation/mutation in owner.dna.mutations)
-			if (mutation.quality == NEGATIVE)
-				update_burden(TRUE, silent = TRUE)
-
-	for (var/datum/brain_trauma/severe/trauma in owner.get_traumas())
-		update_burden(TRUE, silent = TRUE)
-
+	queue_burden_recalculation()
 	return ..()
 
 /datum/brain_trauma/special/burdened/on_lose()
@@ -70,12 +60,93 @@
 		COMSIG_CARBON_LOSE_MUTATION,
 		COMSIG_CARBON_GAIN_TRAUMA,
 		COMSIG_CARBON_LOSE_TRAUMA,
+		COMSIG_LIVING_REVIVE,
 	))
 
 	for (var/i in 1 to burden_level)
 		update_burden(FALSE, silent = TRUE)
 
 	return ..()
+
+/// Works out what burden_level the owner's current condition is worth: every missing vital organ, missing limb, addiction, negative mutation and severe trauma counts for one.
+/datum/brain_trauma/special/burdened/proc/count_burden()
+	. = 0
+	if(!owner)
+		return
+	for (var/burden_slot in burden_organ_slots)
+		if (!owner.get_organ_slot(burden_slot) && is_burdensome_organ(owner, burden_slot, null, FALSE))
+			.++
+
+	var/list/missing_limbs = owner.get_missing_limbs()
+	. += length(missing_limbs) + length(owner.mind?.active_addictions)
+
+	if (owner.dna)
+		for (var/datum/mutation/mutation in owner.dna.mutations)
+			if (mutation.quality == NEGATIVE)
+				.++
+
+	for (var/datum/brain_trauma/severe/trauma in owner.get_traumas())
+		.++
+
+/**
+ * Queues a recalculation of burden_level from the owner's actual condition on the next tick.
+ * Burden used to be counted up and down by 1 per event, which drifted from reality whenever something
+ * changed the body without sending a matching event (limbs and organs regrown by a full heal or revival, ...)
+ * and left the owner at a level that no longer matched their rewards.
+ * It's deferred so it doesn't see a half finished change (signals are sent before a mutation is added or removed, etc.) and so a burst of changes only costs one recount.
+ */
+/datum/brain_trauma/special/burdened/proc/queue_burden_recalculation()
+	addtimer(CALLBACK(src, PROC_REF(recalculate_burden)), 1, TIMER_UNIQUE|TIMER_OVERRIDE|TIMER_DELETE_ME)
+
+/// Brings burden_level in line with count_burden(), and makes sure the rewards for that level are in place.
+/datum/brain_trauma/special/burdened/proc/recalculate_burden()
+	if(QDELETED(src) || QDELETED(owner))
+		return
+	var/target = count_burden()
+	while(burden_level != target)
+		var/increase = burden_level < target
+		// only the last step talks, a jump of several levels at once would spam
+		update_burden(increase, silent = (burden_level + (increase ? 1 : -1) != target))
+		if(QDELETED(src))
+			return
+	sync_burden_rewards()
+
+/// Gives or takes the mutations that burden_level should have, whether or not that level was just crossed (they can be lost without it going down, e.g. telekinesis when losing your head)
+/datum/brain_trauma/special/burdened/proc/sync_burden_rewards()
+	var/datum/dna/dna = owner?.dna
+	if(!dna)
+		return
+	if(burden_level >= 3)
+		grant_burden_mutation(/datum/mutation/telepathy)
+		grant_burden_mutation(/datum/mutation/unintelligible)
+		if(!owner.get_filter("burden_outline"))
+			owner.add_filter("burden_outline", 9, list("type" = "outline", "color" = "#6c6eff"))
+	else
+		dna.remove_mutation(/datum/mutation/telepathy, MUTATION_SOURCE_BURDENED_TRAUMA)
+		dna.remove_mutation(/datum/mutation/unintelligible, MUTATION_SOURCE_BURDENED_TRAUMA)
+		owner.remove_filter("burden_outline")
+	if(burden_level >= 6)
+		grant_burden_mutation(/datum/mutation/telekinesis)
+		grant_burden_mutation(/datum/mutation/mindreader)
+	else
+		dna.remove_mutation(/datum/mutation/telekinesis, MUTATION_SOURCE_BURDENED_TRAUMA)
+		dna.remove_mutation(/datum/mutation/mindreader, MUTATION_SOURCE_BURDENED_TRAUMA)
+
+/// Adds a mutation from this trauma unless it's already ours or the owner can't have it right now (dead, or missing the limb it needs), so we can try again later without nagging
+/datum/brain_trauma/special/burdened/proc/grant_burden_mutation(mutation_type)
+	var/datum/dna/dna = owner.dna
+	var/datum/mutation/existing = dna.get_mutation(mutation_type)
+	if(existing && (MUTATION_SOURCE_BURDENED_TRAUMA in existing.sources))
+		return
+	var/datum/mutation/prototype = GET_INITIALIZED_MUTATION(mutation_type)
+	if(owner.stat == DEAD || (prototype.limb_req && !owner.get_bodypart(prototype.limb_req)))
+		return
+	dna.add_mutation(mutation_type, MUTATION_SOURCE_BURDENED_TRAUMA)
+
+/// Burden is recalculated once the owner is back on their feet, rewards can't be given to a corpse
+/datum/brain_trauma/special/burdened/proc/owner_revived(datum/source, full_heal_flags)
+	SIGNAL_HANDLER
+	queue_burden_recalculation()
 
 /**
  * Called by hooked signals whenever burden_level var needs to go up or down by 1.
@@ -202,72 +273,68 @@
 		return FALSE
 	return TRUE
 
-/// Signal to decrease burden_level (see update_burden proc) if an organ is added
+/// Signal to recalculate burden_level (see recalculate_burden proc) if an organ is added
 /datum/brain_trauma/special/burdened/proc/organ_added_burden(mob/burdened, obj/item/organ/new_organ, special)
 	SIGNAL_HANDLER
 
-	if(is_burdensome_organ(burdened, new_organ.slot, new_organ, special))
-		update_burden(increase = FALSE)//working organ
+	if(new_organ.slot in burden_organ_slots)
+		queue_burden_recalculation() //the recount decides whether it matters (a replacement organ inserted as special changes nothing, a regrown one does)
 
-/// Signal to increase burden_level (see update_burden proc) if an organ is removed
+/// Signal to recalculate burden_level (see recalculate_burden proc) if an organ is removed
 /datum/brain_trauma/special/burdened/proc/organ_removed_burden(mob/burdened, obj/item/organ/old_organ, special)
 	SIGNAL_HANDLER
 
-	if(is_burdensome_organ(burdened, old_organ.slot, old_organ, special))
-		update_burden(increase = TRUE) //lost organ
+	if(old_organ.slot in burden_organ_slots)
+		queue_burden_recalculation()
 
-/// Signal to decrease burden_level (see update_burden proc) if a limb is added
+/// Signal to recalculate burden_level (see recalculate_burden proc) if a limb is added
 /datum/brain_trauma/special/burdened/proc/limbs_added_burden(datum/source, obj/item/bodypart/new_limb, special)
 	SIGNAL_HANDLER
 
-	if(special) //something we don't wanna consider, like instaswapping limbs
-		return
-	update_burden(increase = FALSE)
+	queue_burden_recalculation() //instaswapped limbs (special) don't change the count, regrown ones do
 
-/// Signal to increase burden_level (see update_burden proc) if a limb is removed
+/// Signal to recalculate burden_level (see recalculate_burden proc) if a limb is removed
 /datum/brain_trauma/special/burdened/proc/limbs_removed_burden(datum/source, obj/item/bodypart/old_limb, special, dismembered)
 	SIGNAL_HANDLER
 
-	if(special) //something we don't wanna consider, like instaswapping limbs
-		return
-	update_burden(increase = TRUE)
+	queue_burden_recalculation() //instaswapped limbs (special) don't change the count, regrown ones do
 
-/// Signal to increase burden_level (see update_burden proc) if an addiction is added
+/// Signal to recalculate burden_level (see recalculate_burden proc) if an addiction is added
 /datum/brain_trauma/special/burdened/proc/addict_added_burden(datum/addiction/new_addiction, datum/mind/addict_mind)
 	SIGNAL_HANDLER
 
-	update_burden(increase = TRUE)
+	queue_burden_recalculation()
 
-/// Signal to decrease burden_level (see update_burden proc) if an addiction is removed
+/// Signal to recalculate burden_level (see recalculate_burden proc) if an addiction is removed
 /datum/brain_trauma/special/burdened/proc/addict_removed_burden(datum/addiction/old_addiction, datum/mind/nonaddict_mind)
 	SIGNAL_HANDLER
 
-	update_burden(increase = FALSE)
+	queue_burden_recalculation()
 
-/// Signal to increase burden_level (see update_burden proc) if a mutation is added
+/// Signal to recalculate burden_level (see recalculate_burden proc) if a mutation is added
 /datum/brain_trauma/special/burdened/proc/mutation_added_burden(mob/living/carbon/burdened, datum/mutation/mutation_type, class)
 	SIGNAL_HANDLER
 
 	if(initial(mutation_type.quality) == NEGATIVE)
-		update_burden(increase = TRUE)
+		queue_burden_recalculation()
 
-/// Signal to decrease burden_level (see update_burden proc) if a mutation is removed
+/// Signal to recalculate burden_level (see recalculate_burden proc) if a mutation is removed
 /datum/brain_trauma/special/burdened/proc/mutation_removed_burden(mob/living/carbon/burdened, datum/mutation/mutation_type)
 	SIGNAL_HANDLER
 
 	if(initial(mutation_type.quality) == NEGATIVE)
-		update_burden(increase = FALSE)
+		queue_burden_recalculation()
 
-/// Signal to increase burden_level (see update_burden proc) if a trauma is added
+/// Signal to recalculate burden_level (see recalculate_burden proc) if a trauma is added
 /datum/brain_trauma/special/burdened/proc/trauma_added_burden(mob/living/carbon/burdened, datum/brain_trauma/trauma_added)
 	SIGNAL_HANDLER
 
 	if(istype(trauma_added, /datum/brain_trauma/severe))
-		update_burden(increase = TRUE)
+		queue_burden_recalculation()
 
-/// Signal to decrease burden_level (see update_burden proc) if a trauma is removed
+/// Signal to recalculate burden_level (see recalculate_burden proc) if a trauma is removed
 /datum/brain_trauma/special/burdened/proc/trauma_removed_burden(mob/living/carbon/burdened, datum/brain_trauma/trauma_removed)
 	SIGNAL_HANDLER
 
 	if(istype(trauma_removed, /datum/brain_trauma/severe))
-		update_burden(increase = FALSE)
+		queue_burden_recalculation()
