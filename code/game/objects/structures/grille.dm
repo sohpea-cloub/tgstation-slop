@@ -245,10 +245,11 @@
 		return ITEM_INTERACT_SUCCESS
 
 //window placing begin
-	if(!broken && (is_glass_sheet(tool) || istype(tool, /obj/item/stack/sheet/bronze)))
+	if(!broken && (is_glass_sheet(tool) || istype(tool, /obj/item/stack/sheet/bronze) || istype(tool, /obj/item/stack/wall_filling/plastitaniumglass)))
 		var/obj/item/stack/to_spend = tool
-		if (to_spend.get_amount() < 2)
-			to_chat(user, span_warning("You need at least two sheets of glass for that!"))
+		var/required_amount = istype(tool, /obj/item/stack/wall_filling) ? 1 : 2
+		if (to_spend.get_amount() < required_amount)
+			to_chat(user, span_warning("You need at least [required_amount == 1 ? "one" : "two"] [required_amount == 1 ? "filling" : "sheets of glass"] for that!"))
 			return ITEM_INTERACT_BLOCKING
 
 		var/dir_to_set = SOUTHWEST
