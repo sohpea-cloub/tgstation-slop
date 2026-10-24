@@ -1,5 +1,7 @@
 /// Init this specific atom
-/datum/controller/subsystem/atoms/proc/InitAtom(atom/A, from_template = FALSE, list/arguments)
+/// If from_template and template_created_atoms are set, the contents of the initialized movable are added to template_created_atoms.
+/// The list is owned by the calling InitializeAtoms, never shared, since several map loads can be initializing atoms at once.
+/datum/controller/subsystem/atoms/proc/InitAtom(atom/A, from_template = FALSE, list/arguments, list/template_created_atoms = null)
 
 	var/the_type = A.type
 
@@ -48,8 +50,8 @@
 		if(location)
 			/// Sends a signal that the new atom `src`, has been created at `loc`
 			SEND_SIGNAL(location, COMSIG_ATOM_AFTER_SUCCESSFUL_INITIALIZED_ON, A, arguments[1])
-		if(created_atoms && from_template && ispath(the_type, /atom/movable))//we only want to populate the list with movables
-			created_atoms += A.get_all_contents()
+		if(template_created_atoms && from_template && ispath(the_type, /atom/movable))//we only want to populate the list with movables
+			template_created_atoms += A.get_all_contents()
 
 	return qdeleted || QDELING(A)
 

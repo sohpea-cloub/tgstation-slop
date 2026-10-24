@@ -20,9 +20,6 @@ SUBSYSTEM_DEF(atoms)
 
 	var/list/BadInitializeCalls = list()
 
-	///initAtom() adds the atom its creating to this list iff InitializeAtoms() has been given a list to populate as an argument
-	var/list/created_atoms
-
 	/// Atoms that will be deleted once the subsystem is initialized
 	var/list/queued_deletions = list()
 
@@ -71,10 +68,6 @@ SUBSYSTEM_DEF(atoms)
 		testing("Late initialized [late_loaders.len] atoms")
 		late_loaders.Cut()
 
-	if (created_atoms)
-		atoms_to_return += created_atoms
-		created_atoms = null
-
 	for (var/queued_deletion in queued_deletions)
 		qdel(queued_deletion)
 
@@ -87,9 +80,6 @@ SUBSYSTEM_DEF(atoms)
 
 /// Actually creates the list of atoms. Exists solely so a runtime in the creation logic doesn't cause initialized to totally break
 /datum/controller/subsystem/atoms/proc/CreateAtoms(list/atoms, list/atoms_to_return = null, mapload_source = null)
-	if (atoms_to_return)
-		LAZYINITLIST(created_atoms)
-
 	#ifdef TESTING
 	var/count
 	#endif
@@ -114,7 +104,7 @@ SUBSYSTEM_DEF(atoms)
 					if(A.flags_1 & INITIALIZED_1)
 						continue
 				PROFILE_INIT_ATOM_BEGIN()
-				InitAtom(A, TRUE, mapload_arg)
+				InitAtom(A, TRUE, mapload_arg, atoms_to_return)
 				PROFILE_INIT_ATOM_END(A)
 	else
 		#ifdef TESTING
