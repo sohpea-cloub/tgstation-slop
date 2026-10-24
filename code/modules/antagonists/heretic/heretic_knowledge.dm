@@ -837,6 +837,7 @@
 		title = generate_heretic_text(),
 		sound = announcement_sound,
 		color_override = "pink",
+		has_important_message = TRUE,
 	)
 
 	if(EMERGENCY_IDLE_OR_RECALLED)

@@ -198,7 +198,7 @@ GLOBAL_LIST_EMPTY(blob_nodes)
 /// Announce the blob's victory! Tell everyone that they're about to explode and/or turn into biomass soup and give the overmind a victory lap.
 /mob/eye/blob/proc/begin_victory()
 	victory_in_progress = TRUE
-	priority_announce("Biohazard has reached critical mass. Station loss is imminent.", "Biohazard Alert")
+	priority_announce("Biohazard has reached critical mass. Station loss is imminent.", "Biohazard Alert", has_important_message = TRUE)
 	SSsecurity_level.set_level(SEC_LEVEL_DELTA)
 
 	// Set status displays to biohazard alert - critical level
@@ -230,7 +230,7 @@ GLOBAL_LIST_EMPTY(blob_nodes)
 		// Is the station going boom? No. But is the station still going to get yelled at? Yes.
 		priority_announce("Experimental, classified, and very expensive emergency countermeasures have been activated to prevent total station loss, \
 			but the initial failure to contain the viral biohazard will be noted on the station's performance report. Expect further penalties.", \
-			"Emergency Biohazard Countermeasure Alert")
+			"Emergency Biohazard Countermeasure Alert", has_important_message = TRUE)
 
 /// Kill everyone who's still on the station area and not already part of the blob's faction, and cover every station area with blob icons. Everyone's soup now.
 /mob/eye/blob/proc/victory_sequence()
