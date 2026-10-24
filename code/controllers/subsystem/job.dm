@@ -748,6 +748,21 @@ SUBSYSTEM_DEF(job)
 		buckle_mob(created_joining_mob, FALSE, FALSE)
 	return created_joining_mob
 
+/// Picks a latejoin spawn point, preferring ones that aren't covered by a closet or other dense object (someone may have dragged a locker onto a chair of the arrivals shuttle).
+/// Falls back to any spawn point if all of them are obstructed.
+/datum/controller/subsystem/job/proc/pick_latejoin_tracker()
+	var/list/free_trackers = list()
+	for(var/atom/tracker as anything in latejoin_trackers)
+		var/turf/tracker_turf = get_turf(tracker)
+		if(isnull(tracker_turf))
+			continue
+		if(tracker_turf.is_blocked_turf(exclude_mobs = TRUE, ignore_atoms = list(tracker)) || (locate(/obj/structure/closet) in tracker_turf))
+			continue
+		free_trackers += tracker
+	if(length(free_trackers))
+		return pick(free_trackers)
+	return pick(latejoin_trackers)
+
 /datum/controller/subsystem/job/proc/send_to_late_join(mob/M, buckle = TRUE)
 	var/atom/destination
 	if(M.mind && !is_unassigned_job(M.mind.assigned_role) && length(GLOB.jobspawn_overrides[M.mind.assigned_role.title])) //We're doing something special today.
@@ -756,7 +771,7 @@ SUBSYSTEM_DEF(job)
 		return TRUE
 
 	if(latejoin_trackers.len)
-		destination = pick(latejoin_trackers)
+		destination = pick_latejoin_tracker()
 		destination.JoinPlayerHere(M, buckle)
 		return TRUE
 

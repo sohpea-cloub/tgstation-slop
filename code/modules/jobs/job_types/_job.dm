@@ -512,7 +512,7 @@
 	if(length(GLOB.jobspawn_overrides[title])) //We're doing something special today.
 		return pick(GLOB.jobspawn_overrides[title])
 	if(length(SSjob.latejoin_trackers))
-		return pick(SSjob.latejoin_trackers)
+		return SSjob.pick_latejoin_tracker()
 	return SSjob.get_last_resort_spawn_points()
 
 
