@@ -27,23 +27,34 @@ All ShuttleMove procs go here
 			continue
 		if(isliving(thing))
 			var/mob/living/living_thing = thing
-			if(living_thing.incorporeal_move) // Don't crush incorporeal things
-				continue
-			if (isvehicle(living_thing.buckled))
-				living_thing.client?.give_award(/datum/award/achievement/misc/no_parking, living_thing)
-			living_thing.buckled?.unbuckle_mob(living_thing, force = TRUE)
-			living_thing.pulledby?.stop_pulling()
-			living_thing.stop_pulling()
-			living_thing.visible_message(span_warning("[shuttle] slams into [living_thing]!"))
-			SSblackbox.record_feedback("tally", "shuttle_gib", 1, living_thing.type)
-			log_shuttle("[key_name(living_thing)] was shuttle gibbed by [shuttle].")
-			living_thing.investigate_log("has been gibbed by [shuttle].", INVESTIGATE_DEATHS)
-			living_thing.gib(DROP_ALL_REMAINS)
+			living_thing.get_crushed_by_shuttle(shuttle)
 		else if(!ismob(thing)) //non-living mobs shouldn't be affected by shuttles, which is why this is an else
+			// Whoever is inside (a locker, a mech, a crate...) gets crushed with it, whether it is pushed aside or destroyed.
+			for(var/mob/living/trapped in thing.get_all_contents_type(/mob/living))
+				if(trapped.resistance_flags & SHUTTLE_CRUSH_PROOF)
+					continue
+				trapped.get_crushed_by_shuttle(shuttle)
+			if(QDELETED(thing))
+				continue
 			if(!thing.anchored)
 				step(thing, shuttle_dir)
 			else
 				qdel(thing)
+
+/// A shuttle is docking on top of us: gib, unless incorporeal.
+/mob/living/proc/get_crushed_by_shuttle(obj/docking_port/mobile/shuttle)
+	if(incorporeal_move) // Don't crush incorporeal things
+		return
+	if(isvehicle(buckled))
+		client?.give_award(/datum/award/achievement/misc/no_parking, src)
+	buckled?.unbuckle_mob(src, force = TRUE)
+	pulledby?.stop_pulling()
+	stop_pulling()
+	visible_message(span_warning("[shuttle] slams into [src]!"))
+	SSblackbox.record_feedback("tally", "shuttle_gib", 1, type)
+	log_shuttle("[key_name(src)] was shuttle gibbed by [shuttle].")
+	investigate_log("has been gibbed by [shuttle].", INVESTIGATE_DEATHS)
+	gib(DROP_ALL_REMAINS)
 
 // Called on the old turf to move the turf data
 /turf/proc/onShuttleMove(turf/new_turf, list/movement_force, move_dir, ignore_area_change = FALSE)
