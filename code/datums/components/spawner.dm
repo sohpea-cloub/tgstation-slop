@@ -211,6 +211,10 @@
 		RegisterSignal(created_mob, COMSIG_LIVING_DEATH, PROC_REF(mob_death))
 		if(spawner_logic == SPAWN_BY_WAVE_BEHAVIOR)
 			created_mob.adjust_timed_status_effect(60 SECONDS, /datum/status_effect/heads_up)
+			// Wave defenders must keep attacking even when no player is nearby (off-station AI otherwise sleeps), or the wave can be skipped by walking away.
+			if(created_mob.ai_controller)
+				created_mob.ai_controller.ai_traits |= (RUN_WHILE_UNWATCHED | ALWAYS_HIGH_PRIORITY)
+				created_mob.ai_controller.reset_ai_status()
 
 	SEND_SIGNAL(src, COMSIG_SPAWNER_SPAWNED, spawned_mob)
 	RegisterSignal(spawned_mob, COMSIG_QDELETING, PROC_REF(on_deleted))
