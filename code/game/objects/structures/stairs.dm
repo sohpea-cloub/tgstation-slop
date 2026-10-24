@@ -271,6 +271,10 @@
 		return FALSE
 	return ..()
 
+/// Blobs grow over stairs instead of eating them, otherwise blob mobs would lose their way between z-levels
+/obj/structure/stairs/blob_act(obj/structure/blob/attacking_blob)
+	return FALSE
+
 /obj/structure/stairs/proc/stair_ascend(atom/movable/climber)
 	var/turf/checking = get_step_multiz(src, UP)
 	if(!istype(checking))

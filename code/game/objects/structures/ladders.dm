@@ -231,6 +231,10 @@
 		visible_message(span_danger("[src] is torn to pieces by the gravitational pull!"))
 		qdel(src)
 
+/// Blobs grow over ladders instead of eating them, otherwise blob mobs would lose their way between z-levels
+/obj/structure/ladder/blob_act(obj/structure/blob/attacking_blob)
+	return FALSE
+
 /obj/structure/ladder/proc/use(mob/user, going_up = TRUE)
 	if(!in_range(src, user) || DOING_INTERACTION(user, DOAFTER_SOURCE_CLIMBING_LADDER))
 		return
