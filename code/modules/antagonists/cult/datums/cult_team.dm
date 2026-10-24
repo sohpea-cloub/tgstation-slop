@@ -124,12 +124,15 @@
 			parts += "<b>Objective #[count]</b>: [objective.explanation_text] [objective.get_roundend_success_suffix()]"
 			count++
 
-	if(members.len)
+	// Spirits manifested by a manifest rune were never part of the cult proper
+	var/list/reported_cultists = length(true_cultists) ? true_cultists.Copy() : members.Copy()
+	for(var/datum/mind/spirit_mind as anything in reported_cultists)
+		var/datum/antagonist/cult/cult_datum = spirit_mind.has_antag_datum(/datum/antagonist/cult)
+		if(cult_datum?.manifested_spirit)
+			reported_cultists -= spirit_mind
+	if(length(reported_cultists))
 		parts += span_header("The cultists were:")
-		if(length(true_cultists))
-			parts += printplayerlist(true_cultists)
-		else
-			parts += printplayerlist(members)
+		parts += printplayerlist(reported_cultists)
 
 	return "<div class='panel redborder'>[parts.Join("<br>")]</div>"
 

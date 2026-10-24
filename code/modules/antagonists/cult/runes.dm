@@ -1018,8 +1018,10 @@ GLOBAL_VAR_INIT(narsie_summon_count, 0)
 				old_mind = ghost_to_spawn.mind, \
 			)
 		new_human.PossessByPlayer(ghost_to_spawn.key)
-		var/datum/antagonist/cult/created_cultist = new_human.mind?.add_antag_datum(/datum/antagonist/cult)
+		var/datum/mind/spirit_mind = new_human.mind
+		var/datum/antagonist/cult/created_cultist = spirit_mind?.add_antag_datum(/datum/antagonist/cult)
 		created_cultist?.silent = TRUE
+		created_cultist?.manifested_spirit = TRUE
 		to_chat(new_human, span_cult_italic("<b>You are a servant of the Geometer. You have been made semi-corporeal by the cult of Nar'Sie, and you are to serve them at all costs.</b>"))
 
 		while(!QDELETED(src) && !QDELETED(user) && !QDELETED(new_human) && (user in T))
@@ -1030,12 +1032,13 @@ GLOBAL_VAR_INIT(narsie_summon_count, 0)
 
 		qdel(N)
 		ghosts--
+		if(created_cultist && spirit_mind) // even when the body is already gone, the spirit mustn't stay on the cult's roster
+			spirit_mind.remove_antag_datum(/datum/antagonist/cult)
 		if(new_human)
 			new_human.visible_message(span_warning("[new_human] suddenly dissolves into bones and ashes."), \
 					span_cult_large("Your link to the world fades. Your form breaks apart."))
 			for(var/obj/I in new_human)
 				new_human.dropItemToGround(I, TRUE)
-			new_human.mind?.remove_antag_datum(/datum/antagonist/cult)
 			new_human.dust()
 
 	else if(choice == "Ascend as a Dark Spirit")

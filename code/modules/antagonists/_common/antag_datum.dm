@@ -384,7 +384,7 @@ GLOBAL_LIST_EMPTY(antagonists)
 	if(!antag_moodlet)
 		return
 	var/mob/living/target = mob_override || owner.current
-	target.clear_mood_event("antag_moodlet_[type]")
+	target?.clear_mood_event("antag_moodlet_[type]")
 
 /**
  * Proc that will return the team this antagonist belongs to, when called. Helpful with antagonists that may belong to multiple potential teams in a single round.
