@@ -20,6 +20,7 @@
 	additional_access = /datum/id_trim/job/station_engineer
 	ai_controller = /datum/ai_controller/basic_controller/bot/repairbot
 	mob_size = MOB_SIZE_SMALL
+	status_flags = CANPUSH //bots default to none, but we need to be grabbable aggressively to be scooped up
 	possessed_message = "You are a repairbot, cursed to prolong the swiss-cheesening of this death metal trap!"
 	///our iron stack
 	var/obj/item/stack/sheet/iron/our_iron
