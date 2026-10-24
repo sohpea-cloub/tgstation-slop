@@ -321,7 +321,7 @@
 		FALSE,
 		thrown_item.weak_against_armour,
 	)
-	apply_damage(thrown_item.throwforce, thrown_item.damtype, zone, armor, sharpness = thrown_item.get_sharpness(), wound_bonus = (nosell_hit * CANT_WOUND), attacking_item = thrown_item)
+	apply_damage(thrown_item.throwforce, thrown_item.damtype, zone, armor, sharpness = thrown_item.get_sharpness(), wound_bonus = (nosell_hit * CANT_WOUND), attack_direction = (throwingdatum ? get_dir(throwingdatum.starting_turf, src) : null), attacking_item = thrown_item)
 	log_hit_combat(throwingdatum?.get_thrower(), thrown_item)
 
 	if(QDELETED(src)) //Damage can delete the mob.

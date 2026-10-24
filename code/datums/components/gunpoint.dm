@@ -39,10 +39,10 @@
 	RegisterSignals(targ, list(
 		COMSIG_MOB_ATTACK_HAND,
 		COMSIG_MOB_ITEM_ATTACK,
-		COMSIG_MOVABLE_MOVED,
 		COMSIG_MOB_FIRED_GUN,
 		COMSIG_MOVABLE_SET_GRAB_STATE,
 		COMSIG_LIVING_START_PULL), PROC_REF(trigger_reaction))
+	RegisterSignal(targ, COMSIG_MOVABLE_MOVED, PROC_REF(on_target_moved))
 	RegisterSignal(targ, COMSIG_ATOM_EXAMINE, PROC_REF(examine_target))
 	RegisterSignal(targ, COMSIG_LIVING_PRE_MOB_BUMP, PROC_REF(block_bumps_target))
 	RegisterSignals(targ, list(COMSIG_LIVING_DISARM_HIT, COMSIG_LIVING_GET_PULLED), PROC_REF(cancel))
@@ -89,6 +89,8 @@
 	RegisterSignal(parent, COMSIG_ATOM_EXAMINE, PROC_REF(examine))
 	RegisterSignal(parent, COMSIG_LIVING_PRE_MOB_BUMP, PROC_REF(block_bumps_parent))
 	RegisterSignal(parent, COMSIG_LIVING_DISARM_HIT, PROC_REF(cancel))
+	RegisterSignal(parent, COMSIG_MOB_FIRED_GUN, PROC_REF(on_shooter_fired))
+	RegisterSignal(parent, COMSIG_BEING_STRIPPED, PROC_REF(on_being_stripped))
 
 /datum/component/gunpoint/UnregisterFromParent()
 	UnregisterSignal(parent, COMSIG_MOVABLE_MOVED)
@@ -98,7 +100,7 @@
 	UnregisterSignal(parent, list(COMSIG_LIVING_START_PULL, COMSIG_MOVABLE_BUMP))
 	UnregisterSignal(parent, COMSIG_ATOM_EXAMINE)
 	UnregisterSignal(parent, COMSIG_LIVING_PRE_MOB_BUMP)
-	UnregisterSignal(parent, COMSIG_LIVING_DISARM_HIT)
+	UnregisterSignal(parent, list(COMSIG_LIVING_DISARM_HIT, COMSIG_MOB_FIRED_GUN, COMSIG_BEING_STRIPPED))
 
 ///If the shooter bumps the target, cancel the holdup to avoid cheesing and forcing the charged shot
 /datum/component/gunpoint/proc/check_bump(atom/B, atom/A)
@@ -145,6 +147,30 @@
 	if(!can_see(parent, target, GUNPOINT_SHOOTER_STRAY_RANGE))
 		cancel()
 		return TRUE
+
+///The target moved: it only counts as a retaliation if they weren't simply dragged along by the shooter
+/datum/component/gunpoint/proc/on_target_moved(datum/source)
+	SIGNAL_HANDLER
+
+	if(target.pulledby == parent)
+		return
+	trigger_reaction()
+
+///If the shooter fires their weapon on their own, the holdup is spent: don't let it fire a second, charged shot afterwards
+/datum/component/gunpoint/proc/on_shooter_fired(datum/source, obj/item/gun/gun)
+	SIGNAL_HANDLER
+
+	if(point_of_no_return || gun != weapon)
+		return
+	cancel()
+
+///The target is messing with the shooter's inventory (strip menu), which counts as an attack
+/datum/component/gunpoint/proc/on_being_stripped(datum/source, mob/user)
+	SIGNAL_HANDLER
+
+	if(user != target)
+		return
+	trigger_reaction()
 
 ///Bang bang, we're firing a charged shot off
 /datum/component/gunpoint/proc/trigger_reaction()
