@@ -590,16 +590,19 @@ DEFINE_BITFIELD(turret_flags, list(
 	if(obj_flags & EMAGGED)
 		return 10 //if emagged, always return 10.
 
-	if((turret_flags & (TURRET_FLAG_SHOOT_ALL | TURRET_FLAG_SHOOT_ALL_REACT)) && !allowed(perp))
-		//if the turret has been attacked or is angry, target all non-sec people
-		if(!allowed(perp))
-			return 10
+	// An angry turret (it was attacked) shoots everyone without security access, command included
+	if((turret_flags & TURRET_FLAG_SHOOT_ALL_REACT) && !allowed(perp))
+		return 10
 
-	// If we aren't shooting heads then return a threatcount of 0
+	// If we aren't shooting heads then return a threatcount of 0.
+	// This comes before "Non-Security and Non-Command" so that setting really spares command.
 	if (!(turret_flags & TURRET_FLAG_SHOOT_HEADS))
 		var/datum/job/apparent_job = SSjob.get_job(perp.get_assignment())
 		if(apparent_job?.job_flags & JOB_HEAD_OF_STAFF)
 			return 0
+
+	if((turret_flags & TURRET_FLAG_SHOOT_ALL) && !allowed(perp))
+		return 10
 
 	if(turret_flags & TURRET_FLAG_AUTH_WEAPONS) //check for weapon authorization
 		if(!istype(perp.wear_id?.GetID(), /obj/item/card/id/advanced/chameleon))
