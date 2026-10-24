@@ -45,6 +45,8 @@ GLOBAL_LIST_EMPTY(GPS_list)
 	/// UI state of GPS, altering when it can be used.
 	var/datum/ui_state/state = null
 	var/debug_mode = FALSE
+	/// Icon state added as an overlay to the parent while tracking; if null/FALSE, the parent gets no GPS overlays at all (including the EMP one)
+	var/overlay_state = null
 
 /datum/component/gps/item/Initialize(_gpstag = "COM0", _tracking = TRUE, emp_proof = FALSE, state = null, overlay_state = "working", debug = FALSE)
 	. = ..()
@@ -54,11 +56,12 @@ GLOBAL_LIST_EMPTY(GPS_list)
 	if(isnull(state))
 		state = GLOB.default_state
 	src.state = state
+	src.overlay_state = overlay_state || null
 	debug_mode = debug
 
 	var/atom/A = parent
-	if(overlay_state)
-		A.add_overlay(overlay_state)
+	if(src.overlay_state)
+		A.add_overlay(src.overlay_state)
 	A.name = "[initial(A.name)] ([gpstag])"
 	RegisterSignal(parent, COMSIG_ITEM_ATTACK_SELF, PROC_REF(interact))
 
@@ -119,8 +122,9 @@ GLOBAL_LIST_EMPTY(GPS_list)
 		return
 	emped = TRUE
 	var/atom/A = parent
-	A.cut_overlay("working")
-	A.add_overlay("emp")
+	if(overlay_state)
+		A.cut_overlay(overlay_state)
+		A.add_overlay("emp")
 	addtimer(CALLBACK(src, PROC_REF(reboot)), 300, TIMER_UNIQUE|TIMER_OVERRIDE) //if a new EMP happens, remove the old timer so it doesn't reactivate early
 	SStgui.close_uis(src) //Close the UI control if it is open.
 
@@ -128,8 +132,9 @@ GLOBAL_LIST_EMPTY(GPS_list)
 /datum/component/gps/item/proc/reboot()
 	emped = FALSE
 	var/atom/A = parent
-	A.cut_overlay("emp")
-	A.add_overlay("working")
+	if(overlay_state)
+		A.cut_overlay("emp")
+		A.add_overlay(overlay_state)
 
 ///Calls toggletracking
 /datum/component/gps/item/proc/on_click_alt(datum/source, mob/user)
@@ -147,11 +152,13 @@ GLOBAL_LIST_EMPTY(GPS_list)
 		return
 	var/atom/A = parent
 	if(tracking)
-		A.cut_overlay("working")
+		if(overlay_state)
+			A.cut_overlay(overlay_state)
 		to_chat(user, span_notice("[parent] is no longer tracking, or visible to other GPS devices."))
 		tracking = FALSE
 	else
-		A.add_overlay("working")
+		if(overlay_state)
+			A.add_overlay(overlay_state)
 		to_chat(user, span_notice("[parent] is now tracking, and visible to other GPS devices."))
 		tracking = TRUE
 

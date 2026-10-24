@@ -211,6 +211,8 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/machinery/door/window/survival_pod/left, 0)
 	anchored = TRUE
 	density = TRUE
 	pixel_y = -32
+	// the GPS "working"/"emp" overlays are drawn for a small handheld GPS and land below the pod computer's sprite
+	overlay_icon = FALSE // null would fall back to the component's default "working"
 
 /obj/item/gps/computer/wrench_act(mob/living/user, obj/item/I)
 	..()
