@@ -95,10 +95,16 @@
 	. = ..()
 	if(!.)
 		return
-	for(var/obj/item/gun in target.get_all_contents())
-		if(!isgun(gun) && !istype(gun, /obj/item/flamethrower))
+	for(var/obj/item/ammo_holder in target.get_all_contents())
+		if(isgun(ammo_holder) || istype(ammo_holder, /obj/item/flamethrower))
+			SEND_SIGNAL(ammo_holder, COMSIG_ITEM_RECHARGED)
 			continue
-		SEND_SIGNAL(gun, COMSIG_ITEM_RECHARGED)
+		// spare magazines carried on the person (pockets, belt, bags); the ones loaded in guns are handled by the guns above
+		if(istype(ammo_holder, /obj/item/ammo_box/magazine) && !isgun(ammo_holder.loc))
+			var/obj/item/ammo_box/magazine/spare_magazine = ammo_holder
+			if(spare_magazine.ammo_type)
+				spare_magazine.top_off()
+				spare_magazine.update_appearance()
 
 /obj/effect/powerup/ammo/ctf
 	icon = 'icons/effects/effects.dmi'
