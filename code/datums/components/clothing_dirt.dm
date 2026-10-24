@@ -82,7 +82,7 @@
 /datum/component/clothing_dirt/proc/on_overlays_updated(obj/item/clothing/source, list/overlays)
 	SIGNAL_HANDLER
 
-	if (!dirtiness || !dirt_state && !(source.flags_cover & PEPPERPROOF))
+	if (!dirtiness || !dirt_state || !(source.flags_cover & PEPPERPROOF))
 		return
 
 	var/mutable_appearance/dirt_overlay = mutable_appearance(source.icon, dirt_state, appearance_flags = KEEP_APART|RESET_COLOR)

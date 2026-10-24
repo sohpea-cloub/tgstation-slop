@@ -58,6 +58,8 @@ GLOBAL_LIST_INIT(hailer_phrases, list(
 	visor_flags_cover = MASKCOVERSMOUTH | PEPPERPROOF
 	tint = 0
 	fishing_modifier = 0
+	// no dirt overlay of its own: the gas mask one doesn't fit this sprite
+	dirt_state = null
 	emote_sounds = list(
 		/datum/emote/living/deathgasp::key = 'sound/items/sec_hailer/sec_death.ogg',
 	)

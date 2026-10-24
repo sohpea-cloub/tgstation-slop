@@ -355,6 +355,8 @@ GLOBAL_LIST_INIT(clown_mask_options, list(
 	flash_protect = FLASH_PROTECTION_FLASH
 	resistance_flags = FIRE_PROOF
 	flags_cover = MASKCOVERSEYES | PEPPERPROOF
+	// no dirt overlay of its own: the gas mask one doesn't fit this sprite
+	dirt_state = null
 
 /obj/item/clothing/mask/gas/sexyclown
 	name = "sexy-clown wig and mask"
