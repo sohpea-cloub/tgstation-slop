@@ -541,6 +541,11 @@
 
 	log_combat(source, target, "[picked_hit_type]ed", "muscle implant")
 
+	// Our slam replaces the punch, so the martial art never sees it: count it towards their combo ourselves
+	var/datum/martial_art/current_style = LAZYACCESS(source.martial_arts, 1)
+	if(current_style?.can_use(source) && !HAS_TRAIT(living_target, TRAIT_MARTIAL_ARTS_IMMUNE) && (!HAS_TRAIT(source, TRAIT_PACIFISM) || current_style.pacifist_style))
+		current_style.add_to_streak("H", living_target)
+
 	if(ishuman(target))
 		COOLDOWN_START(src, slam_cooldown, slam_cooldown_duration)
 
