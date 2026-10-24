@@ -276,12 +276,15 @@ GLOBAL_LIST_INIT(meta_gas_info, meta_gas_list()) //see ATMOSPHERICS/gas_types.dm
 /datum/gas_mixture/proc/equalize(datum/gas_mixture/other)
 	. = FALSE
 	if(abs(return_temperature() - other.return_temperature()) > MINIMUM_TEMPERATURE_DELTA_TO_SUSPEND)
-		. = TRUE
 		var/self_heat_cap = heat_capacity()
 		var/other_heat_cap = other.heat_capacity()
-		var/new_temp = (temperature * self_heat_cap + other.temperature * other_heat_cap) / (self_heat_cap + other_heat_cap)
-		temperature = new_temp
-		other.temperature = new_temp
+		var/combined_heat_cap = self_heat_cap + other_heat_cap
+		// Two empty (non-turf) mixtures have no heat capacity, so there is no energy to average out.
+		if(combined_heat_cap > 0)
+			. = TRUE
+			var/new_temp = (temperature * self_heat_cap + other.temperature * other_heat_cap) / combined_heat_cap
+			temperature = new_temp
+			other.temperature = new_temp
 
 	var/min_p_delta = 0.1
 	var/total_volume = volume + other.volume
