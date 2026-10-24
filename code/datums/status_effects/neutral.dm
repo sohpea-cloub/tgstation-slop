@@ -8,13 +8,36 @@
 	alert_type = null
 	/// How much damage?
 	var/total_damage = 0
+	/// Crusher damage already counted in total_damage by damage_incoming, until the damage is actually applied
+	var/pending_damage = 0
 
 /datum/status_effect/crusher_damage/on_apply()
+	RegisterSignal(owner, COMSIG_MOB_APPLY_DAMAGE, PROC_REF(damage_incoming))
 	RegisterSignal(owner, COMSIG_MOB_AFTER_APPLY_DAMAGE, PROC_REF(damage_taken))
 	return TRUE
 
 /datum/status_effect/crusher_damage/on_remove()
-	UnregisterSignal(owner, COMSIG_MOB_AFTER_APPLY_DAMAGE)
+	UnregisterSignal(owner, list(COMSIG_MOB_APPLY_DAMAGE, COMSIG_MOB_AFTER_APPLY_DAMAGE))
+
+/// The killing blow kills the owner (and runs death handlers like crusher_loot) before the after-damage signal is sent,
+/// so we count the damage up front and correct it with the damage actually dealt once the damage is applied.
+/datum/status_effect/crusher_damage/proc/damage_incoming(
+	datum/source,
+	damage_amount,
+	damagetype,
+	def_zone,
+	blocked,
+	wound_bonus,
+	exposed_wound_bonus,
+	sharpness,
+	attack_direction,
+	attacking_item,
+)
+	SIGNAL_HANDLER
+
+	if(istype(attacking_item, /obj/item/kinetic_crusher))
+		pending_damage = damage_amount
+		total_damage += damage_amount
 
 /datum/status_effect/crusher_damage/proc/damage_taken(
 	datum/source,
@@ -31,7 +54,8 @@
 	SIGNAL_HANDLER
 
 	if(istype(attacking_item, /obj/item/kinetic_crusher))
-		total_damage += damage_dealt
+		total_damage += damage_dealt - pending_damage
+		pending_damage = 0
 
 /datum/status_effect/syphon_mark
 	id = "syphon_mark"
