@@ -33,9 +33,24 @@
 /// Build Your Own Shuttle (BYOS) kit
 /obj/docking_port/mobile/emergency/shuttle_build
 
-/obj/docking_port/mobile/emergency/shuttle_build/postregister()
+/obj/docking_port/mobile/emergency/shuttle_build/postregister(replace = FALSE)
 	. = ..()
-	initiate_docking(SSshuttle.getDock("emergency_home"))
+	var/obj/docking_port/stationary/station_dock = SSshuttle.getDock("emergency_home")
+	if(!station_dock)
+		return
+	// Show the landing marks first, so whoever stands in the docking area has a chance to move.
+	create_ripples(station_dock, SHUTTLE_RIPPLE_TIME)
+	addtimer(CALLBACK(src, PROC_REF(dock_at_station), station_dock), SHUTTLE_RIPPLE_TIME)
+
+/// Docks the chassis with the station once the landing marks have been shown.
+/obj/docking_port/mobile/emergency/shuttle_build/proc/dock_at_station(obj/docking_port/stationary/station_dock)
+	remove_ripples()
+	if(QDELETED(src) || QDELETED(station_dock) || get_docked() == station_dock)
+		return
+	// Anything else that moved us in the meantime (a call, an admin) already took over.
+	if(mode != SHUTTLE_IDLE)
+		return
+	initiate_docking(station_dock)
 
 /// The chassis is already at the station, so its engines only affect the escape flight, not the call time.
 /obj/docking_port/mobile/emergency/shuttle_build/get_call_engine_coeff()
