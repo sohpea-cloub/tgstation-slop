@@ -384,6 +384,49 @@ world
 		((hi3 >= 65 ? hi3-55 : hi3-48)<<4) | (lo3 >= 65 ? lo3-55 : lo3-48),
 		((hi4 >= 65 ? hi4-55 : hi4-48)<<4) | (lo4 >= 65 ? lo4-55 : lo4-48))
 
+/**
+ * Emulates the displacement map filters of an appearance on a flat icon.
+ * getFlatIcon() composes icons, it can't run filters, so things relying on them (like mob height) vanish from photos.
+ *
+ * Arguments:
+ * * flat - the icon to displace
+ * * filters_to_apply - the filters list of the appearance flat was made from
+ *
+ * Returns the displaced icon (a new one if any filter was applied).
+ */
+/proc/apply_displacement_filters(icon/flat, list/filters_to_apply)
+	for(var/filter_object in filters_to_apply)
+		if(filter_object:type != "displace")
+			continue
+		var/icon/displacement_map = filter_object:icon
+		if(isnull(displacement_map))
+			continue
+		displacement_map = icon(displacement_map)
+		var/filter_size = filter_object:size
+		var/filter_x = filter_object:x
+		var/filter_y = filter_object:y
+		var/width = flat.Width()
+		var/height = flat.Height()
+		var/icon/source = icon(flat)
+		var/icon/displaced = icon('icons/blanks/32x32.dmi', "nothing")
+		displaced.Scale(width, height)
+		for(var/y in 1 to height)
+			for(var/x in 1 to width)
+				var/source_x = x
+				var/source_y = y
+				var/map_color = displacement_map.GetPixel(x - filter_x, y - filter_y)
+				if(!isnull(map_color))
+					var/list/map_channels = rgb2num(map_color)
+					// red moves pixels sideways, green up and down, 128 is no displacement and size the maximum.
+					// Green below 128 pulls the pixel from above, so the image sinks (icon y goes bottom up)
+					source_x += round(((map_channels[1] - 127.5) / 127.5) * filter_size)
+					source_y += round(((127.5 - map_channels[2]) / 127.5) * filter_size)
+				var/displaced_color = source.GetPixel(source_x, source_y)
+				if(!isnull(displaced_color))
+					displaced.DrawBox(displaced_color, x, y)
+		flat = displaced
+	return flat
+
 /// Create a single [/icon] from a given [/atom] or [/image].
 ///
 /// Very low-performance. Should usually only be used for HTML, where BYOND's
@@ -526,6 +569,9 @@ world
 						add.MapColors(arglist(appearance.color))
 					else
 						add.Blend(appearance.color, ICON_MULTIPLY)
+				// without KEEP_TOGETHER our filters only apply to our own icon, not to our overlays
+				if(length(appearance.filters) && !(appearance.appearance_flags & KEEP_TOGETHER))
+					add = apply_displacement_filters(add, appearance.filters)
 			else // 'I' is an appearance object.
 				add = getFlatIcon(image(layer_image), curdir, curicon, curstate, curblend, FALSE, no_anim, next_parentcolor)
 
@@ -561,6 +607,10 @@ world
 			flat.Blend(add, blendMode2iconMode(curblend), layer_image.pixel_x + layer_image.pixel_w + 2 - flatX1, layer_image.pixel_y + layer_image.pixel_z + 2 - flatY1)
 
 
+		// with KEEP_TOGETHER the filters apply to the combination of our icon and our overlays
+		if(length(appearance.filters) && (appearance.appearance_flags & KEEP_TOGETHER))
+			flat = apply_displacement_filters(flat, appearance.filters)
+
 		if(appearance.alpha < 255)
 			flat.Blend(rgb(255, 255, 255, appearance.alpha), ICON_MULTIPLY)
 
@@ -582,6 +632,9 @@ world
 				final_icon.MapColors(arglist(appearance.color))
 			else
 				final_icon.Blend(appearance.color, ICON_MULTIPLY)
+
+		if(length(appearance.filters))
+			final_icon = apply_displacement_filters(final_icon, appearance.filters)
 
 		return final_icon
 
