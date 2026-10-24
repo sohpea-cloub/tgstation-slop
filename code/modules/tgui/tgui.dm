@@ -365,8 +365,12 @@
 			initialized = TRUE
 		if("suspend")
 			close(can_be_suspended = TRUE)
+			// Handled here: otherwise the window would process the same message
+			// and suspend a second time.
+			return TRUE
 		if("close")
 			close(can_be_suspended = FALSE)
+			return TRUE
 		if("log")
 			if(href_list["fatal"])
 				close(can_be_suspended = FALSE)
