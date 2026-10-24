@@ -67,9 +67,9 @@
 	// Register a signal to handle what happens when a different cinematic tries to play over us.
 	RegisterSignal(SSdcs, COMSIG_GLOB_PLAY_CINEMATIC, PROC_REF(handle_replacement_cinematics))
 
-	// Pause OOC
+	// Pause OOC, but only while the round is still going: after round end OOC is meant to stay open
 	var/ooc_toggled = FALSE
-	if(is_global && stop_ooc && GLOB.ooc_allowed)
+	if(is_global && stop_ooc && GLOB.ooc_allowed && SSticker.IsRoundInProgress())
 		ooc_toggled = TRUE
 		toggle_ooc(FALSE)
 
