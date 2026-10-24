@@ -226,7 +226,6 @@ That prevents a few funky behaviors.
 		to_chat(user, "[span_boldnotice("Transfer successful")]: [AI.name] ([rand(1000,9999)].exe) installed and executed successfully. Local copy has been removed.")
 		card.AI = null
 		AI.battery = circuit.battery
-		AI.posibrain_inside = isnull(core_mmi) || core_mmi.braintype == "Android"
 		qdel(src)
 	else //If for some reason you use an empty card on an empty AI terminal.
 		to_chat(user, span_alert("There is no AI loaded on this terminal."))
