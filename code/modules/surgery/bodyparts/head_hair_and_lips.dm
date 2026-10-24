@@ -40,6 +40,9 @@
 	var/image/lip_overlay = image('icons/mob/human/human_face.dmi', "lips_[lip_style]", -BODY_LAYER, dir = (dropped ? SOUTH : null))
 	lip_overlay.color = lip_color
 	worn_face_offset?.apply_offset(lip_overlay)
+	// Lips are part of the head's icon but get added after the bodypart's height handling, so apply height like we do for eyes and hair
+	if(!dropped)
+		owner?.apply_height(lip_overlay, UPPER_BODY)
 	. += lip_overlay
 	return .
 
