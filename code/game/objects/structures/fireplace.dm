@@ -34,6 +34,9 @@
 	. = ..()
 
 /obj/structure/fireplace/setDir(newdir)
+	// The sprite has no north facing, so a north fireplace is invisible. Show the default (south) one instead
+	if(newdir == NORTH)
+		newdir = SOUTH
 	. = ..()
 	set_light(l_dir = dir)
 
