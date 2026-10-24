@@ -138,6 +138,11 @@
 		var/mob/wearer = chameleon_item.loc
 		wearer.update_clothing(chameleon_item.slot_flags | ITEM_SLOT_HANDS)
 		wearer.refresh_obscured()
+	// Balanced on a hat stabilizer (EVA helmet and the like): the holder draws us as an overlay, so it needs redrawing
+	else if(isitem(chameleon_item.loc) && chameleon_item.loc.GetComponent(/datum/component/hat_stabilizer))
+		var/obj/item/stabilized = chameleon_item.loc
+		stabilized.update_appearance()
+		stabilized.update_slot_icon()
 
 /datum/action/item_action/chameleon/change/proc/update_item(obj/item/picked_item)
 	PROTECTED_PROC(TRUE) // Call update_look, not this!
