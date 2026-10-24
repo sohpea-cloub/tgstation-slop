@@ -1971,8 +1971,9 @@ GLOBAL_LIST_EMPTY(fire_appearances)
 			buckled.unbuckle_mob(src, force = TRUE)
 		if(has_buckled_mobs())
 			unbuckle_all_mobs(force = TRUE)
-	refresh_gravity()
 	. = ..()
+	// Refresh after the move: gravity depends on where we are now, not where we were
+	refresh_gravity()
 	if(. && client)
 		reset_perspective()
 
