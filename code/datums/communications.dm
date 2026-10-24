@@ -57,18 +57,20 @@ GLOBAL_DATUM_INIT(communications_controller, /datum/communciations_controller, n
 
 /datum/communciations_controller/proc/send_message(datum/comm_message/sending,print = TRUE,unique = FALSE, contains_advanced_html = FALSE)
 	for(var/obj/machinery/computer/communications/C in GLOB.shuttle_caller_list)
-		if(!(C.machine_stat & (BROKEN|NOPOWER)) && is_station_level(C.z))
-			if(unique)
-				C.add_message(sending)
-			else //We copy the message for each console, answers and deletions won't be shared
-				var/datum/comm_message/M = new(sending.title,sending.content,sending.possible_answers.Copy())
-				C.add_message(M)
-			if(print)
-				var/obj/item/paper/printed_paper = new /obj/item/paper(C.loc)
-				printed_paper.name = "paper - '[sending.title]'"
-				printed_paper.add_raw_text("</center>[sending.content]", advanced_html = contains_advanced_html)
-				printed_paper.color = "#deebff"
-				printed_paper.update_appearance()
+		if(!is_station_level(C.z))
+			continue
+		// An unpowered or broken console can't print, but it still stores the message so it isn't lost (e.g. during a blackout)
+		if(unique)
+			C.add_message(sending)
+		else //We copy the message for each console, answers and deletions won't be shared
+			var/datum/comm_message/M = new(sending.title,sending.content,sending.possible_answers.Copy())
+			C.add_message(M)
+		if(print && !(C.machine_stat & (BROKEN|NOPOWER)))
+			var/obj/item/paper/printed_paper = new /obj/item/paper(C.loc)
+			printed_paper.name = "paper - '[sending.title]'"
+			printed_paper.add_raw_text("</center>[sending.content]", advanced_html = contains_advanced_html)
+			printed_paper.color = "#deebff"
+			printed_paper.update_appearance()
 
 // Called AFTER everyone is equipped with their job
 /datum/communciations_controller/proc/queue_roundstart_report()
