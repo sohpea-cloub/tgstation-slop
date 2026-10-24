@@ -308,6 +308,8 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/structure/sign/poster/ripped, 32)
 
 /obj/structure/sign/poster/random
 	name = "random poster" // could even be ripped
+	poster_item_name = "rolled poster"
+	poster_item_desc = "A rolled up poster with an automatic adhesive mechanism, for easy pinning to any vertical surface. Who knows what is printed on it."
 	icon_state = "random_anything"
 	never_random = TRUE
 	random_basetype = /obj/structure/sign/poster
