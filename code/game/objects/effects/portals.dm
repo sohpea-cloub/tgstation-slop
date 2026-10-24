@@ -152,7 +152,9 @@
 	if(!force && (!ismecha(moving) && !isprojectile(moving) && moving.anchored && !allow_anchored))
 		return
 	var/no_effect = FALSE
-	if(last_effect == world.time || sparkless)
+	// ghosts are unseen, so their trip shouldn't be heard or seen by the living
+	var/silent = isobserver(moving)
+	if(last_effect == world.time || sparkless || silent)
 		no_effect = TRUE
 	else
 		last_effect = world.time
@@ -161,9 +163,10 @@
 		if(isprojectile(moving))
 			var/obj/projectile/proj = moving
 			proj.ignore_source_check = TRUE
-		new /obj/effect/temp_visual/portal_animation(start_turf, src, moving)
-		playsound(start_turf, SFX_PORTAL_ENTER, 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE)
-		playsound(real_target, SFX_PORTAL_ENTER, 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE)
+		if(!silent)
+			new /obj/effect/temp_visual/portal_animation(start_turf, src, moving)
+			playsound(start_turf, SFX_PORTAL_ENTER, 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE)
+			playsound(real_target, SFX_PORTAL_ENTER, 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE)
 		return TRUE
 	return FALSE
 
