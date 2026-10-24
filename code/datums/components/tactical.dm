@@ -44,6 +44,7 @@
 	RegisterSignal(parent, COMSIG_MOVABLE_MOVED, PROC_REF(on_moved))
 	RegisterSignal(user, COMSIG_HUMAN_GET_VISIBLE_NAME, PROC_REF(on_name_inquiry))
 	RegisterSignal(user, COMSIG_HUMAN_GET_FORCED_NAME, PROC_REF(on_name_inquiry))
+	RegisterSignal(user, COMSIG_REFLECTION_UPDATED, PROC_REF(on_reflection_updated))
 	// This forces a name update on the user, so we don't need to call name update ourselves
 	ADD_TRAIT(user, TRAIT_UNKNOWN_APPEARANCE, REF(src))
 
@@ -70,6 +71,23 @@
 	image.plane = FLOAT_PLANE
 	user.add_alt_appearance(/datum/atom_hud/alternate_appearance/basic/everyone, "sneaking_mission[REF(src)]", image)
 
+/// Disguises the user's reflections (mirrors) too, since those copy the mob's own appearance and not the alt appearance above.
+/datum/component/tactical/proc/on_reflection_updated(mob/source, atom/mirror, obj/effect/abstract/reflection)
+	SIGNAL_HANDLER
+	var/obj/item/master = parent
+	var/old_vis_flags = reflection.vis_flags
+	var/old_transform = reflection.transform
+	var/old_dir = reflection.dir
+	var/old_pixel_x = reflection.pixel_x
+	var/old_pixel_y = reflection.pixel_y
+	var/old_name = reflection.name
+	reflection.appearance = copy_appearance_filter_overlays(master.appearance)
+	reflection.vis_flags = old_vis_flags
+	reflection.transform = old_transform
+	reflection.dir = old_dir
+	reflection.pixel_x = old_pixel_x
+	reflection.pixel_y = old_pixel_y
+	reflection.name = old_name
 
 /datum/component/tactical/proc/on_name_inquiry(obj/item/source, list/identity)
 	SIGNAL_HANDLER
@@ -107,10 +125,14 @@
 	UnregisterSignal(user, list(
 		COMSIG_HUMAN_GET_VISIBLE_NAME,
 		COMSIG_HUMAN_GET_FORCED_NAME,
+		COMSIG_REFLECTION_UPDATED,
 	))
 	current_slot = null
 	user.remove_alt_appearance("sneaking_mission[REF(src)]")
 	REMOVE_TRAIT(user, TRAIT_UNKNOWN_APPEARANCE, REF(src))
+	// The disguise is gone, so any reflection of the user must go back to the real appearance.
+	if(!QDELETED(user) && ismob(user))
+		user.update_appearance(UPDATE_ICON)
 
 ///Checks if a mob is holding us, and if so we will modify our appearance to properly match w/ the mob.
 /datum/component/tactical/proc/tactical_update(obj/item/source)
