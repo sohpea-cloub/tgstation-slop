@@ -37,3 +37,17 @@
 	. = ..()
 	initiate_docking(SSshuttle.getDock("emergency_home"))
 
+/// The chassis is already at the station, so its engines only affect the escape flight, not the call time.
+/obj/docking_port/mobile/emergency/shuttle_build/get_call_engine_coeff()
+	return 1
+
+/obj/docking_port/mobile/emergency/shuttle_build/alter_engines(mod)
+	// A call (or recall) in progress is not slowed or sped up by engines being added or removed.
+	if(mode == SHUTTLE_CALL || mode == SHUTTLE_RECALL)
+		if(!mod)
+			return
+		engine_coeff = get_engine_coeff(mod)
+		current_engine_power = max(0, current_engine_power + mod)
+		return
+	return ..()
+

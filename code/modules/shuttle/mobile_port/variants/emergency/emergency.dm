@@ -35,11 +35,15 @@
 
 	. = ..()
 
+/// The engine coefficient applied to the time the shuttle takes to arrive when called.
+/obj/docking_port/mobile/emergency/proc/get_call_engine_coeff()
+	return engine_coeff
+
 /obj/docking_port/mobile/emergency/request(obj/docking_port/stationary/S, area/signal_origin, reason, red_alert, set_coefficient=null)
 	if(!isnum(set_coefficient))
 		set_coefficient = SSsecurity_level.current_security_level.shuttle_call_time_mod
 	alert_coeff = set_coefficient
-	var/call_time = SSshuttle.emergency_call_time * alert_coeff * engine_coeff
+	var/call_time = SSshuttle.emergency_call_time * alert_coeff * get_call_engine_coeff()
 	switch(mode)
 		// The shuttle can not normally be called while "recalling", so
 		// if this proc is called, it's via admin fiat
