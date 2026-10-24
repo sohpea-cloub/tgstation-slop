@@ -46,16 +46,21 @@ GAME_VERB(/mob, me_verb, VERB_ME, null)
 
 	QUEUE_OR_CALL_VERB_FOR(VERB_CALLBACK(src, TYPE_PROC_REF(/mob, emote), "me", NONE, message, TRUE), SSspeech_controller)
 
-/mob/try_speak(message, ignore_spam = FALSE, forced = null, filterproof = FALSE)
+/**
+ * Checks a message against the hard and soft IC word filters.
+ * Soft filter hits ask the speaker to confirm (unless check_soft is FALSE). Returns FALSE if the message must not be said.
+ */
+/mob/proc/passes_ic_filter(message, check_soft = TRUE)
 	var/list/filter_result
 	var/list/soft_filter_result
-	if(client && !forced && !filterproof)
-		//The filter doesn't act on the sanitized message, but the raw message.
-		filter_result = CAN_BYPASS_FILTER(src) ? null : is_ic_filtered(message)
-		if(!filter_result)
-			soft_filter_result = CAN_BYPASS_FILTER(src) ? null : is_soft_ic_filtered(message)
+	if(!client)
+		return TRUE
+	//The filter doesn't act on the sanitized message, but the raw message.
+	filter_result = CAN_BYPASS_FILTER(src) ? null : is_ic_filtered(message)
+	if(!filter_result && check_soft)
+		soft_filter_result = CAN_BYPASS_FILTER(src) ? null : is_soft_ic_filtered(message)
 
-	if(filter_result && !filterproof)
+	if(filter_result)
 		//The filter warning message shows the sanitized message though.
 		to_chat(src, span_warning("That message contained a word prohibited in IC chat! Consider reviewing the server rules."))
 		to_chat(src, span_warning("\"[message]\""))
@@ -64,7 +69,7 @@ GAME_VERB(/mob, me_verb, VERB_ME, null)
 		SSblackbox.record_feedback("tally", "ic_blocked_words", 1, LOWER_TEXT(config.ic_filter_regex.match))
 		return FALSE
 
-	if(soft_filter_result && !filterproof)
+	if(soft_filter_result)
 		if(tgui_alert(usr,"Your message contains \"[soft_filter_result[CHAT_FILTER_INDEX_WORD]]\". \"[soft_filter_result[CHAT_FILTER_INDEX_REASON]]\", Are you sure you want to say it?", "Soft Blocked Word", list("Yes", "No")) != "Yes")
 			SSblackbox.record_feedback("tally", "soft_ic_blocked_words", 1, LOWER_TEXT(config.soft_ic_filter_regex.match))
 			log_filter("Soft IC", message, filter_result)
@@ -73,6 +78,12 @@ GAME_VERB(/mob, me_verb, VERB_ME, null)
 		log_admin_private("[key_name(usr)] has passed the soft filter for \"[soft_filter_result[CHAT_FILTER_INDEX_WORD]]\" they may be using a disallowed term. Message: \"[message]\"")
 		SSblackbox.record_feedback("tally", "passed_soft_ic_blocked_words", 1, LOWER_TEXT(config.soft_ic_filter_regex.match))
 		log_filter("Soft IC (Passed)", message, filter_result)
+
+	return TRUE
+
+/mob/try_speak(message, ignore_spam = FALSE, forced = null, filterproof = FALSE)
+	if(!forced && !filterproof && !passes_ic_filter(message))
+		return FALSE
 
 	if(client && !(ignore_spam || forced))
 		if(client.prefs.muted & MUTE_IC)

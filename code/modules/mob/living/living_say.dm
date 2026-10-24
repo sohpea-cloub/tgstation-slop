@@ -164,6 +164,10 @@ GLOBAL_LIST_INIT(message_modes_stat_limits, list(
 	if(!try_speak(original_message, ignore_spam, forced, filterproof))
 		return
 
+	// Radio/mode prefixes are stripped from `message`; the filter's word bounds don't see a word glued to a prefix (":hword"), so check the stripped text too.
+	if(!forced && !filterproof && message != original_message && !passes_ic_filter(message, check_soft = !is_soft_ic_filtered(original_message)))
+		return
+
 	language ||= message_mods[LANGUAGE_EXTENSION] || get_selected_language()
 
 	var/succumbed = FALSE
