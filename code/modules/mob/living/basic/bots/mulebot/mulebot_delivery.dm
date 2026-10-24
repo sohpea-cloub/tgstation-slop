@@ -17,6 +17,7 @@
 	. = ..()
 	if(istype(arrived) && isnull(cell))
 		assign_cell(arrived)
+		set_cell_hud()
 
 // mousedrop a crate to load the bot
 // can load anything if hacked
