@@ -13,8 +13,13 @@
 	for(var/turf/T in map)
 		SSair.remove_from_active(T)
 	for(var/turf/open/T in map)
-		if(T.air)
-			T.air = T.create_gas_mixture()
+		// Space (and turfs without air) keep their own, immutable, gas mixture: giving them a regular one breaks atmos
+		if(T.blocks_air || isspaceturf(T) || !T.air)
+			continue
+		var/datum/gas_mixture/roundstart_air = SSair.parse_gas_string(T.initial_gas_mix, /datum/gas_mixture/turf)
+		T.copy_air(roundstart_air)
+		T.temperature = initial(T.temperature)
+		T.update_visuals()
 		SSair.add_to_active(T, TRUE)
 
 /datum/map_generator_module/bottom_layer/massdelete
