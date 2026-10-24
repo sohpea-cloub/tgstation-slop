@@ -76,6 +76,7 @@
 		for(var/mat_type in custom_materials)
 			if(custom_materials[mat_type] > mat_amount)
 				main_mat_type = mat_type
+				mat_amount = custom_materials[mat_type]
 		LAZYADD(intrinsic_food_materials, main_mat_type)
 	if(intrinsic_food_materials)
 		intrinsic_food_materials = typecacheof(intrinsic_food_materials)
