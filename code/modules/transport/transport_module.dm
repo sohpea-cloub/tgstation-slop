@@ -98,6 +98,9 @@
 /obj/structure/transport/linear/LateInitialize()
 	//after everything is initialized the transport controller can order everything
 	transport_controller_datum.order_platforms_by_z_level()
+	// wall mounts on our tiles were picked up before they initialized and found their wall; they hang off the wall, not the platform
+	for(var/obj/structure/transport/linear/transport_module as anything in transport_controller_datum.transport_modules)
+		transport_module.remove_wallmounted_from_transport()
 
 /obj/structure/transport/linear/Destroy()
 	transport_controller_datum = null
@@ -122,6 +125,12 @@
 	if(!(gone.loc in locs))
 		remove_item_from_transport(gone)
 
+/// Stops wall mounted objects (intercoms, lights...) from riding along with us, as they're attached to a wall next to the platform
+/obj/structure/transport/linear/proc/remove_wallmounted_from_transport()
+	for(var/atom/movable/rider as anything in transport_contents)
+		if(HAS_TRAIT(rider, TRAIT_WALLMOUNTED))
+			remove_item_from_transport(rider)
+
 /obj/structure/transport/linear/proc/remove_item_from_transport(atom/movable/potential_rider)
 	SIGNAL_HANDLER
 	if(!(potential_rider in transport_contents))
@@ -137,7 +146,7 @@
 /obj/structure/transport/linear/proc/add_item_on_transport(datum/source, atom/movable/new_transport_contents)
 	SIGNAL_HANDLER
 	var/static/list/blacklisted_types = typecacheof(list(/obj/structure/fluff/tram_rail, /obj/effect/decal/cleanable, /obj/structure/transport/linear, /mob/eye, /obj/effect/gravity_fluff_field))
-	if(is_type_in_typecache(new_transport_contents, blacklisted_types) || new_transport_contents.invisibility == INVISIBILITY_ABSTRACT || HAS_TRAIT(new_transport_contents, TRAIT_UNDERFLOOR)) //prevents the tram from stealing things like landmarks
+	if(is_type_in_typecache(new_transport_contents, blacklisted_types) || new_transport_contents.invisibility == INVISIBILITY_ABSTRACT || HAS_TRAIT(new_transport_contents, TRAIT_UNDERFLOOR) || HAS_TRAIT(new_transport_contents, TRAIT_WALLMOUNTED)) //prevents the tram from stealing things like landmarks, or wall mounts that are hanging off a wall beside the platform
 		return FALSE
 	if(new_transport_contents in transport_contents)
 		return FALSE
@@ -592,6 +601,9 @@
 		var/list/atom/movable/foreign_contents_in_loc = list()
 
 		for(var/atom/movable/foreign_movable as anything in (turf_loc.contents - original_contents))
+			if(HAS_TRAIT(foreign_movable, TRAIT_WALLMOUNTED))
+				continue
+
 			if(foreign_objects && ismovable(foreign_movable) && !ismob(foreign_movable) && !istype(foreign_movable, /obj/effect/landmark/transport/nav_beacon))
 				foreign_contents_in_loc += foreign_movable
 				continue
