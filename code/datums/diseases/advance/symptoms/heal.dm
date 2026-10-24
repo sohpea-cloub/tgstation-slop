@@ -519,8 +519,9 @@
 	///  the amount of mols in a breath is significantly lower than in the environment so we are just going to use the tank's
 	///  distribution pressure as an abstraction rather than calculate it using the ideal gas equation.
 	///  balanced around a tank set to 4kpa = about 0.2 healing power. maxes out at 0.75 healing power, or 15kpa.
+	///  Hosts that don't need to breathe don't draw gas from the tank, so they can't be healed by "breathing" it either.
 	var/obj/item/tank/internals/internals_tank = carbon_host.internal
-	if(internals_tank)
+	if(internals_tank && !HAS_TRAIT(carbon_host, TRAIT_NOBREATH))
 		var/datum/gas_mixture/tank_contents = internals_tank.return_air()
 		if(tank_contents && round(tank_contents.return_pressure())) // make sure the tank is not empty or 0 pressure
 			if(tank_contents.moles[/datum/gas/plasma])
