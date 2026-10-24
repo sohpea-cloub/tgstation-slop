@@ -23,6 +23,14 @@
 	if(owner && hatch_time <= world.time)
 		pop()
 
+/// Returns TRUE if the player behind the origin mind has since moved on to play some other mob (a ghost role, a midround spawn...), which we must not pull them out of.
+/obj/item/organ/body_egg/changeling_egg/proc/origin_player_is_busy()
+	var/client/origin_client = GLOB.directory[ckey(origin.key)]
+	if(isnull(origin_client))
+		return FALSE
+	var/mob/player_mob = origin_client.mob
+	return !isnull(player_mob) && !isobserver(player_mob) && player_mob != origin.current
+
 /// Once the egg is fully grown, we gib the host and spawn a monkey (with the changeling's player controlling it). Very descriptive proc name.
 /obj/item/organ/body_egg/changeling_egg/proc/pop()
 	var/mob/living/carbon/human/spawned_monkey = new(owner)
@@ -31,7 +39,7 @@
 	for(var/obj/item/organ/insertable in src)
 		insertable.Insert(spawned_monkey, 1)
 
-	if(origin && (origin.current ? (origin.current.stat == DEAD) : origin.get_ghost()))
+	if(origin && (origin.current ? (origin.current.stat == DEAD) : origin.get_ghost()) && !origin_player_is_busy())
 		origin.transfer_to(spawned_monkey)
 		spawned_monkey.PossessByPlayer(origin.key)
 		var/datum/antagonist/changeling/changeling_datum = origin.has_antag_datum(/datum/antagonist/changeling)
