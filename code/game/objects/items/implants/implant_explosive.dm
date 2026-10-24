@@ -77,7 +77,11 @@
 		to_chat(imp_in, span_notice("You activate your [name]."))
 	active = TRUE
 	var/turf/boomturf = get_turf(imp_in)
-	message_admins("[ADMIN_LOOKUPFLW(imp_in)] has activated their [name] at [ADMIN_VERBOSEJMP(boomturf)], with cause of [cause].")
+	var/area/boom_area = get_area(boomturf)
+	if(boom_area?.area_flags & QUIET_LOGS) // Don't spam admins with deathmatch microbombs
+		log_game("[key_name(imp_in)] has activated their [name] at [AREACOORD(boomturf)], with cause of [cause].")
+	else
+		message_admins("[ADMIN_LOOKUPFLW(imp_in)] has activated their [name] at [ADMIN_VERBOSEJMP(boomturf)], with cause of [cause].")
 	//If the delay is shorter or equal to the default delay, just blow up already jeez
 	if(delay <= MICROBOMB_DELAY && instant_explosion)
 		explode()
