@@ -529,6 +529,7 @@
 	var/obj/item/stock_parts/power_store/real_cell = get_cell()
 	if(real_cell.charge > 2.5 * /obj/item/stock_parts/power_store/cell/emergency_light::maxcharge) //it's meant to handle 120 W, ya doofus
 		visible_message(span_warning("[src] short-circuits from too powerful of a power cell!"))
+		real_cell.use(power_usage_amount) // current still flows through the cell, so rigged ones go off
 		burn_out()
 		return FALSE
 	real_cell.use(power_usage_amount)
