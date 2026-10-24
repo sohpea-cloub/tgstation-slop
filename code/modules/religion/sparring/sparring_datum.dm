@@ -124,6 +124,9 @@
 	var/mob/living/honorbound = source
 	var/obj/item/thrown_item = thrown_movable
 	var/mob/thrown_by = throwingdatum?.get_thrower()
+	if(thrown_by == chaplain || thrown_by == opponent)
+		//participants may throw things at each other, any weapon restrictions are handled by the violation procs
+		return
 	if(thrown_item.throwforce < honorbound.health && ishuman(thrown_by))
 		INVOKE_ASYNC(src, PROC_REF(flub), thrown_by)
 
