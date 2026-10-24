@@ -30,6 +30,14 @@
 		if(_pipe_type)
 			pipe_type = _pipe_type
 		setDir(_dir)
+		// The RPD selects the mirrored variant of junctions with a diagonal dir. Pipes only use diagonal dirs
+		// for bends, so turn it into the flipped pipe type with the cardinal dominant dir it stands for.
+		if(!flip && ISDIAGONALDIR(dir) && is_pipe())
+			var/obj/structure/disposalpipe/temp = pipe_type
+			var/pipe_flip_type = initial(temp.flip_type)
+			if(pipe_flip_type)
+				pipe_type = pipe_flip_type
+				setDir(turn(dir, -135))
 
 	pipename = initial(pipe_type.name)
 
