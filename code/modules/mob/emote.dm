@@ -85,6 +85,14 @@
 	/// The direction we spin in. TRUE means clockwise, FALSE means counter-clockwise.
 	var/clockwise_spin = TRUE
 
+/datum/emote/flip/can_run_emote(mob/user, status_check = TRUE, intentional = FALSE, params)
+	. = ..()
+	// AIs ignore the stat checks (they have no hands to be blocked), but a dead AI shouldn't be flipping around
+	if(. && status_check && isliving(user) && user.stat == DEAD)
+		if(intentional)
+			to_chat(user, span_warning("You cannot [key] while dead!"))
+		return FALSE
+
 /datum/emote/flip/run_emote(mob/user, params , type_override, intentional)
 	. = ..()
 	user.SpinAnimation(FLIP_EMOTE_DURATION, 1, clockwise = clockwise_spin)
