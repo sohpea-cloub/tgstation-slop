@@ -16,7 +16,7 @@
 		},
 		{
 			"Down": true,
-			"Baseturf": "/turf/open/openspace/airless",
+			"Baseturf": "/turf/open/openspace",
 			"Linkage": "Cross"
 		}
 	],
