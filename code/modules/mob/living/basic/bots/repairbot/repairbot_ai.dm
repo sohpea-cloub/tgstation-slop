@@ -249,7 +249,16 @@
 			return FALSE
 	var/turf/adjacent_turfs = get_adjacent_open_turfs(my_target)
 	for(var/turf/possible_spaced_turf as anything in adjacent_turfs)
-		if(isspaceturf(possible_spaced_turf) && istype(get_area(possible_spaced_turf), /area/space))
+		if(!isspaceturf(possible_spaced_turf) || !istype(get_area(possible_spaced_turf), /area/space))
+			continue
+		// a window standing on the void and facing us already seals this side, it's not a breach
+		var/sealed = FALSE
+		var/space_dir = get_dir(possible_spaced_turf, my_target)
+		for(var/obj/structure/window/window in possible_spaced_turf)
+			if(window.fulltile || window.dir == space_dir)
+				sealed = TRUE
+				break
+		if(!sealed)
 			return TRUE
 	return FALSE
 
