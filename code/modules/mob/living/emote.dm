@@ -268,6 +268,10 @@
 	key_third_person = "kisses"
 	cooldown = 3 SECONDS
 
+/// Forced kisses (e.g. from circuit speech) still respect the cooldown, since each one hands out a ranged projectile.
+/datum/emote/living/kiss/check_cooldown(mob/user, intentional)
+	return ..(user, TRUE)
+
 /datum/emote/living/kiss/run_emote(mob/living/user, params, type_override, intentional)
 	. = ..()
 	var/kiss_type = /obj/item/hand_item/kisser
