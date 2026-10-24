@@ -81,7 +81,7 @@ There are several things that need to be remembered:
 		if(HAS_TRAIT(uniform, TRAIT_NO_WORN_ICON) || (obscured_slots & HIDEJUMPSUIT))
 			return
 
-		var/target_overlay = uniform.icon_state
+		var/target_overlay = RESOLVE_ICON_STATE(uniform)
 		if(uniform.adjusted == ALT_STYLE)
 			target_overlay = "[target_overlay]_d"
 
