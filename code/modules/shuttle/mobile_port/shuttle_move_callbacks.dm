@@ -33,12 +33,21 @@ All ShuttleMove procs go here
 			for(var/mob/living/trapped in thing.get_all_contents_type(/mob/living))
 				if(trapped.resistance_flags & SHUTTLE_CRUSH_PROOF)
 					continue
+				// A brain in an MMI/posibrain is not crushed on its own: gibbing it would delete the MMI, and a
+				// cyborg that gets gibbed already drops its MMI.
+				if(isbrain(trapped) || ismob(trapped.loc))
+					continue
 				trapped.get_crushed_by_shuttle(shuttle)
 			if(QDELETED(thing))
 				continue
 			if(!thing.anchored)
 				step(thing, shuttle_dir)
 			else
+				if(istype(thing, /obj/structure/disposalpipe))
+					// Let whatever is travelling through it (a cyborg's MMI, gibs, packages) out first,
+					// or it is deleted along with the pipe.
+					var/obj/structure/disposalpipe/pipe = thing
+					pipe.spew_forth()
 				qdel(thing)
 
 /// A shuttle is docking on top of us: gib, unless incorporeal.
