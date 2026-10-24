@@ -582,7 +582,8 @@
 
 	RegisterSignal(target, COMSIG_ITEM_ATTACK, PROC_REF(on_attack_during_jump))
 	ADD_TRAIT(target, TRAIT_NODROP, ACTION_TRAIT)
-	owner.add_traits(list(TRAIT_SILENT_FOOTSTEPS, TRAIT_MOVE_FLYING), ACTION_TRAIT)
+	// godmode: you are high up in the air, nothing on the ground can hit you.
+	owner.add_traits(list(TRAIT_SILENT_FOOTSTEPS, TRAIT_MOVE_FLYING, TRAIT_GODMODE), ACTION_TRAIT)
 
 	if(owner.pass_flags & PASSTABLE)
 		gave_pass_flags = FALSE
@@ -621,7 +622,7 @@
 
 	UnregisterSignal(target, COMSIG_ITEM_ATTACK)
 	target.remove_traits(list(TRAIT_NEEDS_TWO_HANDS, TRAIT_NODROP), ACTION_TRAIT)
-	mob_doing_effects.remove_traits(list(TRAIT_SILENT_FOOTSTEPS, TRAIT_MOVE_FLYING), ACTION_TRAIT)
+	mob_doing_effects.remove_traits(list(TRAIT_SILENT_FOOTSTEPS, TRAIT_MOVE_FLYING, TRAIT_GODMODE), ACTION_TRAIT)
 	if(gave_pass_flags)
 		mob_doing_effects.pass_flags &= ~PASSTABLE
 	mob_doing_effects.set_density(TRUE)
