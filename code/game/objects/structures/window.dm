@@ -910,13 +910,11 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/structure/window/reinforced/tinted/frosted/spaw
 	glass_type = /obj/item/stack/sheet/titaniumglass
 	custom_materials = list(/datum/material/alloy/titaniumglass = SHEET_MATERIAL_AMOUNT * 1)
 
-/obj/structure/window/reinforced/titanium/unanchored
-	anchored = FALSE
-
 MAPPING_DIRECTIONAL_HELPERS(/obj/structure/window/reinforced/titanium/spawner, 0)
 
 /obj/structure/window/reinforced/titanium/unanchored
 	anchored = FALSE
+	state = WINDOW_OUT_OF_FRAME
 
 /obj/structure/window/reinforced/shuttle/survival_pod
 	name = "pod window"
