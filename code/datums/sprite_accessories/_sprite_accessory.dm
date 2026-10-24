@@ -53,6 +53,8 @@
 /datum/sprite_accessory/blank
 	name = SPRITE_ACCESSORY_NONE
 	icon_state = SPRITE_ACCESSORY_NONE
+	// the "None" option should never be picked when randomizing a spawned organ's appearance
+	natural_spawn = FALSE
 
 //////////.//////////////////
 // MutantParts Definitions //
