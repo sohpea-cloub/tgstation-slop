@@ -82,7 +82,7 @@
 	. = ..()
 	if (!owner)
 		return
-	observed_blocker = owner.AddComponent(/datum/component/unobserved_actor, unobserved_flags = NO_OBSERVED_ACTIONS, affected_actions = list(type))
+	observed_blocker = owner.AddComponent(/datum/component/unobserved_actor, unobserved_flags = NO_OBSERVED_ACTIONS, affected_actions = list(type), silicons_observe = TRUE)
 
 /datum/action/cooldown/spell/jaunt/creature_teleport/Remove(mob/living/remove_from)
 	QDEL_NULL(observed_blocker)

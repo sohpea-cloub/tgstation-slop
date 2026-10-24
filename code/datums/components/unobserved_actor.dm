@@ -8,10 +8,12 @@
 	var/unobserved_flags = NONE
 	/// List of action types which cannot be used while observed. Applies to all actions if not set, and does nothing if NO_OBSERVED_ACTIONS flag isnt present
 	var/list/affected_actions = null
+	/// If TRUE, silicons (and AI eyes) with a client count as observers even though they have TRAIT_UNOBSERVANT
+	var/silicons_observe = FALSE
 	/// Cooldown to prevent message spam when holding a move button
 	COOLDOWN_DECLARE(message_cooldown)
 
-/datum/component/unobserved_actor/Initialize(unobserved_flags = NONE, list/affected_actions = null)
+/datum/component/unobserved_actor/Initialize(unobserved_flags = NONE, list/affected_actions = null, silicons_observe = FALSE)
 	. = ..()
 	if (!isliving(parent))
 		return ELEMENT_INCOMPATIBLE
@@ -19,6 +21,7 @@
 		CRASH("No behaviour flags provided to unobserved actor element")
 	src.unobserved_flags = unobserved_flags
 	src.affected_actions = affected_actions
+	src.silicons_observe = silicons_observe
 
 /datum/component/unobserved_actor/RegisterWithParent()
 	if (unobserved_flags & NO_OBSERVED_MOVEMENT)
@@ -99,11 +102,24 @@
 
 	// We aren't in darkness, loop for viewers.
 	for(var/mob/living/mob_target in oview(my_turf, 7)) // They probably cannot see us if we cannot see them... can they?
-		if(mob_target.client && !mob_target.is_blind() && !HAS_TRAIT(mob_target, TRAIT_UNOBSERVANT))
+		if(is_observer(mob_target))
 			return TRUE
 	for(var/obj/vehicle/sealed/mecha/mecha_mob_target in oview(my_turf, 7))
 		for(var/mob/mechamob_target as anything in mecha_mob_target.occupants)
-			if(mechamob_target.client && !mechamob_target.is_blind() && !HAS_TRAIT(mechamob_target, TRAIT_UNOBSERVANT))
+			if(is_observer(mechamob_target))
+				return TRUE
+	if(silicons_observe)
+		// An AI watching through its camera eye
+		for(var/mob/eye/camera/ai/ai_eye in oview(my_turf, 7))
+			if(is_observer(ai_eye.ai))
 				return TRUE
 
 	return FALSE
+
+/// Returns TRUE if this mob counts as looking at us
+/datum/component/unobserved_actor/proc/is_observer(mob/living/watcher)
+	if(!istype(watcher) || !watcher.client || watcher.is_blind())
+		return FALSE
+	if(HAS_TRAIT(watcher, TRAIT_UNOBSERVANT))
+		return silicons_observe && issilicon(watcher)
+	return TRUE
