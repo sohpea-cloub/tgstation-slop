@@ -186,9 +186,11 @@
 	to_chat(user, span_notice("You attach the [A] to the valve controls and secure it."))
 	A.holder = src
 	A.on_attach()
-	A.toggle_secure() //this calls update_icon(), which calls update_icon() on the holder (i.e. the bomb).
+	A.toggle_secure()
 	log_bomber(user, "attached a [A.name] to a ttv -", src, null, FALSE)
 	attacher = user
+	// not every assembly updates its holder in toggle_secure(), so do it ourselves
+	update_appearance()
 	return TRUE
 
 //These keep attached devices synced up, for example a TTV with a mouse trap being found in a bag so it's triggered, or moving the TTV with an infrared beam sensor to update the beam's direction.
