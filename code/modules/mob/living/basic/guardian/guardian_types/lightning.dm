@@ -30,7 +30,29 @@
 	. = ..()
 	if (isnull(summoner))
 		return
+	create_summoner_chain()
+	RegisterSignal(src, COMSIG_MOVABLE_MOVED, PROC_REF(on_position_changed))
+	RegisterSignal(summoner, COMSIG_MOVABLE_MOVED, PROC_REF(on_position_changed))
+
+/// Link us to our summoner with a lightning chain
+/mob/living/basic/guardian/lightning/proc/create_summoner_chain()
 	summoner_chain = chain_to(summoner, max_range = INFINITY) // Functionally it's actually our leash range but admins might fuck with it
+	RegisterSignal(summoner_chain, COMSIG_QDELETING, PROC_REF(on_summoner_chain_deleted))
+
+/// Forget our summoner chain when it goes away (the beam ends if either end leaves the z-level, such as by being stuffed into a container)
+/mob/living/basic/guardian/lightning/proc/on_summoner_chain_deleted(datum/source)
+	SIGNAL_HANDLER
+	if (summoner_chain == source)
+		summoner_chain = null
+
+/// If we or our summoner moved somewhere our chain can be drawn again, restore it
+/mob/living/basic/guardian/lightning/proc/on_position_changed(datum/source)
+	SIGNAL_HANDLER
+	if (!isnull(summoner_chain) || isnull(summoner) || stat == DEAD || !is_deployed())
+		return
+	if (!isturf(loc) || !isturf(summoner.loc) || loc.z != summoner.loc.z)
+		return
+	create_summoner_chain()
 
 /mob/living/basic/guardian/lightning/recall_effects()
 	. = ..()
@@ -38,6 +60,9 @@
 
 /// Remove all of our chains
 /mob/living/basic/guardian/lightning/proc/clear_chains()
+	UnregisterSignal(src, COMSIG_MOVABLE_MOVED)
+	if (!isnull(summoner))
+		UnregisterSignal(summoner, COMSIG_MOVABLE_MOVED)
 	QDEL_NULL(summoner_chain)
 	QDEL_LIST_ASSOC_VAL(enemy_chains)
 
