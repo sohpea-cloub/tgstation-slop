@@ -15,6 +15,8 @@
 	var/name
 	/// If the user has hit "submit"
 	var/ready = FALSE
+	/// Incremented every time saved data is loaded, so the UI knows to refresh its inputs
+	var/load_revision = 0
 
 /datum/pai_candidate/New(ckey)
 	src.ckey = ckey

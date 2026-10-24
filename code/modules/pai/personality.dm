@@ -53,4 +53,5 @@
 	F["name"] >> src.name
 	F["description"] >> src.description
 	F["comments"] >> src.comments
+	load_revision++
 	return TRUE

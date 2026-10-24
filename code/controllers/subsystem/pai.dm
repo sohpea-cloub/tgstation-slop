@@ -34,6 +34,7 @@ SUBSYSTEM_DEF(pai)
 	data["comments"] = candidate.comments
 	data["description"] = candidate.description
 	data["name"] = candidate.name
+	data["load_revision"] = candidate.load_revision
 	return data
 
 /datum/controller/subsystem/pai/ui_act(action, list/params, datum/tgui/ui)

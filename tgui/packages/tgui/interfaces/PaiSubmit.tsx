@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Button, Input, Section, Stack } from 'tgui-core/components';
 
 import { useBackend } from '../backend';
@@ -8,6 +8,7 @@ type Data = {
   comments: string;
   description: string;
   name: string;
+  load_revision: number;
 };
 
 const PAI_DESCRIPTION = `Personal AIs are advanced models capable of nuanced
@@ -21,12 +22,18 @@ alert pAI cards of your candidacy.`;
 
 export const PaiSubmit = (props) => {
   const { data } = useBackend<Data>();
-  const { comments, description, name } = data;
+  const { comments, description, name, load_revision } = data;
   const [input, setInput] = useState({
     comments,
     description,
     name,
   });
+
+  // Loading saved data changes the data from the server, but the inputs only
+  // read it when the window opens: copy it over whenever a load happens.
+  useEffect(() => {
+    setInput({ comments, description, name });
+  }, [load_revision]);
 
   return (
     <Window width={400} height={460} title="pAI Candidacy Menu">
