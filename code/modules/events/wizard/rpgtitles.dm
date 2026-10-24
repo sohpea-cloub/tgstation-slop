@@ -11,6 +11,11 @@
 /datum/round_event/wizard/rpgtitles/start()
 	GLOB.rpgtitle_controller = new /datum/rpgtitle_controller
 
+/// RPG titles whose trim icon state in card.dmi isn't just the title in lowercase without spaces.
+GLOBAL_LIST_INIT(rpg_trim_state_exceptions, list(
+	"Tavern Chef" = "trim_tavernstationhand",
+))
+
 ///Holds the global datum for rpgtitle, so anywhere may check for its existence (it signals into whatever it needs to modify, so it shouldn't require fetching)
 GLOBAL_DATUM(rpgtitle_controller, /datum/rpgtitle_controller)
 
@@ -105,6 +110,12 @@ GLOBAL_DATUM(rpgtitle_controller, /datum/rpgtitle_controller)
 	if(istype(card, /obj/item/card/id/advanced))
 		var/obj/item/card/id/advanced/advanced_card = card
 		advanced_card.assigned_icon_state = "rpg_assigned"
+		// The RPG card is smaller than a normal ID, so the subdepartment bar would hang off its edge.
+		advanced_card.show_subdepartment_overlay = FALSE
+		// Show the trim icon matching the RPG title (Chaplain -> Paladin) instead of the job's normal one.
+		var/rpg_trim_state = job.rpg_title && (GLOB.rpg_trim_state_exceptions[job.rpg_title] || "trim_[lowertext(replacetext(job.rpg_title, " ", ""))]")
+		if(rpg_trim_state && icon_exists(advanced_card.trim?.trim_icon || 'icons/obj/card.dmi', rpg_trim_state))
+			advanced_card.trim_state_override = rpg_trim_state
 	card.update_label()
 	card.update_icon()
 

@@ -1037,6 +1037,9 @@
 	/// An overlay icon state for when the card is assigned to a name. Usually manifests itself as a little scribble to the right of the job icon.
 	var/assigned_icon_state = "assigned"
 
+	/// Whether the subdepartment bar is drawn under the trim icon. Off for ID cards whose sprite is too small for it.
+	var/show_subdepartment_overlay = TRUE
+
 	/// If this is set, will manually override the icon file for the trim. Intended for admins to VV edit and chameleon ID cards.
 	var/trim_icon_override
 	/// If this is set, will manually override the icon state for the trim. Intended for admins to VV edit and chameleon ID cards.
@@ -1185,9 +1188,10 @@
 	department_overlay.color = trim_department_color
 	. += department_overlay
 
-	var/mutable_appearance/subdepartment_overlay = mutable_appearance(trim_icon_file, "subdepartment")
-	subdepartment_overlay.color = trim_subdepartment_color
-	. += subdepartment_overlay
+	if(show_subdepartment_overlay)
+		var/mutable_appearance/subdepartment_overlay = mutable_appearance(trim_icon_file, "subdepartment")
+		subdepartment_overlay.color = trim_subdepartment_color
+		. += subdepartment_overlay
 
 	/// Then we handle the job's icon here.
 	. += mutable_appearance(trim_icon_file, trim_icon_state)
