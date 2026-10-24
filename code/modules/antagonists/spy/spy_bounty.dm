@@ -192,7 +192,22 @@
  * * stealing - The item that was stolen.
  */
 /datum/spy_bounty/proc/finish_cleanup(atom/movable/stealing)
+	eject_living_contents(stealing)
 	qdel(stealing)
+
+/**
+ * Drops any living mobs inside the passed stolen thing (for example in a body bag inside a stolen modsuit) onto its turf,
+ * so they don't get sent to nullspace or deleted along with it.
+ * Mobs that are meant to live inside containers (brains in MMIs, pAIs in cards) are left alone.
+ */
+/datum/spy_bounty/proc/eject_living_contents(atom/movable/thing)
+	var/turf/drop_turf = get_turf(thing)
+	if(isnull(drop_turf))
+		return
+	for(var/mob/living/inside in thing.get_all_contents_type(/mob/living))
+		if(inside == thing || isbrain(inside) || ispAI(inside))
+			continue
+		inside.forceMove(drop_turf)
 
 /**
  * Handles putting the passed movable up on the black market.
@@ -210,6 +225,7 @@
 		thing.interaction_flags_atom |= INTERACT_ATOM_ATTACK_HAND
 	thing.anchored = was_anchored
 	thing.transform = thing.transform.Scale(100)
+	eject_living_contents(thing)
 	thing.moveToNullspace()
 
 	var/item_price
@@ -337,6 +353,7 @@
 
 /datum/spy_bounty/machine/send_to_black_market(obj/machinery/thing)
 	if(!istype(thing.circuit, /obj/item/circuitboard))
+		eject_living_contents(thing)
 		qdel(thing)
 		return FALSE
 
