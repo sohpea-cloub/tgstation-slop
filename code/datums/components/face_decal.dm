@@ -46,7 +46,7 @@
 		for(var/layer_key in layers)
 			simple_layers[""] = layers[layer_key]
 		bodypart_overlay.set_layers(simple_layers)
-		bodypart_overlay.offset_location = UPPER_BODY
+		bodypart_overlay.offset_location = ENTIRE_BODY
 		if(carbon_parent.bodyshape & BODYSHAPE_SNOUTED) //stupid, but external organ bodytypes are not stored on the limb
 			bodypart_overlay.icon_state = "[icon_state]_lizard"
 		else if(my_head.bodyshape & BODYSHAPE_MONKEY)
