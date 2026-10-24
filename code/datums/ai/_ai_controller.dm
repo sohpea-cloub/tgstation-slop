@@ -616,6 +616,12 @@ multiple modular subtrees with behaviors
 
 	var/params = list2params(modifiers)
 	var/mob/living/living_pawn = pawn
+	// Lost or disabled the active arm: switch to a working hand, or every interaction silently fails
+	if(!living_pawn.has_active_hand())
+		for(var/hand_index in 1 to living_pawn.get_num_hand_slots())
+			if(living_pawn.has_hand_for_held_index(hand_index))
+				living_pawn.swap_hand(hand_index, silent = TRUE)
+				break
 	if(isnull(combat_mode))
 		living_pawn.ClickOn(final_target, params)
 		return TRUE
