@@ -40,7 +40,12 @@
 			return
 		bodypart_overlay = new()
 		bodypart_overlay.overlay_flags = NONE
-		bodypart_overlay.set_layers(layers)
+		// Simple bodypart overlays append the layer key to the icon state ("spray_human_ADJ"), but the decal
+		// icons have no such states, so draw it on the one layer with an empty key.
+		var/list/simple_layers = list()
+		for(var/layer_key in layers)
+			simple_layers[""] = layers[layer_key]
+		bodypart_overlay.set_layers(simple_layers)
 		bodypart_overlay.offset_location = UPPER_BODY
 		if(carbon_parent.bodyshape & BODYSHAPE_SNOUTED) //stupid, but external organ bodytypes are not stored on the limb
 			bodypart_overlay.icon_state = "[icon_state]_lizard"
