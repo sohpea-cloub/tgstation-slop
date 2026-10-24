@@ -65,6 +65,7 @@
 		if(!strategy?.is_valid_target(dog, iter_living))
 			continue
 		dog.audible_message(span_warning("[dog] growls at [iter_living], seemingly annoyed by [iter_living.p_their()] presence."), hearing_distance = COMBAT_MESSAGE_RANGE)
+		playsound(dog, SFX_GROWL, 50, TRUE, -1)
 		controller.set_blackboard_key(target_key, iter_living)
 		controller.set_blackboard_key(BB_DOG_HARASS_HARM, FALSE)
 		return AI_BEHAVIOR_DELAY | AI_BEHAVIOR_SUCCEEDED
