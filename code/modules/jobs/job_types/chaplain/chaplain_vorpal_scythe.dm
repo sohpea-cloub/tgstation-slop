@@ -24,7 +24,8 @@ If the scythe isn't empowered when you sheath it, you take a heap of damage and 
 	var/obj/item/vorpalscythe/scythe = active_item
 	if(!scythe)
 		return FALSE
-	if(scythe.empowerment >= SCYTHE_SATED)
+	// No owner means the arm is being removed (the organ is already detached), so there is nobody left to punish
+	if(!owner || scythe.empowerment >= SCYTHE_SATED)
 		return ..()
 
 	to_chat(owner, span_userdanger("[scythe] tears into you for your unworthy display of arrogance!"))
