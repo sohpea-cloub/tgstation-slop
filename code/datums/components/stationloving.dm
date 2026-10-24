@@ -89,6 +89,13 @@
 	if(atom_in_bounds(source))
 		return
 
+	// Something we're inside of is being deliberately held in nullspace for a moment (like a shapechanged mob being swapped out)
+	var/atom/movable/movable_parent = parent
+	if(!get_turf(movable_parent))
+		for(var/atom/container as anything in get_nested_locs(movable_parent))
+			if(HAS_TRAIT(container, TRAIT_STATIONLOVING_NULLSPACE_SAFE))
+				return
+
 	var/turf/current_turf = get_turf(source)
 	var/turf/new_destination = relocate()
 	if(!new_destination)

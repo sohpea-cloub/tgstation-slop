@@ -95,8 +95,11 @@
 	caster_mob.remove_status_effect(/datum/status_effect/grouped/stasis, STASIS_SHAPECHANGE_EFFECT)
 
 	var/atom/former_loc = owner.loc
+	// The caster (and anything on them, like the nuke disk) is inside the owner, so it is in nullspace for a moment too
+	ADD_TRAIT(caster_mob, TRAIT_STATIONLOVING_NULLSPACE_SAFE, TRAIT_STATUS_EFFECT(id))
 	owner.moveToNullspace()
 	caster_mob.forceMove(former_loc) // This is to avoid crushing our former cockroach body
+	REMOVE_TRAIT(caster_mob, TRAIT_STATIONLOVING_NULLSPACE_SAFE, TRAIT_STATUS_EFFECT(id))
 
 	if(kill_caster_after)
 		caster_mob.death()

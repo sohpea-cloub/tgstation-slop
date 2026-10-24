@@ -638,6 +638,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 /// This atom is a secluded location, which is counted as out of bounds.
 /// Anything that enters this atom's contents should react if it wants to stay in bounds.
 #define TRAIT_SECLUDED_LOCATION "secluded_loc"
+/// Atoms holding this trait (or inside something holding it) are allowed to be briefly in nullspace by stationloving things, as when a shapechanged mob is swapped back to its true body.
+#define TRAIT_STATIONLOVING_NULLSPACE_SAFE "stationloving_nullspace_safe"
 
 /// Trait used by fugu glands to avoid double buffing
 #define TRAIT_FUGU_GLANDED "fugu_glanded"
