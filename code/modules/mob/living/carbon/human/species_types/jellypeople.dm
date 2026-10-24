@@ -313,6 +313,10 @@
 	if(!.)
 		return
 	var/mob/living/carbon/human/H = owner
+	if(H.has_trauma_type(/datum/brain_trauma/severe/split_personality))
+		if(feedback)
+			to_chat(H, span_warning("Your mind is too fractured to split your body!"))
+		return FALSE
 	if(H.get_blood_volume() >= BLOOD_VOLUME_SLIME_SPLIT)
 		return TRUE
 	return FALSE
@@ -342,6 +346,10 @@
 /datum/action/innate/split_body/proc/make_dupe()
 	var/mob/living/carbon/human/H = owner
 	CHECK_DNA_AND_SPECIES(H)
+	// A split personality's backseats belong to this body, so the mind must not leave it
+	if(H.has_trauma_type(/datum/brain_trauma/severe/split_personality))
+		to_chat(H, span_warning("Your mind is too fractured to split your body!"))
+		return
 
 	var/mob/living/carbon/human/spare = new /mob/living/carbon/human(H.loc)
 
@@ -380,9 +388,12 @@
 	overlay_icon_state = "bg_alien_border"
 
 /datum/action/innate/swap_body/Activate()
-	if(!isslimeperson(owner))
+	var/mob/living/carbon/human/slime = owner
+	if(!isslimeperson(slime))
 		to_chat(owner, span_warning("You are not a slimeperson."))
 		Remove(owner)
+	else if(slime.has_trauma_type(/datum/brain_trauma/severe/split_personality))
+		to_chat(owner, span_warning("Your mind is too fractured to move to another body!"))
 	else
 		ui_interact(owner)
 
@@ -478,6 +489,10 @@
 		return FALSE
 	var/datum/species/jelly/slime/SS = H.dna.species
 
+	// Split personality backseats belong to the body they were created in, so neither body may take part in a swap
+	if(H.has_trauma_type(/datum/brain_trauma/severe/split_personality))
+		return FALSE
+
 	if(QDELETED(dupe)) //Is there a body?
 		SS.bodies -= dupe
 		return FALSE
@@ -493,6 +508,9 @@
 		return FALSE
 
 	if(dupe.mind && dupe.mind.active) //Is it unoccupied?
+		return FALSE
+
+	if(dupe.has_trauma_type(/datum/brain_trauma/severe/split_personality)) //Is it hosting a split personality?
 		return FALSE
 
 	if(!(dupe in SS.bodies)) //Do we actually own it?
