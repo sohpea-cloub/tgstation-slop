@@ -167,6 +167,9 @@
 	if(glass)
 		airlock_material = "glass"
 	. = ..()
+	//walls (titanium, plastitanium...) smooth with airlocks, so tell them when one appears after them
+	if(!mapload)
+		QUEUE_SMOOTH_NEIGHBORS(src)
 	set_wires(get_wires())
 	if(security_level > AIRLOCK_SECURITY_IRON)
 		atom_integrity = normal_integrity * AIRLOCK_INTEGRITY_MULTIPLIER
@@ -301,6 +304,7 @@
 	qdel(src)
 
 /obj/machinery/door/airlock/Destroy()
+	QUEUE_SMOOTH_NEIGHBORS(src)
 	QDEL_NULL(electronics)
 	if (cyclelinkedairlock)
 		if (cyclelinkedairlock.cyclelinkedairlock == src)
