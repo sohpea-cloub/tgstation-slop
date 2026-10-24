@@ -226,7 +226,8 @@
 
 		diseases_to_add += disease
 
-	if(LAZYLEN(diseases_to_add))
+	// Components can't be added to something that is being deleted (e.g. a gibbed mob spilling organs)
+	if(LAZYLEN(diseases_to_add) && !QDELING(src))
 		AddComponent(/datum/component/infective, diseases_to_add)
 
 /// Called to remove an organ from a limb. Do not put any mob operations here (except the bodypart_getter at the start)
