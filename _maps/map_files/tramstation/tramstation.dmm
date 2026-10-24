@@ -15,6 +15,16 @@
 "aac" = (
 /turf/open/misc/asteroid/airless,
 /area/station/asteroid)
+"aad" = (
+/obj/effect/turf_decal/trimline/neutral/filled/corner{
+	dir = 1
+	},
+/obj/machinery/navbeacon{
+	location = "TramTop1";
+	codes_txt = "patrol;next_patrol=TramTop2"
+	},
+/turf/open/floor/iron,
+/area/station/hallway/primary/tram/center)
 "aae" = (
 /obj/structure/cable,
 /obj/machinery/door/airlock/external{
@@ -70,6 +80,22 @@
 /obj/effect/turf_decal/sand/plating,
 /turf/open/floor/plating,
 /area/station/asteroid)
+"aam" = (
+/obj/effect/landmark/start/bartender,
+/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
+/obj/machinery/navbeacon{
+	location = "TramTop2";
+	codes_txt = "patrol;next_patrol=TramTop3"
+	},
+/turf/open/floor/iron/dark,
+/area/station/service/bar)
+"aan" = (
+/obj/machinery/navbeacon{
+	location = "TramTop3";
+	codes_txt = "patrol;next_patrol=TramTop4"
+	},
+/turf/open/floor/iron/cafeteria,
+/area/station/service/kitchen)
 "aao" = (
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
@@ -86,10 +112,52 @@
 /obj/structure/marker_beacon/burgundy,
 /turf/open/misc/asteroid/airless,
 /area/station/asteroid)
+"aar" = (
+/obj/effect/turf_decal/siding/thinplating,
+/obj/structure/cable,
+/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
+/obj/machinery/navbeacon{
+	location = "TramTop4";
+	codes_txt = "patrol;next_patrol=TramTop5"
+	},
+/turf/open/floor/iron/white/side{
+	dir = 1
+	},
+/area/station/service/kitchen)
+"aas" = (
+/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
+/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
+/obj/machinery/navbeacon{
+	location = "TramTop5";
+	codes_txt = "patrol;next_patrol=TramTop6"
+	},
+/turf/open/floor/wood/large,
+/area/station/service/theater)
 "aat" = (
 /obj/item/stack/cable_coil,
 /turf/open/misc/asteroid/airless,
 /area/station/asteroid)
+"aau" = (
+/obj/structure/disposalpipe/segment,
+/obj/machinery/atmospherics/pipe/smart/manifold4w/supply/hidden/layer4,
+/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
+/obj/machinery/navbeacon{
+	location = "TramTop6";
+	codes_txt = "patrol;next_patrol=TramTop7"
+	},
+/turf/open/floor/wood,
+/area/station/service/theater)
+"aav" = (
+/obj/effect/landmark/event_spawn,
+/obj/structure/cable,
+/obj/structure/disposalpipe/segment,
+/obj/machinery/atmospherics/pipe/smart/manifold4w/scrubbers/hidden/layer2,
+/obj/machinery/navbeacon{
+	location = "TramTop7";
+	codes_txt = "patrol;next_patrol=TramTop8"
+	},
+/turf/open/floor/carpet,
+/area/station/service/theater)
 "aaw" = (
 /obj/item/storage/toolbox/electrical,
 /turf/open/misc/asteroid/airless,
@@ -98,12 +166,49 @@
 /obj/item/stack/ore/glass,
 /turf/open/misc/asteroid/airless,
 /area/station/asteroid)
+"aay" = (
+/obj/structure/cable,
+/obj/structure/disposalpipe/segment{
+	dir = 4
+	},
+/obj/machinery/navbeacon{
+	location = "TramTop8";
+	codes_txt = "patrol;next_patrol=TramTop9"
+	},
+/turf/open/floor/wood,
+/area/station/service/theater)
 "aaz" = (
 /obj/effect/turf_decal/trimline/red/filled/line{
 	dir = 4
 	},
 /turf/open/floor/iron,
 /area/station/security/prison/safe)
+"aaA" = (
+/obj/structure/cable,
+/obj/structure/disposalpipe/segment{
+	dir = 9
+	},
+/obj/machinery/navbeacon{
+	location = "TramTop9";
+	codes_txt = "patrol;next_patrol=TramTop10"
+	},
+/turf/open/floor/iron/checker,
+/area/station/commons/lounge)
+"aaB" = (
+/obj/machinery/navbeacon{
+	location = "TramTop10";
+	codes_txt = "patrol;next_patrol=TramTop1"
+	},
+/turf/open/floor/iron/checker,
+/area/station/commons/lounge)
+"aaC" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/machinery/navbeacon{
+	location = "TramLower1";
+	codes_txt = "patrol;next_patrol=TramLower2"
+	},
+/turf/open/floor/plating,
+/area/station/maintenance/tram/left)
 "aaD" = (
 /obj/structure/ore_box,
 /turf/open/misc/asteroid/airless,
@@ -212,6 +317,14 @@
 /obj/structure/cable,
 /turf/open/floor/iron,
 /area/station/security/prison/workout)
+"aaU" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/machinery/navbeacon{
+	location = "TramLower2";
+	codes_txt = "patrol;next_patrol=TramLower3"
+	},
+/turf/open/floor/plating,
+/area/station/maintenance/tram/left)
 "aaV" = (
 /obj/effect/spawner/structure/window/reinforced,
 /obj/effect/turf_decal/trimline/blue/warning{
@@ -219,6 +332,30 @@
 	},
 /turf/open/floor/plating,
 /area/station/escapepodbay)
+"aaW" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/machinery/navbeacon{
+	location = "TramLower3";
+	codes_txt = "patrol;next_patrol=TramLower4"
+	},
+/turf/open/floor/plating,
+/area/station/maintenance/tram/left)
+"aaX" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/machinery/navbeacon{
+	location = "TramLower4";
+	codes_txt = "patrol;next_patrol=TramLower5"
+	},
+/turf/open/floor/plating,
+/area/station/maintenance/tram/left)
+"aaY" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/machinery/navbeacon{
+	location = "TramLower5";
+	codes_txt = "patrol;next_patrol=TramLower16"
+	},
+/turf/open/floor/plating,
+/area/station/maintenance/tram/left)
 "aaZ" = (
 /obj/effect/turf_decal/sand/plating,
 /turf/open/floor/plating,
@@ -89198,7 +89335,7 @@ aaa
 ncF
 oUq
 qQq
-qQq
+aaU
 qQq
 qQq
 lQM
@@ -89456,7 +89593,7 @@ ncF
 ulJ
 agL
 qQq
-qQq
+aaW
 qQq
 lQM
 kcA
@@ -91510,9 +91647,9 @@ ahU
 rQp
 wyf
 qQq
-qQq
+aaC
 hvm
-qQq
+aaX
 qQq
 oRE
 ncF
@@ -93825,7 +93962,7 @@ sHR
 fid
 qQq
 hvm
-qQq
+aaY
 fid
 dmR
 ncF
@@ -171166,7 +171303,7 @@ mHc
 wwK
 crT
 nKz
-tOB
+aam
 qid
 vnI
 jPK
@@ -171412,7 +171549,7 @@ eSx
 qfs
 tqV
 sfv
-guL
+aan
 fKn
 lJA
 mdp
@@ -171431,9 +171568,9 @@ hOh
 crT
 hCp
 mHc
-mHc
+aaB
 beW
-aEk
+aad
 rOu
 umT
 ykP
@@ -171673,7 +171810,7 @@ kEO
 kEO
 ddf
 kEO
-mUL
+aar
 ejK
 lgD
 wWH
@@ -172200,7 +172337,7 @@ cye
 nWu
 tqo
 bLl
-eTQ
+aaA
 aCT
 jjy
 vyH
@@ -172962,7 +173099,7 @@ eDV
 fHo
 tIT
 dME
-evW
+aas
 vlJ
 nMe
 anN
@@ -173998,7 +174135,7 @@ aBa
 uDB
 uDB
 eSO
-pvg
+aay
 dcz
 aaa
 aaa
@@ -174247,11 +174384,11 @@ atr
 siv
 cRF
 qHv
-mwA
+aau
 mwA
 arY
 arY
-jza
+aav
 axU
 axU
 clc
