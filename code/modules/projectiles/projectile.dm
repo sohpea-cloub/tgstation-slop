@@ -770,6 +770,12 @@
 
 /obj/projectile/proc/fire(fire_angle, atom/direct_target)
 	LAZYINITLIST(impacted)
+	// Whatever is hiding inside a chameleon projector's dummy can't be hit directly (its loc is the dummy, not the turf),
+	// so a shot aimed at it would fly right through. Aim at the disguise instead, so that it gets hit and the projector breaks.
+	if (istype(original?.loc, /obj/effect/dummy/chameleon))
+		original = original.loc
+	if (istype(direct_target?.loc, /obj/effect/dummy/chameleon))
+		direct_target = direct_target.loc
 	if (firer)
 		RegisterSignal(firer, COMSIG_QDELETING, PROC_REF(firer_deleted))
 		SEND_SIGNAL(firer, COMSIG_PROJECTILE_FIRER_BEFORE_FIRE, src, fired_from, original)
