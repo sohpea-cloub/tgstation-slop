@@ -1329,11 +1329,11 @@
 
 /obj/item/circuitboard/machine/hydroponics/proc/changeindicators(mob/living/user, obj/item/I)
 	if(build_path == /obj/machinery/hydroponics/constructable/oldstyle)
-		name = "Hydroponics Tray [name_extension]"
+		name = "\improper Hydroponics Tray [name_extension]"
 		build_path = /obj/machinery/hydroponics/constructable
 		balloon_alert(user, "defaulting indicator location")
 	else
-		name = "Hydroponics Tray (Alt) [name_extension]"
+		name = "\improper Hydroponics Tray (Alt) [name_extension]"
 		build_path = /obj/machinery/hydroponics/constructable/oldstyle
 		balloon_alert(user, "moved indicators location")
 

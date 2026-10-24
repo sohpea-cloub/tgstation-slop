@@ -24,7 +24,8 @@
 
 /obj/item/circuitboard/Initialize(mapload)
 	if(name_extension)
-		name = "[initial(name)] [name_extension]"
+		// \improper: board names are capitalized, but they are not proper nouns
+		name = "\improper [initial(name)] [name_extension]"
 	if(icon_state == "circuit_map") // some circuitboards have cool custom sprites
 		set_greyscale(new_config = /datum/greyscale_config/circuit)
 	return ..()
