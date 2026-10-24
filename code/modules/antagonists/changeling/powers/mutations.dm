@@ -101,6 +101,10 @@
 	var/helmet_name_simple = "     "
 	var/recharge_slowdown = 0
 	var/blood_on_castoff = 0
+	/// The changeling datum whose chem recharge we slowed while the suit is worn, so the slowdown is still undone
+	/// when the suit is cast off after the mind has already left this body (body swapping, death, deletion).
+	var/datum/weakref/slowed_changeling
+
 
 /datum/action/changeling/suit/Grant(mob/granted_to)
 	. = ..()
@@ -126,7 +130,7 @@
 
 //checks if we already have an organic suit and casts it off.
 /datum/action/changeling/suit/proc/check_suit(mob/user)
-	var/datum/antagonist/changeling/changeling = IS_CHANGELING(user)
+	var/datum/antagonist/changeling/changeling = IS_CHANGELING(user) || slowed_changeling?.resolve()
 	if(!ishuman(user) || !changeling)
 		return 1
 	var/mob/living/carbon/human/H = user
@@ -147,6 +151,7 @@
 			playsound(H.loc, 'sound/effects/splat.ogg', 50, TRUE) //So real sounds
 
 		changeling.chem_recharge_slowdown -= recharge_slowdown
+		slowed_changeling = null
 		return 1
 
 /datum/action/changeling/suit/sting_action(mob/living/carbon/human/user)
@@ -166,6 +171,7 @@
 
 	var/datum/antagonist/changeling/changeling = IS_CHANGELING(user)
 	changeling.chem_recharge_slowdown += recharge_slowdown
+	slowed_changeling = WEAKREF(changeling)
 	return TRUE
 
 
