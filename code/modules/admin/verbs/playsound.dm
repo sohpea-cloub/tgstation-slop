@@ -45,7 +45,11 @@ ADMIN_VERB(play_local_sound, R_SOUND, "Play Local Sound", "Plays a sound only yo
 	log_admin("[key_name(user)] played a local sound [sound]")
 	message_admins("[key_name_admin(user)] played a local sound [sound]")
 	var/volume = tgui_input_number(user, "What volume would you like the sound to play at?", max_value = 100)
-	playsound(get_turf(user.mob), sound, volume || 50, FALSE)
+	// Sent straight to the admin: playsound() would play it to everyone in earshot and
+	// scale it by distance and pressure (a ghost over space heard it at 15%, or not at all).
+	var/sound/admin_sound = sound(sound)
+	admin_sound.volume = volume || 50
+	SEND_SOUND(user, admin_sound)
 	BLACKBOX_LOG_ADMIN_VERB("Play Local Sound")
 
 ADMIN_VERB(play_direct_mob_sound, R_SOUND, "Play Direct Mob Sound", "Play a sound directly to a mob.", ADMIN_CATEGORY_FUN)
@@ -61,7 +65,7 @@ ADMIN_VERB(play_direct_mob_sound, R_SOUND, "Play Direct Mob Sound", "Play a soun
 	var/sound/admin_sound = sound(sound)
 	if(volume)
 		admin_sound.volume = volume
-	SEND_SOUND(target, sound)
+	SEND_SOUND(target, admin_sound)
 	BLACKBOX_LOG_ADMIN_VERB("Play Direct Mob Sound")
 
 GLOBAL_VAR_INIT(web_sound_cooldown, 0)
