@@ -181,6 +181,8 @@
 
 		call(src, on_loss)(organ_owner, dummy, partial_pressure)
 	dummy.garbage_collect()
+	// Forget what we breathed last, so stale pressures don't make the next owner (or this one, if we're put back) skip clearing failed breaths
+	last_partial_pressures = alist()
 
 /**
  * Tells the lungs to pay attention to the passed in gas type
