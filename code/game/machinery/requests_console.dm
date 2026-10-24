@@ -531,7 +531,10 @@ GLOBAL_LIST_EMPTY(req_console_ckey_departments)
 	return NONE
 
 /obj/machinery/requests_console/on_deconstruction(disassembled)
-	new /obj/item/wallframe/requests_console(loc)
+	var/obj/item/wallframe/requests_console/frame = new(loc)
+	// Keep the capabilities given by mapping helpers, so the console works the same when it is put back
+	frame.can_send_announcements = can_send_announcements
+	frame.receive_ore_updates = receive_ore_updates
 
 /obj/machinery/requests_console/auto_name // Register an autoname variant and then make the directional helpers before undefing all the magic bits
 	auto_name = TRUE
@@ -547,6 +550,16 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/machinery/requests_console/auto_name, 30)
 	result_path = /obj/machinery/requests_console/auto_name
 	pixel_shift = 30
 	custom_materials = list(/datum/material/iron = SHEET_MATERIAL_AMOUNT * 7)
+	/// Whether the console built from this frame can send department announcements
+	var/can_send_announcements = FALSE
+	/// Whether the console built from this frame receives ore updates
+	var/receive_ore_updates = FALSE
+
+/obj/item/wallframe/requests_console/after_attach(obj/attached_to)
+	..()
+	var/obj/machinery/requests_console/console = attached_to
+	console.can_send_announcements = can_send_announcements
+	console.receive_ore_updates = receive_ore_updates
 
 /datum/aas_config_entry/rc_emergency
 	name = "RC Alert: Emergency Request"
