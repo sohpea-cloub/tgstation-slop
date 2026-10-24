@@ -873,6 +873,9 @@
 	owner.casting = FALSE //set the casting value to false so we don't delete the new fishing line (different target) on Destroy()
 	if(blocked >= 100)
 		return
+	//The rod may have been dropped while the hook was still in the air, in which case we mustn't tie a line to a mob that isn't holding it.
+	if(!ismob(firer) || !firer.contains(owner))
+		return
 	owner.hook_hit(target, firer)
 
 	if(!isturf(target) || owner.fishing_line)
