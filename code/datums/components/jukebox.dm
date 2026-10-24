@@ -194,6 +194,7 @@
 	for(var/mob/listening as anything in listeners)
 		deregister_listener(listening)
 	active_song_sound = null
+	UnregisterSignal(SSdcs, COMSIG_GLOB_MOB_LOGGED_IN)
 
 /// Helper to update all mobs currently listening to the music.
 /datum/jukebox/proc/update_all()
@@ -226,6 +227,7 @@
 		return
 
 	RegisterSignals(new_listener, list(COMSIG_MOVABLE_MOVED, COMSIG_MOB_JUKEBOX_PREFERENCE_APPLIED), PROC_REF(listener_moved))
+	RegisterSignal(new_listener, COMSIG_MOB_LOGOUT, PROC_REF(listener_logout))
 	RegisterSignals(new_listener, list(SIGNAL_ADDTRAIT(TRAIT_DEAF), SIGNAL_REMOVETRAIT(TRAIT_DEAF)), PROC_REF(listener_deaf))
 	var/pref_volume = new_listener.client?.prefs.read_preference(/datum/preference/numeric/volume/sound_jukebox)
 	if(HAS_TRAIT(new_listener, TRAIT_DEAF) || !pref_volume)
@@ -241,6 +243,8 @@
 		active_song_sound.y = 1
 		active_song_sound.environment = juke_area.sound_environment || SOUND_ENVIRONMENT_NONE
 		active_song_sound.repeat = sound_loops
+		if(requires_range_check)
+			RegisterSignal(SSdcs, COMSIG_GLOB_MOB_LOGGED_IN, PROC_REF(check_logged_in_listener))
 
 	update_listener(new_listener)
 	// if you have a sound with status SOUND_UPDATE,
@@ -263,8 +267,17 @@
 /// Allows mobs who are clientless when the music starts to hear it when they log in.
 /datum/jukebox/proc/listener_login(mob/source)
 	SIGNAL_HANDLER
-	deregister_listener(source)
+	// the client is on this mob now and the song is about to be (re)sent to it, no need to stop it in between
+	deregister_listener(source, stop_music = FALSE)
 	register_listener(source)
+
+/// When a listener's client leaves it (death and ghosting, possession...), the music is no longer theirs to play or stop.
+/// The mob goes back to waiting for a login, and whichever mob the client moved to picks the music up on its own.
+/datum/jukebox/proc/listener_logout(mob/source)
+	SIGNAL_HANDLER
+	deregister_listener(source)
+	if(!QDELETED(source))
+		register_listener(source)
 
 /// Updates the sound's mute status when the mob's deafness updates.
 /datum/jukebox/proc/listener_deaf(mob/source)
@@ -310,13 +323,16 @@
 	return TRUE
 
 /// Deregisters the passed mob as a listener to the jukebox, stopping the music.
-/datum/jukebox/proc/deregister_listener(mob/no_longer_listening)
+/datum/jukebox/proc/deregister_listener(mob/no_longer_listening, stop_music = TRUE)
 	PROTECTED_PROC(TRUE)
 
 	listeners -= no_longer_listening
-	no_longer_listening.stop_sound_channel(CHANNEL_JUKEBOX)
+	// a clientless mob has no channel of its own: the client may already be on another mob that is listening
+	if(stop_music && no_longer_listening.client)
+		no_longer_listening.stop_sound_channel(CHANNEL_JUKEBOX)
 	UnregisterSignal(no_longer_listening, list(
 		COMSIG_MOB_LOGIN,
+		COMSIG_MOB_LOGOUT,
 		COMSIG_QDELETING,
 		COMSIG_MOVABLE_MOVED,
 		COMSIG_MOB_JUKEBOX_PREFERENCE_APPLIED,
@@ -383,6 +399,20 @@
 	if(entered in listeners)
 		return
 	register_listener(entered)
+
+/// Mobs that get a client without ever walking into range (ghosts made by dying, spawned or possessed mobs) are not caught by check_new_listener
+/datum/jukebox/proc/check_logged_in_listener(datum/source, mob/logged_in)
+	SIGNAL_HANDLER
+
+	if(isnull(active_song_sound) || (logged_in in listeners))
+		return
+	var/turf/sound_turf = get_turf(parent)
+	var/turf/listener_turf = get_turf(logged_in)
+	if(isnull(sound_turf) || isnull(listener_turf) || sound_turf.z != listener_turf.z)
+		return
+	if(abs(sound_turf.x - listener_turf.x) > x_cutoff || abs(sound_turf.y - listener_turf.y) > z_cutoff)
+		return
+	register_listener(logged_in)
 
 /**
  * Subtype which only plays the music to the mob you pass in via start_music().
