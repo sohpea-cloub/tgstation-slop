@@ -339,6 +339,10 @@ GLOBAL_LIST_INIT(emphasis_types, list(
 	var/name = GLOB.reserved_radio_frequencies["[freq]"]
 	if(name)
 		return name
+	// Messages that bypass telecomms (mundane radio broadcasts) have no server-provided name
+	name = GLOB.default_radio_channel_names["[freq]"]
+	if(name)
+		return name
 	return "[copytext_char("[freq]", 1, 4)].[copytext_char("[freq]", 4, 5)]"
 
 /proc/get_radio_color(freq, freq_color)

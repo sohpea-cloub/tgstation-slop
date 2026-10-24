@@ -112,6 +112,15 @@ GLOBAL_LIST_INIT(default_radio_channels, list(
 	STATUS_DISPLAY_RELAY = FREQ_STATUS_DISPLAYS,
 ))
 
+/// Reverse of default_radio_channels: frequency (as text) to channel name. Used to name a frequency when no telecomms server stamped a name on the message.
+GLOBAL_LIST_INIT(default_radio_channel_names, init_default_radio_channel_names())
+
+/proc/init_default_radio_channel_names()
+	var/list/names = list()
+	for(var/channel_name in GLOB.default_radio_channels)
+		names["[GLOB.default_radio_channels[channel_name]]"] = channel_name
+	return names
+
 GLOBAL_LIST_INIT(reserved_radio_frequencies, list(
 	"[FREQ_CENTCOM]" = RADIO_CHANNEL_CENTCOM,
 	"[FREQ_SYNDICATE]" = RADIO_CHANNEL_SYNDICATE,
