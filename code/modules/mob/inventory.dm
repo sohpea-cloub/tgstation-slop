@@ -256,6 +256,7 @@
 	I.pixel_y = I.base_pixel_y
 	if(QDELETED(I)) // this is here because some ABSTRACT items like slappers and circle hands could be moved from hand to hand then delete, which meant you'd have a null in your hand until you cleared it (say, by dropping it)
 		held_items[hand_index] = null
+		update_held_items() // the overlay built above still shows the deleted item
 		return FALSE
 	SEND_SIGNAL(I, COMSIG_ITEM_ENTERED_HANDS, src, hand_index)
 	return hand_index
