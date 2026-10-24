@@ -267,7 +267,29 @@
 		// attempt to move us where we currently are, it will get weird.
 			return SHUTTLE_ALREADY_DOCKED
 
+	// the dock itself may be free while another shuttle sits on part of the area we would take up
+	if(overlaps_other_shuttle(stationary_dock))
+		return SHUTTLE_SOMEONE_ELSE_DOCKED
+
 	return SHUTTLE_CAN_DOCK
+
+/// Returns TRUE if another mobile docking port currently occupies any of the area this shuttle would cover when docked at stationary_dock.
+/obj/docking_port/mobile/proc/overlaps_other_shuttle(obj/docking_port/stationary/stationary_dock)
+	var/list/new_bounds = return_coords(stationary_dock.x, stationary_dock.y, stationary_dock.dir)
+	for(var/obj/docking_port/mobile/other as anything in SSshuttle.mobile_docking_ports)
+		if(other == src || QDELETED(other) || !other.z || other.z != stationary_dock.z)
+			continue
+		var/list/other_bounds = other.return_coords()
+		if(max(new_bounds[1], new_bounds[3]) < min(other_bounds[1], other_bounds[3]))
+			continue
+		if(min(new_bounds[1], new_bounds[3]) > max(other_bounds[1], other_bounds[3]))
+			continue
+		if(max(new_bounds[2], new_bounds[4]) < min(other_bounds[2], other_bounds[4]))
+			continue
+		if(min(new_bounds[2], new_bounds[4]) > max(other_bounds[2], other_bounds[4]))
+			continue
+		return TRUE
+	return FALSE
 
 /obj/docking_port/mobile/proc/check_dock(obj/docking_port/stationary/S, silent = FALSE)
 	var/status = canDock(S)
