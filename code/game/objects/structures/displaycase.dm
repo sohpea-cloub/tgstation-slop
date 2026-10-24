@@ -413,6 +413,10 @@
 		trophy_message = null
 
 /obj/structure/displaycase/trophy/insert_showpiece(obj/item/new_showpiece, mob/user)
+	// only the typepath is saved, which can't describe a mob inside a holder
+	if(istype(new_showpiece, /obj/item/mob_holder))
+		to_chat(user, span_notice("This doesn't belong in this kind of display."))
+		return TRUE
 	if(..())
 		return TRUE
 	if(showpiece == new_showpiece)
