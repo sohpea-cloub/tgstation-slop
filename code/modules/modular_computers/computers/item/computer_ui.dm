@@ -11,6 +11,7 @@
  * user - The person whose UI we're updating. Only necessary if we're opening the UI for the first time.
  */
 /obj/item/modular_computer/proc/update_tablet_open_uis(mob/user)
+	var/datum/tgui/new_ui
 	if(user)
 		var/datum/tgui/active_ui = SStgui.get_open_ui(user, src)
 		if(!active_ui)
@@ -19,9 +20,13 @@
 				active_program.ui_interact(user, active_ui)
 			else
 				active_ui = new(user, src, "NtosMain")
-			return active_ui.open()
+			new_ui = active_ui
+			active_ui.open()
+			// Other viewers with the computer already open still need their interface switched, so don't return here.
 
 	for (var/datum/tgui/window as anything in open_uis)
+		if(window == new_ui) // just opened on the right interface
+			continue
 		if(active_program)
 			window.interface = active_program.tgui_id
 			window.title = active_program.filedesc
