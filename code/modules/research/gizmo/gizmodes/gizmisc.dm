@@ -30,7 +30,7 @@
 
 /datum/gizpulse/lights_off/activate(atom/movable/holder, datum/gizmodes/master, datum/gizmo_interface/interface)
 	SEND_SIGNAL(holder, COMSIG_GIZMO_OFF_STATE)
-	holder.set_light_on(FALSE)
+	holder.set_light(l_on = FALSE)
 
 /// Gives a voice hint or changes the voices language for use with a voice interface (i mean you give this to a wire interface or other but it then gives you
 /// the info to use a voice interface)
