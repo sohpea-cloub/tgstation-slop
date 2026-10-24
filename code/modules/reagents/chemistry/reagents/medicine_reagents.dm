@@ -792,8 +792,8 @@
 		if(48 to INFINITY) //10u onward
 			affected_mob.adjust_drowsiness_up_to(3 SECONDS * metabolization_ratio * seconds_per_tick, 20 SECONDS)
 			// doesn't scale from purity - at this point it tries to guarantee sleep
-			if(SPT_PROB(30 * (48 - current_cycle), seconds_per_tick))
-				affected_mob.Sleeping(4 SECONDS * metabolization_ratio)
+			if(SPT_PROB(min(30 * (current_cycle - 48), 100), seconds_per_tick))
+				affected_mob.Sleeping(4 SECONDS * metabolization_ratio * seconds_per_tick)
 
 /datum/reagent/medicine/morphine/overdose_process(mob/living/affected_mob, seconds_per_tick, metabolization_ratio)
 	. = ..()
