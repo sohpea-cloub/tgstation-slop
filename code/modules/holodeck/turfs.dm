@@ -99,6 +99,12 @@
 	. = ..()
 	AddComponent(/datum/component/fishing_spot, /datum/fish_source/holographic)
 
+/turf/open/floor/holofloor/beach/water/item_interaction(mob/living/user, obj/item/tool, list/modifiers)
+	// holofloors block every item interaction, but fishing rods need theirs to reach the fishing spot when cast from an adjacent turf
+	if(istype(tool, /obj/item/fishing_rod))
+		return NONE
+	return ..()
+
 /turf/open/floor/holofloor/asteroid
 	gender = PLURAL
 	name = "asteroid sand"
