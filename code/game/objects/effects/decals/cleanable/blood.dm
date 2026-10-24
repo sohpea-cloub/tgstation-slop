@@ -129,17 +129,22 @@
 		return reagents
 
 	var/list/blood_DNA = GET_ATOM_BLOOD_DNA(src)
-	var/list/reagents_to_add = list()
+	var/list/datum/blood_type/types_to_add = list()
+	var/list/dna_samples = list()
 	for(var/dna_sample in blood_DNA)
-		var/datum/blood_type/blood_type = blood_DNA[dna_sample]
-		reagents_to_add += blood_type.reagent_type
+		types_to_add += blood_DNA[dna_sample]
+		dna_samples += dna_sample
 
 	create_reagents(round(bloodiness * BLOOD_TO_UNITS_MULTIPLIER, CHEMICAL_VOLUME_ROUNDING))
-	var/num_reagents = length(reagents_to_add)
-	for(var/reagent_type in reagents_to_add)
-		reagents.add_reagent(reagent_type = reagent_type,
+	var/num_reagents = length(types_to_add)
+	for(var/i in 1 to num_reagents)
+		var/datum/blood_type/blood_type = types_to_add[i]
+		// Carry over the blood type (and any other default data) along with the DNA, like blood taken from a mob would have
+		var/list/blood_data = blood_type.get_default_blood_data()
+		blood_data[BLOOD_DATA_DNA] = dna_samples[i]
+		reagents.add_reagent(reagent_type = blood_type.reagent_type,
 							amount = round(bloodiness * BLOOD_TO_UNITS_MULTIPLIER / num_reagents, CHEMICAL_VOLUME_ROUNDING),
-							data = ispath(reagent_type, /datum/reagent/blood) ? list(BLOOD_DATA_DNA = pick(blood_DNA)) : null)
+							data = blood_data)
 	return reagents
 
 /obj/effect/decal/cleanable/blood/replace_decal(obj/effect/decal/cleanable/blood/merger)
