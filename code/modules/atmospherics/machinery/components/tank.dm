@@ -124,9 +124,9 @@
 	. = ..()
 	var/wrench_hint = EXAMINE_HINT("wrench")
 	if(!initialize_directions)
-		. += span_notice("A pipe port can be opened with a [wrench_hint].")
+		. += span_notice("A pipe port can be opened on the side you are standing on with a [wrench_hint].")
 	else
-		. += span_notice("The pipe port can be moved or closed with a [wrench_hint].")
+		. += span_notice("A pipe port can be opened or closed on the side you are standing on with a [wrench_hint]. Moving a port means closing it and opening another.")
 	. += span_notice("A holographic sticker on it says that its maximum safe pressure is: [siunit_pressure(max_pressure, 0)].")
 
 /obj/machinery/atmospherics/components/tank/finalize_material_effects(list/materials)
