@@ -149,7 +149,8 @@
 							"vision_range": 5,
 							"ignore_list_key": "BB_TEMPORARY_IGNORE_LIST",
 							"must_be_reachable": true,
-							"reach_distance": 15
+							"reach_distance": 15,
+							"minimum_distance": 1
 						}
 					},
 					{
