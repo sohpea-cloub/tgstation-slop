@@ -236,6 +236,27 @@ SUBSYSTEM_DEF(cameras)
 /datum/controller/subsystem/cameras/proc/is_visible_by_cameras(atom/target)
 	return turf_visible_by_cameras(get_turf(target))
 
+/// Will check if an atom is on a turf viewable by a working camera that is on at least one of the passed networks.
+/// Used for things like AI tracking, which must not see through cameras the AI has no access to (e.g. ruin cameras).
+/// Returns TRUE if so, FALSE otherwise.
+/datum/controller/subsystem/cameras/proc/is_visible_by_camera_networks(atom/target, list/networks)
+	var/turf/position = get_turf(target)
+	// Cheap early out: if no camera at all sees the turf, no camera on our networks does either
+	if(!turf_visible_by_cameras(position))
+		return FALSE
+	var/datum/camerachunk/chunk = generate_chunk(position.x, position.y, position.z)
+	for(var/z_level in chunk.lower_z to chunk.upper_z)
+		for(var/obj/machinery/camera/camera as anything in chunk.cameras["[z_level]"])
+			if(!length(camera.network & networks))
+				continue
+			if(!camera.can_use())
+				continue
+			if(camera.z == position.z && get_dist(camera, position) > camera.view_range)
+				continue
+			if(length(camera.can_see() & list(position)))
+				return TRUE
+	return FALSE
+
 /// Checks if the passed turf is visible by any camera.
 /// Returns TRUE if the turf is visible by any camera, FALSE otherwise.
 /datum/controller/subsystem/cameras/proc/turf_visible_by_cameras(turf/position)

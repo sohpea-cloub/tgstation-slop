@@ -1347,6 +1347,10 @@ GAME_VERB_PROC(/mob/living, mob_sleep, "Sleep", null)
 	if(onSyndieBase() && !(ROLE_SYNDICATE in user?.faction))
 		return FALSE
 	// Now, are they viewable by a camera? (This is last because it's the most intensive check)
+	// AIs can only track what is seen by cameras on the networks they are connected to
+	if(isAI(user))
+		var/mob/living/silicon/ai/tracking_ai = user
+		return SScameras.is_visible_by_camera_networks(src, tracking_ai.network)
 	if(!SScameras.is_visible_by_cameras(src))
 		return FALSE
 	return TRUE
