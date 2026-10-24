@@ -104,6 +104,18 @@
 	user.revive(flags_to_heal & ~HEAL_LIMBS)
 	to_chat(user, span_changeling("We have revived ourselves."))
 
+	// If we died inside another creature (eaten, absorbed, zombified), burst out of it instead of riding it around alive
+	var/mob/living/devourer = user.loc
+	if(isliving(devourer))
+		var/turf/exit_turf = get_turf(devourer)
+		user.forceMove(exit_turf)
+		playsound(exit_turf, 'sound/effects/splat.ogg', 50, TRUE)
+		user.visible_message(
+			span_danger("[user] bursts out of [devourer]!"),
+			span_changeling("We burst out of [devourer]!"),
+		)
+		to_chat(devourer, span_userdanger("Something bursts out of you!"))
+
 	var/static/list/dont_regenerate = list(BODY_ZONE_HEAD) // headless changelings are funny
 	if(!length(user.get_missing_limbs() - dont_regenerate))
 		return
