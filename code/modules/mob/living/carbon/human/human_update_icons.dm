@@ -800,17 +800,60 @@ generate/load female uniform sprites matching all previously decided variables
 
 	stack_trace("Invalid height body_area specified ([body_area || "null"])")
 
+GLOBAL_LIST_EMPTY(height_filter_masks)
+
+/**
+ * Returns a height filter displacement map which covers an icon of the given size.
+ * Filter icons are centered on the appearance they're applied to, and outside of the map nothing is displaced,
+ * so for icons larger than a single tile we extend the 32x32 map by repeating its edge pixels in every direction.
+ *
+ * * state - Icon state of the mask in cut.dmi
+ * * width, height - Dimensions of the icon the mask will be applied to
+ */
+/proc/get_height_filter_mask(state, width, height)
+	var/extra_x = width > ICON_SIZE_X ? CEILING((width - ICON_SIZE_X) / 2 / ICON_SIZE_X, 1) : 0
+	var/extra_y = height > ICON_SIZE_Y ? CEILING((height - ICON_SIZE_Y) / 2 / ICON_SIZE_Y, 1) : 0
+	var/cache_key = "[state]_[extra_x]_[extra_y]"
+	if(GLOB.height_filter_masks[cache_key])
+		return GLOB.height_filter_masks[cache_key]
+
+	var/icon/base_mask = icon('icons/effects/cut.dmi', state)
+	if(!extra_x && !extra_y)
+		GLOB.height_filter_masks[cache_key] = base_mask
+		return base_mask
+
+	var/icon/extended_mask = icon('icons/blanks/32x32.dmi', "nothing")
+	extended_mask.Scale(ICON_SIZE_X * (1 + extra_x * 2), ICON_SIZE_Y * (1 + extra_y * 2))
+	for(var/tile_x in 0 to extra_x * 2)
+		for(var/tile_y in 0 to extra_y * 2)
+			// Outer tiles are filled with the matching edge of the original mask
+			var/crop_x1 = tile_x < extra_x ? 1 : (tile_x > extra_x ? ICON_SIZE_X : 1)
+			var/crop_x2 = tile_x < extra_x ? 1 : (tile_x > extra_x ? ICON_SIZE_X : ICON_SIZE_X)
+			var/crop_y1 = tile_y < extra_y ? 1 : (tile_y > extra_y ? ICON_SIZE_Y : 1)
+			var/crop_y2 = tile_y < extra_y ? 1 : (tile_y > extra_y ? ICON_SIZE_Y : ICON_SIZE_Y)
+			var/icon/tile = icon(base_mask)
+			tile.Crop(crop_x1, crop_y1, crop_x2, crop_y2)
+			tile.Scale(ICON_SIZE_X, ICON_SIZE_Y)
+			extended_mask.Blend(tile, ICON_OVERLAY, tile_x * ICON_SIZE_X + 1, tile_y * ICON_SIZE_Y + 1)
+
+	GLOB.height_filter_masks[cache_key] = extended_mask
+	return extended_mask
+
 /**
  * Applies a filter to an appearance according to mob height
  */
 /mob/living/carbon/human/proc/apply_height_filter(image/appearance)
 	PRIVATE_PROC(TRUE)
 
-	var/static/icon/cut_torso_mask = icon('icons/effects/cut.dmi', "Cut1")
-	var/static/icon/cut_legs_mask = icon('icons/effects/cut.dmi', "Cut2")
-	var/static/icon/lenghten_torso_mask = icon('icons/effects/cut.dmi', "Cut3")
-	var/static/icon/lenghten_legs_mask = icon('icons/effects/cut.dmi', "Cut4")
-	var/static/icon/lenghten_arms_mask = icon('icons/effects/cut.dmi', "Cut5")
+	// Masks are centered on the appearance, so larger (64x64 and up) icons need masks which cover them entirely
+	var/list/appearance_dimensions = appearance.icon ? get_icon_dimensions(appearance.icon) : null
+	var/appearance_width = appearance_dimensions?["width"] || ICON_SIZE_X
+	var/appearance_height = appearance_dimensions?["height"] || ICON_SIZE_Y
+	var/icon/cut_torso_mask = get_height_filter_mask("Cut1", appearance_width, appearance_height)
+	var/icon/cut_legs_mask = get_height_filter_mask("Cut2", appearance_width, appearance_height)
+	var/icon/lenghten_torso_mask = get_height_filter_mask("Cut3", appearance_width, appearance_height)
+	var/icon/lenghten_legs_mask = get_height_filter_mask("Cut4", appearance_width, appearance_height)
+	var/icon/lenghten_arms_mask = get_height_filter_mask("Cut5", appearance_width, appearance_height)
 
 	appearance.remove_filter(list(
 		"Cut_Torso",
