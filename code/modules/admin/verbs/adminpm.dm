@@ -479,7 +479,7 @@ ADMIN_VERB(cmd_admin_pm_panel, R_NONE, "Admin PM", "Show a list of clients to PM
 
 	// This is us (a player) trying to talk to the recipient (an admin)
 	var/replymsg = "Reply PM from-<b>[name_key_with_link]</b>: [span_linkify(keyword_parsed_msg)]"
-	var/player_replymsg = "Reply PM from-<b>[link_to_us]</b>: [span_linkify(send_message)]"
+	var/player_replymsg = "Reply PM from-<b>[key_name(src, FALSE, FALSE)]</b>: [span_linkify(send_message)]"
 	admin_ticket_log(src,
 		"<font color='red'>[replymsg]</font>",
 		log_in_blackbox = FALSE,
