@@ -190,6 +190,8 @@
 				chat.visible_in_recents = TRUE
 
 			selected_image = null
+			// the chat's photos may not have reached this user yet (they arrived while another screen was open)
+			SSassets.transport.send_assets(usr, get_picture_assets())
 			return TRUE
 
 		if("PDA_closeMessages")
@@ -549,13 +551,13 @@
 		target_chat.add_message(message_datum, show_in_recents = !everyone)
 		target_chat.unread_messages = 0
 
-	// send new pictures to everyone
-	if(!isnull(photo_asset_key))
-		update_pictures_for_all()
-
 	// switch our chat screen after sending a message, but do it only if it's not to everyone
 	if(!everyone)
 		viewing_messages_of = REF(target_chats[1])
+
+	// send new pictures to everyone (after the chat switch, so the sent photo is part of the chat we now view)
+	if(!isnull(photo_asset_key))
+		update_pictures_for_all()
 
 	return TRUE
 
