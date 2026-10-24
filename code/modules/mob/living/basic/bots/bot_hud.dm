@@ -52,7 +52,7 @@
 	//Removes path images and handles removing hud client images
 	clear_path_hud()
 
-	var/list/path_huds_watching_me = list(GLOB.huds[DATA_HUD_DIAGNOSTIC], GLOB.huds[DATA_HUD_BOT_PATH])
+	var/list/path_huds_watching_me = list(GLOB.huds[DATA_HUD_BOT_PATH])
 
 	var/list/path_images = active_hud_list[DIAG_PATH_HUD]
 	LAZYCLEARLIST(path_images)
@@ -115,6 +115,6 @@
 		return
 
 	// Call hud remove handlers to ensure viewing user client images are removed
-	var/list/path_huds_watching_me = list(GLOB.huds[DATA_HUD_DIAGNOSTIC], GLOB.huds[DATA_HUD_BOT_PATH])
+	var/list/path_huds_watching_me = list(GLOB.huds[DATA_HUD_BOT_PATH])
 	for(var/datum/atom_hud/hud as anything in path_huds_watching_me)
 		hud.remove_atom_from_hud(src)
