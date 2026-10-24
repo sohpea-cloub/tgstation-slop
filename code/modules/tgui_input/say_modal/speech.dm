@@ -70,6 +70,7 @@
 			if(!saved_channel)
 				saved_channel = SAY_CHANNEL
 
+		forced_say_time = world.time
 		handle_entry("force", list("type" = "force", "entry" = saved_text, "channel" = saved_channel))
 		window.send_message("close")
 	else
@@ -129,6 +130,11 @@
 	if(length(payload["entry"]) > max_length)
 		CRASH("[usr] has entered more characters than allowed into a TGUI-Say")
 	if(type == "entry")
+		// The client may have sent its own entry before it learned we closed its window for an immediate force say
+		// (network delay). The forced say already spoke what was in the box, so drop it rather than say it twice.
+		if(forced_say_time && world.time - forced_say_time <= forced_say_entry_grace)
+			forced_say_time = null
+			return FALSE
 		delegate_speech(payload["entry"], payload["channel"])
 		return TRUE
 	if(type == "force")

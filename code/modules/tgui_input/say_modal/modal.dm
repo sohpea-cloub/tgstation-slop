@@ -33,6 +33,10 @@
 	var/window_open
 	/// What text was present in the say box the last time save_text was called
 	var/saved_text = ""
+	/// world.time of the last immediate force say, to drop the entry the client sent before its window was closed
+	var/forced_say_time
+	/// How long after an immediate force say a late entry from the client is treated as a duplicate
+	var/forced_say_entry_grace = 2 SECONDS
 	/// What channel was in use in the say box the last time save_text was called
 	var/saved_channel
 	/// Speech suffuxes used for force_say after "-". Defaults to hurt_phrases
@@ -93,6 +97,7 @@
 		CRASH("No channel provided to an open TGUI-Say")
 	window_open = TRUE
 	saved_text = ""
+	forced_say_time = null
 	if(payload["channel"] != OOC_CHANNEL && payload["channel"] != ADMIN_CHANNEL && payload["channel"] != PRAY_CHANNEL)
 		start_thinking()
 	if(!client.typing_indicators)
