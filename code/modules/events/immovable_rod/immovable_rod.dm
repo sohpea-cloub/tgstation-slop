@@ -49,8 +49,11 @@
 
 	if(special_target)
 		GLOB.move_manager.home_onto(src, special_target)
-	else
+	else if(real_destination)
 		GLOB.move_manager.move_towards(src, real_destination)
+	else
+		// Spawned with no destination at all (an admin spawning one by hand, say): don't sit there forever, fly the way we face.
+		walk_in_direction(dir)
 
 /obj/effect/immovablerod/Destroy(force)
 	UnregisterSignal(src, list(COMSIG_ATOM_ENTERING, COMSIG_MOVABLE_TURF_INITIALIZING))
