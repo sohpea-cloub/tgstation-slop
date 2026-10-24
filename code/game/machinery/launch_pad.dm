@@ -168,6 +168,13 @@
 	if(is_centcom_level(z) || istype(surrounding, /area/shuttle/supply) ||istype(surrounding, /area/shuttle/transport))
 		return "ERROR: Launchpad not operative. Heavy area shielding makes teleporting impossible."
 
+	// Shuttles in transit (and other reserved spaces) share a z level with unrelated reservations; don't reach outside our own
+	var/turf/our_turf = get_turf(src)
+	if(is_reserved_level(our_turf.z))
+		var/turf/target = locate(x + x_offset, y + y_offset, z)
+		if(isnull(target) || SSmapping.get_reservation_from_turf(target) != SSmapping.get_reservation_from_turf(our_turf))
+			return "ERROR: Launchpad not operative. Target is outside the local bluespace stability field."
+
 	return null
 
 /// Performs the teleport.
