@@ -157,7 +157,8 @@
 //ATTACK HAND IGNORING PARENT RETURN VALUE
 /obj/item/pizzabox/attack_hand(mob/user, list/modifiers)
 	if(user.get_inactive_held_item() != src)
-		if(open && pizza?.sliced && !isobj(loc))
+		// Left click takes a slice; right click picks the box itself up, so a box with sliced pizza can't get stuck on the floor
+		if(open && pizza?.sliced && !isobj(loc) && !LAZYACCESS(modifiers, RIGHT_CLICK))
 			pizza.produce_slice(user)
 			update_appearance()
 			return
@@ -432,6 +433,10 @@
 /obj/item/pizzabox/add_context(atom/source, list/context, obj/item/held_item, mob/user)
 	if(!held_item)
 		if(user.get_inactive_held_item() != src)
+			if(open && pizza?.sliced && !isobj(loc))
+				context[SCREENTIP_CONTEXT_LMB] = "Take slice"
+				context[SCREENTIP_CONTEXT_RMB] = "Pick up"
+				return CONTEXTUAL_SCREENTIP_SET
 			return NONE
 		if(open)
 			if(pizza)
