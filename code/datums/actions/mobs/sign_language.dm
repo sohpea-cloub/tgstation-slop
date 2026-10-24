@@ -60,6 +60,8 @@
 /// Shows the linked action to the owner Carbon.
 /datum/action/innate/sign_language/proc/show_action()
 	owner_has_control = TRUE
+	// Grant() registers this only if owner_has_control was already set, so register it here for keybinds
+	RegisterSignal(owner, COMSIG_MOB_KEYDOWN, PROC_REF(keydown), override = TRUE)
 	RegisterSignal(owner, SIGNAL_ADDTRAIT(TRAIT_SIGN_LANG), PROC_REF(update_status_on_signal))
 	RegisterSignal(owner, SIGNAL_REMOVETRAIT(TRAIT_SIGN_LANG), PROC_REF(update_status_on_signal))
 	GiveAction(owner)
@@ -68,6 +70,7 @@
 /datum/action/innate/sign_language/proc/hide_action()
 	owner_has_control = FALSE
 	UnregisterSignal(owner, list(
+		COMSIG_MOB_KEYDOWN,
 		SIGNAL_ADDTRAIT(TRAIT_SIGN_LANG),
 		SIGNAL_REMOVETRAIT(TRAIT_SIGN_LANG)
 	))
