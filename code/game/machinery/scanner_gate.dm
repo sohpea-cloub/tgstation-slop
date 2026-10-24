@@ -203,7 +203,7 @@
 				detected_thing = "Warrant"
 				var/mob/living/carbon/human/scanned_human = thing
 				var/perpname = scanned_human.get_face_name(scanned_human.get_id_name())
-				var/datum/record/crew/target = find_record(perpname)
+				var/datum/record/crew/target = find_record(perpname, subject = scanned_human)
 				if(!target || (target.wanted_status == WANTED_ARREST))
 					beep = TRUE
 		if(SCANGATE_MINDSHIELD)

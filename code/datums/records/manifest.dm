@@ -138,7 +138,7 @@ GLOBAL_DATUM_INIT(manifest, /datum/manifest, new)
 		mind_ref = person.mind,
 	)
 
-	new /datum/record/crew(
+	var/datum/record/crew/crew_record = new(
 		age = person.age,
 		blood_type = person.get_bloodtype()?.name || "UNKNOWN",
 		character_appearance = character_appearance,
@@ -158,6 +158,7 @@ GLOBAL_DATUM_INIT(manifest, /datum/manifest, new)
 		minor_disabilities_desc = person.get_quirk_string(TRUE, CAT_QUIRK_MINOR_DISABILITY),
 		quirk_notes = person.get_quirk_string(TRUE, CAT_QUIRK_NOTES),
 	)
+	crew_record.subject_ref = WEAKREF(person)
 
 /// Edits the rank and trim of the found record.
 /datum/manifest/proc/modify(name, assignment, trim)

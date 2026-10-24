@@ -775,7 +775,7 @@
  *
  * If no record is found, returns null
  */
-/proc/find_record(value, locked_only = FALSE) as /datum/record
+/proc/find_record(value, locked_only = FALSE, mob/subject) as /datum/record
 	if(locked_only)
 		for(var/datum/record/locked/target in GLOB.manifest.locked)
 			if(target.name != value)
@@ -783,11 +783,16 @@
 			return target
 		return null
 
+	var/datum/record/crew/name_match
 	for(var/datum/record/crew/target in GLOB.manifest.general)
 		if(target.name != value)
 			continue
-		return target
-	return null
+		// Names aren't unique: when we know whose record we want, prefer the one made for them.
+		if(!subject || target.subject_ref?.resolve() == subject)
+			return target
+		name_match ||= target
+	// no record belongs to the subject (an impersonator, a record-less body): go by name
+	return name_match
 
 
 /**

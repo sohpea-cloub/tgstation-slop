@@ -614,7 +614,7 @@ DEFINE_BITFIELD(turret_flags, list(
 
 	if(turret_flags & TURRET_FLAG_SHOOT_CRIMINALS) //if the turret can check the records, check if they are set to *Arrest* on records
 		var/perpname = perp.get_face_name(perp.get_id_name())
-		var/datum/record/crew/target = find_record(perpname)
+		var/datum/record/crew/target = find_record(perpname, subject = perp)
 		if(!target || (target.wanted_status == WANTED_ARREST))
 			threatcount += 4
 

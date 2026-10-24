@@ -311,7 +311,7 @@ Security HUDs! Basic mode shows only the job.
 		set_hud_image_inactive(WANTED_HUD)
 		return
 
-	var/datum/record/crew/target = find_record(perp_name)
+	var/datum/record/crew/target = find_record(perp_name, subject = src)
 	if(!target || target.wanted_status == WANTED_NONE)
 		set_hud_image_inactive(WANTED_HUD)
 		return

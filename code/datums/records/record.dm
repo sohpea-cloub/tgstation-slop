@@ -98,6 +98,8 @@
 	/// Current arrest status
 	var/wanted_status = WANTED_NONE
 
+	/// Weakref to the mob this record was made for (names aren't unique, so this tells same-named crew apart)
+	var/datum/weakref/subject_ref
 	///Photo used for records, which we store here so we don't have to constantly make more of.
 	var/list/obj/item/photo/record_photos
 

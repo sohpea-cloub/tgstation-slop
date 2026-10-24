@@ -159,7 +159,7 @@
 		if((text2num(href_list["examine_time"]) + 1 MINUTES) < world.time)
 			to_chat(human_or_ghost_user, span_notice("It's too late to use this now!"))
 			return
-		var/datum/record/crew/target_record = find_record(perpname)
+		var/datum/record/crew/target_record = find_record(perpname, subject = src)
 		if(href_list["photo_front"] || href_list["photo_side"])
 			if(!target_record)
 				return
@@ -279,7 +279,7 @@
 			if(!perpname)
 				to_chat(human_or_ghost_user, span_warning("ERROR: Can not identify target."))
 				return
-			target_record = find_record(perpname)
+			target_record = find_record(perpname, subject = src)
 			if(!target_record)
 				to_chat(human_or_ghost_user, span_warning("ERROR: Unable to locate data core entry for target."))
 				return
@@ -451,7 +451,7 @@
 	//Check for arrest warrant
 	if(judgement_criteria & JUDGE_RECORDCHECK)
 		var/perpname = get_face_name(get_id_name())
-		var/datum/record/crew/record = find_record(perpname)
+		var/datum/record/crew/record = find_record(perpname, subject = src)
 		if(record?.wanted_status)
 			switch(record.wanted_status)
 				if(WANTED_ARREST)
@@ -668,8 +668,8 @@
 		return TRUE
 
 /mob/living/carbon/human/replace_records_name(oldname, newname) // Only humans have records right now, move this up if changed.
-	var/datum/record/crew/crew_record = find_record(oldname)
-	var/datum/record/locked/locked_record = find_record(oldname, locked_only = TRUE)
+	var/datum/record/crew/crew_record = find_record(oldname, subject = src)
+	var/datum/record/locked/locked_record = crew_record?.lock_ref ? locate(crew_record.lock_ref) : find_record(oldname, locked_only = TRUE)
 
 	if(crew_record)
 		crew_record.name = newname
