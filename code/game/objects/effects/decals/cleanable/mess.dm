@@ -74,6 +74,8 @@
 	canSmoothWith = SMOOTH_GROUP_CLEANABLE_DIRT + SMOOTH_GROUP_WALLS
 	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
 	beauty = -75
+	/// Below ABOVE_OPEN_TURF_LAYER so things lying on the floor, like alien weeds, cover the dirt instead of being covered by it
+	layer = ABOVE_OPEN_TURF_LAYER - 0.1
 	/// Set to FALSE if your dirt has no smoothing sprites
 	var/is_tileable = TRUE
 
