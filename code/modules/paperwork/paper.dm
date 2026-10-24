@@ -855,10 +855,13 @@ GAME_VERB_SRC(/obj/item/paper, rename, usr, "Rename paper", null)
 /// Returns the raw contents of the input as html, with **ZERO SANITIZATION**
 /datum/paper_input/proc/to_raw_html()
 	var/final = raw_text
+	// The wrapping tags sit on their own lines, separated from the text by blank lines, so that the
+	// markdown renderer (books) treats them as standalone html blocks and still parses the text in
+	// between. Inline, they swallow the first line of a code block and leave stray closing tags.
 	if(font || colour)
-		final = "<font[" color='[colour]'"][" face='[font]'"]>[final]</font>"
+		final = "<font[" color='[colour]'"][" face='[font]'"]>\n\n[final]\n\n</font>"
 	if(bold)
-		final = "<b>[final]</b>"
+		final = "<b>\n\n[final]\n\n</b>"
 	return final
 
 /// A single instance of a saved stamp on paper.
