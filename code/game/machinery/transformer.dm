@@ -98,7 +98,7 @@
 	sleep(0.5 SECONDS)
 
 	use_energy(active_power_usage) // Use a lot of power.
-	var/mob/living/silicon/robot/new_borg = victim.Robotize()
+	var/mob/living/silicon/robot/new_borg = victim.Robotize(master_ai = master_ai)
 	new_borg.cell = new /obj/item/stock_parts/power_store/cell/super(new_borg)
 
 	// So he can't jump out the gate right away.

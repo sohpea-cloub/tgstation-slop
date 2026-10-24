@@ -132,8 +132,12 @@
 	SetInvisibility(INVISIBILITY_MAXIMUM)
 	return ..()
 
-/mob/proc/Robotize(delete_items = FALSE)
-	var/mob/living/silicon/robot/new_borg = transform_into_mob(/mob/living/silicon/robot, delete_items)
+/// master_ai: If set, the new cyborg links to this AI as it is created, instead of the AI with the fewest cyborgs.
+/mob/proc/Robotize(delete_items = FALSE, mob/living/silicon/ai/master_ai)
+	var/list/borg_args
+	if(!QDELETED(master_ai))
+		borg_args = list(null, master_ai) // innate_laws, master_ai (after the mapload argument that replaces the loc)
+	var/mob/living/silicon/robot/new_borg = transform_into_mob(/mob/living/silicon/robot, delete_items, borg_args)
 
 	if(!new_borg)
 		return
@@ -229,7 +233,8 @@
 	to_chat(new_mob, span_boldnotice("You feel more... animalistic."))
 
 ///Creates a new mob, deletes the old one, transfers old mob into new mob
-/mob/proc/transform_into_mob(mob_path, delete_items = FALSE)
+/// extra_args: optional list of arguments passed to the new mob's Initialize, after its mapload argument
+/mob/proc/transform_into_mob(mob_path, delete_items = FALSE, list/extra_args)
 	if(HAS_TRAIT(src, TRAIT_NO_TRANSFORM))
 		return
 
@@ -237,7 +242,10 @@
 		for(var/obj/item/detritus in get_equipped_items(INCLUDE_POCKETS|INCLUDE_HELD))
 			dropItemToGround(detritus, TRUE)
 
-	var/mob/new_mob = new mob_path(get_turf(src))
+	var/list/new_args = list(get_turf(src))
+	if(extra_args)
+		new_args += extra_args
+	var/mob/new_mob = new mob_path(arglist(new_args))
 	if(mind)
 		mind.transfer_to(new_mob)
 	else
