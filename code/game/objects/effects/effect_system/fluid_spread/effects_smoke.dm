@@ -388,10 +388,13 @@
 		return FALSE
 	if(!istype(smoker))
 		return FALSE
-	if(smoker.internal != null || smoker.has_smoke_protection())
-		return FALSE
 
 	var/fraction = (seconds_per_tick SECONDS) / initial(lifetime)
+	if(smoker.internal != null || smoker.has_smoke_protection())
+		// Masks and internals only stop us from breathing the smoke in, the skin is still touched by it (so water smoke can put us out)
+		reagents.expose(smoker, TOUCH, fraction)
+		return FALSE
+
 	reagents.trans_to(smoker, reagents.total_volume, fraction, methods = SMOKE_MACHINE, copy_only = TRUE)
 	return TRUE
 
