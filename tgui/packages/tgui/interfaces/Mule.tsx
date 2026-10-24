@@ -118,7 +118,7 @@ const MuleControls = (props) => {
         </Stack>
       </Section>
       <Section title="Settings">
-        <Button.Checkbox checked={autoReturn} onClick={() => act('autored')}>
+        <Button.Checkbox checked={autoReturn} onClick={() => act('autoret')}>
           Auto-Return
         </Button.Checkbox>
         <br />
@@ -173,7 +173,7 @@ export const Mule = (props) => {
                 <Button
                   icon={powerStatus ? 'power-off' : 'times'}
                   selected={powerStatus}
-                  onClick={() => act('on')}
+                  onClick={() => act('power')}
                 >
                   {powerStatus ? 'On' : 'Off'}
                 </Button>
