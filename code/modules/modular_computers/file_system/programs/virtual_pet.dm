@@ -201,6 +201,8 @@ GLOBAL_LIST_EMPTY(virtual_pets_list)
 	var/direction_text = dir2text(new_dir)
 	var/hat_type = selected_hat["type"]
 	var/list/offsets_list = special_hat_placement[hat_type]?[direction_text] || hat_offsets[direction_text]
+	if(!offsets_list)
+		return
 	var/mutable_appearance/hat_appearance = selected_hat["appearance"]
 	hat_appearance.pixel_w = offsets_list[1]
 	hat_appearance.pixel_z = offsets_list[2] + selected_hat["worn_offset"]

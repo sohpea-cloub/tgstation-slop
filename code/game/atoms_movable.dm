@@ -876,9 +876,13 @@
 	if(glide_size_override)
 		set_glide_size(glide_size_override)
 
+	// Move() can be called without a direction: the parent proc fell back to get_dir(), do the same here instead of setting dir to null.
+	if(!direct)
+		direct = get_dir(oldloc, newloc)
+
 	last_move = direct
 
-	if(set_dir_on_move && dir != direct && update_dir)
+	if(set_dir_on_move && direct && dir != direct && update_dir)
 		setDir(direct)
 	if(. && has_buckled_mobs() && !handle_buckled_mob_movement(loc, direct, glide_size_override)) //movement failed due to buckled mob(s)
 		. = FALSE
