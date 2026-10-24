@@ -129,6 +129,7 @@
 
 /datum/action/item_action/chameleon/change/proc/update_look(obj/item/picked_item)
 	var/obj/item/chameleon_item = target
+	var/old_hair_mask = chameleon_item.hair_mask
 
 	update_item(picked_item)
 	build_all_button_icons()
@@ -136,6 +137,15 @@
 
 	if(ismob(chameleon_item.loc))
 		var/mob/wearer = chameleon_item.loc
+		// The hair mask is tracked per mob when equipped, so swap the old one for the new one
+		if(iscarbon(wearer) && old_hair_mask != chameleon_item.hair_mask)
+			var/mob/living/carbon/carbon_wearer = wearer
+			if(carbon_wearer.get_slot_by_item(chameleon_item) & chameleon_item.slot_flags)
+				if(old_hair_mask)
+					LAZYREMOVE(carbon_wearer.hair_masks, old_hair_mask)
+				if(chameleon_item.hair_mask)
+					LAZYADD(carbon_wearer.hair_masks, chameleon_item.hair_mask)
+				carbon_wearer.update_hair()
 		wearer.update_clothing(chameleon_item.slot_flags | ITEM_SLOT_HANDS)
 		wearer.refresh_obscured()
 

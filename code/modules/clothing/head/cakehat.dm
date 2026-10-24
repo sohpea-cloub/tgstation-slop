@@ -14,6 +14,7 @@
 	light_power = 1.3
 	light_color = "#FF964E"
 	flags_cover = HEADCOVERSEYES
+	hair_mask = /datum/hair_mask/standard_hat_low
 	heat = 999
 	wound_bonus = 10
 	exposed_wound_bonus = 5

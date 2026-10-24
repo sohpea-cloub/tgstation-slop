@@ -119,6 +119,7 @@
 	inhand_icon_state = null
 	armor_type = /datum/armor/head_cowboy
 	resistance_flags = FIRE_PROOF | ACID_PROOF
+	hair_mask = /datum/hair_mask/standard_hat_low
 	/// Chance that the hat will catch a bullet for you
 	var/deflect_chance = 2
 
