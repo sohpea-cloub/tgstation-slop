@@ -51,8 +51,9 @@
 
 /// Full setup for illusion mobs to lessen code duplication in the individual files.
 /mob/living/basic/illusion/proc/full_setup(mob/living/original, mob/living/target_mob = null, list/faction_override = null, life = 5 SECONDS, hp = 100, damage = 0, replicate = 0)
-	mock_as(original, life, hp, damage, replicate)
+	// Copy the original's factions first: mock_as() strips FACTION_NEUTRAL from the copy so it can still attack other neutral mobs
 	SET_FACTION_AND_ALLIES_FROM(src, original)
+	mock_as(original, life, hp, damage, replicate)
 	if(faction_override)
 		set_faction(faction_override)
 	set_target(target_mob)
@@ -72,15 +73,15 @@
 	appearance = original.appearance
 	setDir(original.dir)
 
-	if (isnull(hp))
+	if (!isnull(hp))
 		maxHealth = hp
 		updatehealth() // re-cap health to new value
 
-	if (isnull(damage))
+	if (!isnull(damage))
 		melee_damage_lower = damage
 		melee_damage_upper = damage
 
-	if (isnull(replicate))
+	if (!isnull(replicate))
 		multiply_chance = replicate
 
 	remove_faction(FACTION_NEUTRAL)
