@@ -25,6 +25,9 @@
 		return TRUE
 	var/obj/item/stack/rods/our_rods = locate() in owner
 	var/turf/turf_target = target
+	if(!isturf(owner.loc) || !owner.Adjacent(turf_target))
+		owner.balloon_alert(owner, "too far!")
+		return TRUE
 	if(turf_target.is_blocked_turf())
 		owner.balloon_alert(owner, "blocked!")
 		return TRUE
