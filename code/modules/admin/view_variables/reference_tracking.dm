@@ -1,6 +1,11 @@
 #ifdef REFERENCE_TRACKING
 #define REFSEARCH_RECURSE_LIMIT 64
 
+/// Counter handing out a unique id to every reference search. Datums remember the id of the last search that visited
+/// them (last_find_references) so a search doesn't walk them twice. world.time can't be that id: searches run
+/// without sleeping, so a second search started in the same tick would find everything already "visited" by the first
+GLOBAL_VAR_INIT(reftracker_search_id, 0)
+
 #ifdef FAST_REFERENCE_TRACKING
 // typecache of types that almost certainly have no refs, and thus can be safely skipped when finding references
 GLOBAL_ALIST_INIT(reftracker_skip_typecache, init_reftracker_skip_typecache())
@@ -76,7 +81,7 @@ GLOBAL_ALIST_EMPTY(reftracker_skip_typecache_b)
 /datum/proc/_search_references()
 	log_reftracker("Beginning search for references to a [type], looking for [references_to_clear] refs.")
 
-	var/starting_time = world.time
+	var/starting_time = ++GLOB.reftracker_search_id
 	//Time to search the whole game for our ref
 	DoSearchVar(GLOB, "GLOB", starting_time) //globals
 	log_reftracker("Finished searching globals")
@@ -273,6 +278,10 @@ GLOBAL_ALIST_EMPTY(reftracker_skip_typecache_b)
 /// Will be logged as a representation of this datum if it's a part of a search chain
 /datum/proc/ref_search_details()
 	return text_ref(src)
+
+/// A component is only meaningful together with whoever it is attached to
+/datum/component/ref_search_details()
+	return "[text_ref(src)] (component of [parent ? "[parent.type] [text_ref(parent)]" : "null"])"
 
 /datum/callback/ref_search_details()
 	return "[text_ref(src)] (obj: [object] proc: [delegate] args: [json_encode(arguments)] user: [user?.resolve() || "null"])"
