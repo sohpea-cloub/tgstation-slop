@@ -90,13 +90,7 @@
 
 /obj/machinery/dna_vault/Initialize(mapload)
 	//TODO: Replace this,bsa and gravgen with some big machinery datum
-	var/list/occupied = list()
-	for(var/direct in list(EAST,WEST,SOUTHEAST,SOUTHWEST))
-		occupied += get_step(src,direct)
-	occupied += locate(x+1,y-2,z)
-	occupied += locate(x-1,y-2,z)
-
-	for(var/T in occupied)
+	for(var/turf/T as anything in get_filler_turfs())
 		var/obj/structure/filler/F = new(T)
 		F.parent = src
 		fillers += F
@@ -108,6 +102,25 @@
 		dna_max = dna_vault_goal.human_count
 
 	return ..()
+
+/// The turfs, around our own, that our sprite covers (everything except the open middle bottom), which hold our fillers.
+/obj/machinery/dna_vault/proc/get_filler_turfs()
+	var/list/occupied = list()
+	for(var/direct in list(EAST,WEST,SOUTHEAST,SOUTHWEST))
+		occupied += get_step(src,direct)
+	occupied += locate(x+1,y-2,z)
+	occupied += locate(x-1,y-2,z)
+	return occupied
+
+/obj/machinery/dna_vault/Moved(atom/old_loc, movement_dir, forced, list/old_locs, momentum_change = TRUE)
+	. = ..()
+	// Keep the collision of the fillers matching the sprite when the vault is moved
+	if(!isturf(loc))
+		return
+	var/list/new_turfs = get_filler_turfs()
+	for(var/i in 1 to min(length(fillers), length(new_turfs)))
+		var/obj/structure/filler/filler = fillers[i]
+		filler.forceMove(new_turfs[i])
 
 /obj/machinery/dna_vault/Destroy()
 	for(var/obj/structure/filler/filler as anything in fillers)
