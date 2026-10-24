@@ -71,6 +71,10 @@
 	if(!inputs[message])
 		return
 
+	// A dead mob can't act on commands: let the message through as plain deadchat.
+	if(parent_is_dead())
+		return
+
 	if(deadchat_mode & ANARCHY_MODE)
 		if(!source || !source.ckey)
 			return
@@ -89,9 +93,19 @@
 		to_chat(source, span_notice("You have voted for \"[message]\"."))
 		return MOB_DEADSAY_SIGNAL_INTERCEPT
 
+/// Returns TRUE if the parent is a living-type mob that has died, and so can't carry out commands.
+/datum/component/deadchat_control/proc/parent_is_dead()
+	if(!isliving(parent))
+		return FALSE
+	var/mob/living/living_parent = parent
+	return living_parent.stat == DEAD
+
 /datum/component/deadchat_control/proc/democracy_loop()
 	if(QDELETED(parent) || !(deadchat_mode & DEMOCRACY_MODE))
 		deltimer(timerid)
+		return
+	if(parent_is_dead())
+		ckey_to_cooldown = list() // votes cast for a corpse are void
 		return
 	var/result = count_democracy_votes()
 	if(!isnull(result))
