@@ -838,6 +838,8 @@ GLOBAL_ALIST_INIT(human_heights_to_offsets, alist(
 #define BACK_LAYER 9
 /// Neck layer (for wearing capes and bedsheets)
 #define NECK_LAYER 10
+	/// Layer for tails when they are drawn over the body (facing away or sideways): below the back slot and neck items, above everything beneath them
+	#define BODY_TAIL_FRONT_LAYER 10.5
 /// Suit storage layer (tucking a gun or baton underneath your armor)
 #define SUIT_STORE_LAYER 11
 /// Belt layer

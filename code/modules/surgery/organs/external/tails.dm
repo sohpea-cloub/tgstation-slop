@@ -142,7 +142,7 @@
 ///Tail parent type, with wagging functionality
 /datum/bodypart_overlay/mutant/tail
 	layers = list(
-		EXTERNAL_FRONT = BODY_FRONT_LAYER,
+		EXTERNAL_FRONT = BODY_TAIL_FRONT_LAYER,
 		EXTERNAL_BEHIND = BODY_BEHIND_LAYER,
 	)
 	dyable = TRUE
