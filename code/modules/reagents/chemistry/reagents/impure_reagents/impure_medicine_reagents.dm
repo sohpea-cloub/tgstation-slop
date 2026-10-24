@@ -1239,7 +1239,8 @@ Basically, we fill the time between now and 2s from now with hands based off the
 	. = ..()
 	var/picked_color = pick(random_color_list)
 	var/color_filter = color_transition_filter(picked_color, SATURATION_OVERRIDE)
-	if (can_color_clothing && (methods & (TOUCH|VAPOR|INHALE)))
+	// Cyborgs don't wear clothes: their held items are their module tools, which shouldn't be painted
+	if (can_color_clothing && !issilicon(exposed_mob) && (methods & (TOUCH|VAPOR|INHALE)))
 		var/include_flags = INCLUDE_HELD|INCLUDE_ACCESSORIES|INCLUDE_PROSTHETICS|INCLUDE_ABSTRACT
 		if (methods & (VAPOR|INHALE) || touch_protection >= 1)
 			include_flags |= INCLUDE_POCKETS
