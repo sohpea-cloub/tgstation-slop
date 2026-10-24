@@ -10,6 +10,11 @@
 		return COMPONENT_REDUNDANT
 
 	RegisterSignal(parent, COMSIG_MOVABLE_PRE_MOVE, PROC_REF(on_parent_pre_move))
+	// Also stop whatever is carrying us (a locker, a mech, a bag) from taking us into a restricted area
+	var/static/list/container_connections = list(
+		COMSIG_MOVABLE_PRE_MOVE = PROC_REF(on_parent_pre_move),
+	)
+	AddComponent(/datum/component/connect_containers, parent, container_connections)
 	RegisterSignal(quantum_server, COMSIG_ATOM_EMAG_ACT, PROC_REF(on_emagged))
 
 
@@ -39,7 +44,9 @@
 		return
 
 	if(location_area.area_flags_mapping & VIRTUAL_SAFE_AREA)
-		source.balloon_alert(source, "out of bounds!")
+		// source may be a container we are inside of, not the entity itself
+		var/atom/movable/entity = parent
+		entity.balloon_alert(entity, "out of bounds!")
 		COOLDOWN_START(src, OOB_cooldown, 2 SECONDS)
 		return COMPONENT_MOVABLE_BLOCK_PRE_MOVE
 
