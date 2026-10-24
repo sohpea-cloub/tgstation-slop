@@ -8,13 +8,11 @@
 	var/last_hit_ref
 	/// Counts the number of sequential kicks the user has landed on a target
 	var/last_hit_count = 0
-	/// Reference to the tackling component applied
-	var/datum/component/tackler/tackle_comp
 
 /datum/martial_art/spiders_bite/activate_style(mob/living/new_holder)
 	. = ..()
 	RegisterSignal(new_holder, COMSIG_HUMAN_PUNCHED, PROC_REF(kick_disarm))
-	tackle_comp = new_holder.AddComponent(/datum/component/tackler, \
+	new_holder.AddComponentFrom(REF(src), /datum/component/tackler, \
 		stamina_cost = 20, \
 		base_knockdown = 0.2 SECONDS, \
 		range = 5, \
@@ -27,7 +25,7 @@
 /datum/martial_art/spiders_bite/deactivate_style(mob/living/old_holder)
 	. = ..()
 	UnregisterSignal(old_holder, COMSIG_HUMAN_PUNCHED)
-	QDEL_NULL(tackle_comp)
+	old_holder.RemoveComponentSource(REF(src), /datum/component/tackler)
 
 /datum/martial_art/spiders_bite/proc/kick_disarm(mob/living/source, mob/living/target, damage, attack_type, atk_effect, obj/item/bodypart/affecting, final_armor_block, limb_sharpness)
 	SIGNAL_HANDLER

@@ -9,8 +9,6 @@
 	custom_premium_price = PAYCHECK_COMMAND * 3.5
 	clothing_traits = list(TRAIT_FINGERPRINT_PASSTHROUGH,TRAIT_FAST_CUFFING)
 	equip_sound = 'sound/items/equip/glove_equip.ogg'
-	/// For storing our tackler datum so we can remove it after
-	var/datum/component/tackler
 	/// See: [/datum/component/tackler/var/stamina_cost]
 	var/tackle_stam_cost = 25
 	/// See: [/datum/component/tackler/var/base_knockdown]
@@ -30,17 +28,13 @@
 	. = ..()
 	AddElement(/datum/element/adjust_fishing_difficulty, fishing_modifier) //fishing tackle equipment (ba dum tsh)
 
-/obj/item/clothing/gloves/tackler/Destroy()
-	tackler = null
-	return ..()
-
 /obj/item/clothing/gloves/tackler/equipped(mob/user, slot)
 	. = ..()
 	if(!ishuman(user))
 		return
 	if(slot & ITEM_SLOT_GLOVES)
 		var/mob/living/carbon/human/H = user
-		tackler = H.AddComponent(/datum/component/tackler, stamina_cost=tackle_stam_cost, base_knockdown = base_knockdown, range = tackle_range, speed = tackle_speed, skill_mod = skill_mod, min_distance = min_distance)
+		H.AddComponentFrom(REF(src), /datum/component/tackler, stamina_cost=tackle_stam_cost, base_knockdown = base_knockdown, range = tackle_range, speed = tackle_speed, skill_mod = skill_mod, min_distance = min_distance)
 
 /obj/item/clothing/gloves/tackler/dropped(mob/user)
 	. = ..()
@@ -48,7 +42,7 @@
 		return
 	var/mob/living/carbon/human/H = user
 	if(H.get_item_by_slot(ITEM_SLOT_GLOVES) == src)
-		QDEL_NULL(tackler)
+		H.RemoveComponentSource(REF(src), /datum/component/tackler)
 
 /obj/item/clothing/gloves/tackler/dolphin
 	name = "dolphin gloves"

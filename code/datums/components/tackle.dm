@@ -12,7 +12,7 @@
  * There are 2 separate """skill rolls""" involved here, which are handled and explained in [rollTackle()][/datum/component/tackler/proc/rollTackle] (for roll 1, carbons), and [splat()][/datum/component/tackler/proc/splat] (for roll 2, walls and solid objects)
 */
 /datum/component/tackler
-	dupe_mode = COMPONENT_DUPE_UNIQUE
+	dupe_mode = COMPONENT_DUPE_SOURCES
 
 	///If we're currently tackling or are on cooldown. Actually, shit, if I use this to handle cooldowns, then getting thrown by something while on cooldown will count as a tackle..... whatever, i'll fix that next commit
 	var/tackling = TRUE
@@ -47,6 +47,10 @@
 		to_chat(P, span_notice("You are now able to launch tackles! You can do so by activating throw mode, and ") + span_boldnotice("RIGHT-CLICKING on your target with an empty hand."))
 
 	addtimer(CALLBACK(src, PROC_REF(resetTackle)), base_knockdown, TIMER_STOPPABLE)
+
+// Named arguments from AddComponentFrom() must exist on this proc to be passed through to the parent
+/datum/component/tackler/on_source_add(source, stamina_cost, base_knockdown, range, speed, skill_mod, min_distance, silent_gain)
+	return ..()
 
 /datum/component/tackler/Destroy()
 	var/mob/P = parent
