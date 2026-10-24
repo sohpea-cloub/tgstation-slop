@@ -1142,6 +1142,10 @@ GLOBAL_LIST_INIT(unrecommended_builds, list(
 		verbstoprocess += mob.verbs
 		for(var/atom/movable/thing as anything in mob.contents)
 			verbstoprocess += thing.verbs
+		// verbs with `src = usr.loc` (e.g. an MMI's) belong to whatever the mob is inside
+		if(ismovable(mob.loc))
+			var/atom/movable/container = mob.loc
+			verbstoprocess += container.verbs
 	panel_tabs.Cut() // panel_tabs get reset in init_verbs on JS side anyway
 	for(var/procpath/verb_to_init as anything in verbstoprocess)
 		if(!verb_to_init)
