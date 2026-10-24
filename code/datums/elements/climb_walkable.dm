@@ -24,6 +24,10 @@
 	SIGNAL_HANDLER
 	if(HAS_TRAIT(mover, TRAIT_ON_CLIMBABLE))
 		return COMSIG_COMPONENT_PERMIT_PASSAGE
+	// Non-dense things carrying a rider (like wheelchairs) never get the trait themselves, so let them follow their rider
+	for(var/mob/living/rider as anything in mover.buckled_mobs)
+		if(HAS_TRAIT(rider, TRAIT_ON_CLIMBABLE))
+			return COMSIG_COMPONENT_PERMIT_PASSAGE
 
 // Removes the climbable trait if the crate or whatever it is gets pushed away.
 /datum/element/climb_walkable/proc/on_climbable_moved(datum/source, atom/old_loc)
