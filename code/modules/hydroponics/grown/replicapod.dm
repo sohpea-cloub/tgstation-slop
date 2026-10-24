@@ -122,6 +122,11 @@
 				if (corpse.ckey != ckey || HAS_TRAIT(corpse, TRAIT_SUICIDED))
 					continue
 
+				// The player has since moved on (took a ghost role, was cloned, etc.): they no longer own the mind this sample came from,
+				// and the original body may have been a suicide (the trait stays on the body, not on the ghost).
+				if(corpse.mind != mind || (mind.current && HAS_TRAIT(mind.current, TRAIT_SUICIDED)))
+					break
+
 				if(isobserver(corpse))
 					var/mob/dead/observer/ghost = corpse
 					if(ghost.can_reenter_corpse)
@@ -137,10 +142,10 @@
 				if (!corpse.mind || !corpse.ckey || !corpse.client)
 					continue
 
-				if (ckey(corpse.mind.key) != ckey(mind.key))
+				if (corpse.mind != mind || ckey(corpse.mind.key) != ckey(mind.key))
 					continue
 
-				if (corpse.stat != DEAD || HAS_TRAIT(corpse, TRAIT_SUICIDED))
+				if (corpse.stat != DEAD || HAS_TRAIT(corpse, TRAIT_SUICIDED) || (mind.current && HAS_TRAIT(mind.current, TRAIT_SUICIDED)))
 					continue
 
 				if(isobserver(corpse))
