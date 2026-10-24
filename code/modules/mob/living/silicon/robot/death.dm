@@ -41,4 +41,3 @@
 	SET_PLANE_EXPLICIT(eye_lights, ABOVE_GAME_PLANE, src)
 	eye_lights.icon = icon
 	regenerate_icons()
-	add_overlay(eye_lights)

@@ -294,6 +294,7 @@
 		cyborg.hat.forceMove(drop_location())
 
 	cyborg.cut_overlays()
+	cyborg.managed_overlays = null //so the update_icons() after the transform puts them back
 	cyborg.setDir(SOUTH)
 	do_transform_delay()
 

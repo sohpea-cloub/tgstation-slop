@@ -308,10 +308,9 @@
 	return update_icons()
 
 /mob/living/silicon/robot/update_icons()
-	cut_overlays()
 	SSvis_overlays.remove_vis_overlay(src, managed_vis_overlays)
 	icon_state = model.cyborg_base_icon
-	if(!IS_UNCONSCIOUS(src) && !IsStun() && !IsParalyzed() && !low_power_mode && !is_empty_shell()) //Not dead, not stunned, not an unpiloted AI shell.
+	if(eye_lights_visible())
 		if(!eye_lights)
 			eye_lights = new()
 		if(lamp_enabled || lamp_doom)
@@ -324,21 +323,6 @@
 			eye_lights.color = COLOR_WHITE
 			SET_PLANE_EXPLICIT(eye_lights, ABOVE_GAME_PLANE, src)
 		eye_lights.icon = icon
-		add_overlay(eye_lights)
-
-	var/obj/item/shield_module/shield_module = locate(/obj/item/shield_module) in src
-	if(shield_module && shield_module.active)
-		add_overlay(shield_module.shield_overlay)
-	else if (shield_module && !shield_module.active)
-		cut_overlay(shield_module.shield_overlay)
-
-	if(opened)
-		if(wiresexposed)
-			add_overlay("ov-opencover +w")
-		else if(cell)
-			add_overlay("ov-opencover +c")
-		else
-			add_overlay("ov-opencover -c")
 
 	if(hat)
 		hat_overlay = hat.build_worn_icon(default_layer = 20, default_icon_file = 'icons/mob/clothing/head/default.dmi')
@@ -348,10 +332,31 @@
 
 	update_appearance(UPDATE_OVERLAYS)
 
+/// Whether our eyes should be lit: not dead, not stunned, not an unpiloted AI shell.
+/mob/living/silicon/robot/proc/eye_lights_visible()
+	return !IS_UNCONSCIOUS(src) && !IsStun() && !IsParalyzed() && !low_power_mode && !is_empty_shell()
+
+/// Our overlays are managed (see update_icon()), so overlays added by other things (C4, stickers...) survive icon updates.
+/mob/living/silicon/robot/update_overlays()
+	. = ..()
+	if(eye_lights && eye_lights_visible())
+		. += eye_lights
+
+	if(opened)
+		if(wiresexposed)
+			. += "ov-opencover +w"
+		else if(cell)
+			. += "ov-opencover +c"
+		else
+			. += "ov-opencover -c"
+
+	if(hat_overlay)
+		. += hat_overlay
+
+/// Updates the position of our hat overlay for our current direction.
 /mob/living/silicon/robot/proc/update_worn_icons()
 	if(!hat_overlay)
 		return
-	cut_overlay(hat_overlay)
 
 	if(islist(hat_offset))
 		var/list/offset = hat_offset[ISDIAGONALDIR(dir) ? dir2text(dir & (WEST|EAST)) : dir2text(dir)]
@@ -359,7 +364,7 @@
 			hat_overlay.pixel_w = offset[1]
 			hat_overlay.pixel_z = offset[2]
 
-	add_overlay(hat_overlay)
+	update_appearance(UPDATE_OVERLAYS)
 
 /mob/living/silicon/robot/setDir(newdir)
 	var/old_dir = dir
@@ -372,9 +377,8 @@
 		return ..()
 
 	if(eye_lights)
-		cut_overlay(eye_lights)
 		SET_PLANE_EXPLICIT(eye_lights, PLANE_TO_TRUE(eye_lights.plane), src)
-		add_overlay(eye_lights)
+		update_appearance(UPDATE_OVERLAYS)
 
 	return ..()
 

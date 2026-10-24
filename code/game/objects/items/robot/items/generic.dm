@@ -428,7 +428,7 @@
 /obj/item/shield_module/cyborg_unequip(mob/living/silicon/robot/borg)
 	active = FALSE
 	playsound(src, 'sound/vehicles/mecha/mech_shield_drop.ogg', 50, FALSE)
-	borg.cut_overlay(shield_overlay)
+	borg.update_appearance(UPDATE_OVERLAYS)
 
 /obj/item/shield_module/proc/on_shield_overlay_update(atom/source, list/overlays)
 	SIGNAL_HANDLER
