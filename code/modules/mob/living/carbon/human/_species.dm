@@ -1116,10 +1116,11 @@ GLOBAL_LIST_EMPTY(features_by_species)
 
 		humi.adjust_bodytemperature(area_skin_change)
 
-	// Core to skin temp transfer, when not on fire
-	if(!humi.on_fire)
+	// Core to skin temp transfer. When on fire the skin is heated from the outside, so the core must not
+	// cool it down, but a skin colder than the core (e.g. fire immune and hit by a freezing blast) still rewarms
+	var/core_skin_diff = humi.coretemperature - humi.bodytemperature
+	if(!humi.on_fire || core_skin_diff > 0)
 		// Get the changes to the skin from the core temp
-		var/core_skin_diff = humi.coretemperature - humi.bodytemperature
 		// change rate to reflect temp back to the skin at a slightly higher rate than skin to core
 		var/core_skin_change = (1 + thermal_protection) * get_temp_change_amount(core_skin_diff, BODYTEMP_CORE_SKIN_CHANGE_RATE * seconds_per_tick)
 
