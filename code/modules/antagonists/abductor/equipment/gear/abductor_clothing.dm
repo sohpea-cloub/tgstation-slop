@@ -118,6 +118,8 @@
 	new /obj/effect/temp_visual/dir_setting/ninja(get_turf(wearer), wearer.dir)
 	UnregisterSignal(wearer, COMSIG_HUMAN_GET_VISIBLE_NAME)
 	UnregisterSignal(wearer, COMSIG_MOVABLE_Z_CHANGED)
+	// the disguise overlays were added on top of the wearer's own, so clear them or whatever doesn't overlap the real body stays
+	wearer.cut_overlays()
 	wearer.regenerate_icons()
 	wearer.update_visible_name()
 
