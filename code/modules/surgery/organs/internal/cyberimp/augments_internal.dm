@@ -262,7 +262,7 @@
 		return
 
 	if(organ_flags & ORGAN_FAILING)
-		var/holy_shit_my_brain = remove_brain(owner.get_organ_by_type(ORGAN_SLOT_BRAIN))
+		var/holy_shit_my_brain = remove_brain(owner.get_organ_by_type(/obj/item/organ/brain))
 		if(holy_shit_my_brain)
 			to_chat(owner, span_warning("You take [holy_shit_my_brain] out of [src]. You stare at it for a moment in confusion."))
 		return
@@ -319,8 +319,8 @@
 		// you either lose a chip or a bit of your brain
 		owner.visible_message(span_warning("Something falls to the ground from behind [owner]'s head."),\
 			span_boldwarning("You feel something fall off from behind your head."))
-		var/obj/item/organ/brain/chippy_brain = owner.get_organ_by_type(ORGAN_SLOT_BRAIN)
-		var/obj/item/skillchip/skillchip = chippy_brain?.skillchips[1]
+		var/obj/item/organ/brain/chippy_brain = owner.get_organ_by_type(/obj/item/organ/brain)
+		var/obj/item/skillchip/skillchip = LAZYACCESS(chippy_brain?.skillchips, 1)
 		if(skillchip)
 			owner.remove_skillchip(skillchip, silent = TRUE)
 			skillchip.forceMove(owner.drop_location())
