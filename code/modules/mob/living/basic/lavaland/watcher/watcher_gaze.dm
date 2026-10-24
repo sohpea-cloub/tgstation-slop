@@ -94,6 +94,9 @@
 /datum/action/cooldown/mob_cooldown/watcher_gaze/proc/valid_target(mob/living/viewer)
 	if (!istype(viewer) || IS_UNCONSCIOUS_OR_CRIT(viewer) || viewer == owner)
 		return FALSE
+	// Blindfolded, eyeless or otherwise blind mobs can't meet our gaze
+	if (viewer.is_blind())
+		return FALSE
 	if (!(viewer.dir & get_dir(viewer, owner)))
 		return FALSE
 	return TRUE
