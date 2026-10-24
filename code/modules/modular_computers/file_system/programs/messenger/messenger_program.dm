@@ -743,8 +743,13 @@
 	// send an activation message and open the messenger
 	if(!(computer.enabled || computer.turn_on(usr, open_ui = FALSE)))
 		return
-	if(!(computer.active_program == src || computer.open_program(usr, src, open_ui = FALSE)))
-		return
+	if(computer.active_program != src)
+		if(!computer.open_program(usr, src, open_ui = FALSE))
+			return
+		// Don't open a UI the user didn't have, but if the tablet is already open (e.g. on another app), its
+		// window has to switch to the messenger, or it keeps its old interface fed with the messenger's data.
+		if(SStgui.get_open_ui(usr, computer))
+			computer.update_tablet_open_uis(usr)
 
 	var/target_href = href_list["target"]
 
