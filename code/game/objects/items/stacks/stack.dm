@@ -603,6 +603,7 @@
 		update_custom_materials()
 		update_appearance()
 		update_weight()
+		loc?.atom_storage?.refresh_views()
 	return TRUE
 
 /obj/item/stack/tool_use_check(mob/living/user, amount, heat_required)
@@ -650,6 +651,7 @@
 	update_custom_materials()
 	update_appearance()
 	update_weight()
+	loc?.atom_storage?.refresh_views()
 
 /** Checks whether this stack can merge itself into another stack.
  *
@@ -713,12 +715,16 @@
 
 			// If total size changed, check for overflows
 			if(new_size > cur_size)
-				var/size_limit = max(new_size - target_storage.max_specific_storage, target_storage.get_total_weight() + real_new_size - real_cur_size - target_storage.max_total_storage)
+				// Stacks that the storage holds as an exception to its max specific size can grow to any size
+				var/specific_overflow = 0
+				if(!is_type_in_typecache(target_stack, target_storage.exception_hold))
+					specific_overflow = new_size - target_storage.max_specific_storage
+				var/size_limit = max(specific_overflow, target_storage.get_total_weight() + real_new_size - real_cur_size - target_storage.max_total_storage)
 				// If we're over the stack limit the storage container can support, reduce the transferred amount
-				// to the nearest size threshold, then by a third of the target stack per excess size
+				// so the stack ends up in a size class that is smaller by one for every excess size
 				if(size_limit > 0)
-					var/to_threshold = FLOOR(target_stack.amount + transfer, floor(target_stack.max_amount / 3))
-					transfer = clamp(to_threshold - floor(target_stack.max_amount / 3) * (size_limit - 1) - target_stack.amount, 0, transfer)
+					var/allowed_amount = floor(target_stack.max_amount * (3 - size_limit) / 3)
+					transfer = clamp(allowed_amount - target_stack.amount, 0, transfer)
 
 	if(!transfer)
 		return

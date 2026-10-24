@@ -1208,8 +1208,11 @@ GLOBAL_LIST_EMPTY(cached_storage_typecaches)
 /datum/storage/proc/contents_changed_w_class(datum/source, obj/item/changed, old_w_class, new_w_class)
 	SIGNAL_HANDLER
 
+	// Items we hold as an exception to our max specific size may grow past it (as long as we have room for them)
+	var/within_specific_size = new_w_class <= max_specific_storage || (is_type_in_typecache(changed, exception_hold) && get_exception_count() <= exception_max)
+
 	// If old weight already overloaded the storage, don't drop the item out just in case we're inside of a premade box
-	if(new_w_class <= max_specific_storage && (get_total_weight() <= max_total_storage || get_total_weight() - new_w_class + old_w_class > max_total_storage))
+	if(within_specific_size && (get_total_weight() <= max_total_storage || get_total_weight() - new_w_class + old_w_class > max_total_storage))
 		return
 
 	if(!attempt_remove(changed, parent.drop_location()))
