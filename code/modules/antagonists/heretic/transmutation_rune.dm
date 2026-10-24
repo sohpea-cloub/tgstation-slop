@@ -262,6 +262,11 @@
 	flick("[icon_state]_active", src)
 	playsound(src, 'sound/effects/magic/castsummon.ogg', 50, TRUE, extrarange = SILENCED_SOUND_EXTRARANGE, falloff_exponent = 10, ignore_walls = FALSE)
 
+/// The pixel offsets and direction of a big rune just center its symmetrical icon, so rotating them with a shuttle would shift the rune off its tile
+/obj/effect/heretic_rune/shuttleRotate(rotation, params)
+	params &= ~(ROTATE_OFFSET|ROTATE_DIR)
+	return ..()
+
 /// A 3x3 heretic rune. The kind heretics actually draw in game.
 /obj/effect/heretic_rune/big
 	icon = 'icons/effects/96x96.dmi'
