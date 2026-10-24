@@ -51,8 +51,22 @@
 	set_wires(new /datum/wires/explosive/c4(src))
 
 /obj/item/grenade/c4/Destroy()
+	if(isturf(target))
+		UnregisterSignal(target, COMSIG_TURF_ON_SHUTTLE_MOVE)
 	target = null
 	return ..()
+
+/// When the turf we're planted on is moved by a shuttle, the shuttle copies it to a new turf and leaves the old one behind: follow it.
+/obj/item/grenade/c4/proc/on_target_shuttle_move(turf/source, turf/new_turf)
+	SIGNAL_HANDLER
+
+	if(new_turf == source)
+		return
+	source.cut_overlay(plastic_overlay, TRUE)
+	UnregisterSignal(source, COMSIG_TURF_ON_SHUTTLE_MOVE)
+	target = new_turf
+	RegisterSignal(new_turf, COMSIG_TURF_ON_SHUTTLE_MOVE, PROC_REF(on_target_shuttle_move))
+	new_turf.add_overlay(plastic_overlay)
 
 /obj/item/grenade/c4/screwdriver_act(mob/living/user, obj/item/tool)
 	to_chat(user, span_notice("The wire panel can be accessed without a screwdriver."))
@@ -150,6 +164,8 @@
 		plastic_overlay.layer = ABOVE_OPEN_TURF_LAYER
 
 	target.add_overlay(plastic_overlay)
+	if(isturf(target))
+		RegisterSignal(target, COMSIG_TURF_ON_SHUTTLE_MOVE, PROC_REF(on_target_shuttle_move))
 	to_chat(user, span_notice("You plant the bomb. Timer counting down from [det_time]."))
 	addtimer(CALLBACK(src, PROC_REF(detonate)), det_time*10)
 	return TRUE
