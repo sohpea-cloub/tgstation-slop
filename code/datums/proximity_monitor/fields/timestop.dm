@@ -69,17 +69,25 @@
 	///if true, this doesn't time out after a duration but rather when an immune atom inside moves.
 	var/channelled = FALSE
 
+	/// Atoms inside our field that are already frozen by another timestop field. When that field ends, whatever is still inside ours gets frozen by us.
+	var/list/overlapped = list()
+
 	var/static/list/global_frozen_atoms = list()
+	/// Every timestop field that currently exists.
+	var/static/list/active_fields = list()
 
 /datum/proximity_monitor/advanced/timestop/New(atom/_host, range, _ignore_if_not_on_turf = TRUE, list/immune, antimagic_flags, channelled)
 	..()
+	active_fields += src
 	src.immune = immune
 	src.antimagic_flags = antimagic_flags
 	src.channelled = channelled
 	recalculate_field(full_recalc = TRUE)
 
 /datum/proximity_monitor/advanced/timestop/Destroy()
+	active_fields -= src
 	unfreeze_all()
+	pass_on_overlapped()
 	if(channelled)
 		for(var/atom in immune)
 			UnregisterSignal(atom, COMSIG_MOVABLE_MOVED)
@@ -89,7 +97,7 @@
 	freeze_atom(movable)
 
 /datum/proximity_monitor/advanced/timestop/proc/freeze_atom(atom/movable/A)
-	if(global_frozen_atoms[A] || !istype(A))
+	if(!istype(A) || global_frozen_atoms[A] == src)
 		return FALSE
 
 	if(HAS_TRAIT(A, TRAIT_TIME_STOP_IMMUNE) || astype(A, /mob)?.can_block_magic(antimagic_flags))
@@ -98,6 +106,11 @@
 	if(immune[A])
 		if(channelled)
 			RegisterSignal(A, COMSIG_MOVABLE_MOVED, PROC_REF(atom_broke_channel), override = TRUE)
+		return FALSE
+
+	if(global_frozen_atoms[A])
+		// Another timestop already holds this atom. Remember it, so that it stays frozen when that one ends before we do.
+		overlapped[A] = TRUE
 		return FALSE
 
 	var/frozen = TRUE
@@ -121,8 +134,9 @@
 	A.move_resist = INFINITY
 	global_frozen_atoms[A] = src
 	into_the_negative_zone(A)
-	RegisterSignal(A, COMSIG_MOVABLE_PRE_MOVE, PROC_REF(unfreeze_atom))
+	RegisterSignal(A, COMSIG_MOVABLE_PRE_MOVE, PROC_REF(frozen_atom_pre_move))
 	RegisterSignal(A, COMSIG_ITEM_PICKUP, PROC_REF(unfreeze_atom))
+	RegisterSignal(A, SIGNAL_ADDTRAIT(TRAIT_TIME_STOP_IMMUNE), PROC_REF(frozen_atom_gained_immunity))
 
 	SEND_SIGNAL(A, COMSIG_ATOM_TIMESTOP_FREEZE, src)
 
@@ -145,8 +159,7 @@
 	else if(ismecha(A))
 		unfreeze_mecha(A)
 
-	UnregisterSignal(A, COMSIG_MOVABLE_PRE_MOVE)
-	UnregisterSignal(A, COMSIG_ITEM_PICKUP)
+	UnregisterSignal(A, list(COMSIG_MOVABLE_PRE_MOVE, COMSIG_ITEM_PICKUP, SIGNAL_ADDTRAIT(TRAIT_TIME_STOP_IMMUNE)))
 
 	SEND_SIGNAL(A, COMSIG_ATOM_TIMESTOP_UNFREEZE, src)
 
@@ -155,6 +168,34 @@
 	frozen_things -= A
 	global_frozen_atoms -= A
 
+
+/// Whether this atom is allowed to pull things frozen by us: the ones who are immune to time stop.
+/datum/proximity_monitor/advanced/timestop/proc/can_pull_frozen(atom/movable/puller)
+	return immune[puller] || HAS_TRAIT(puller, TRAIT_TIME_STOP_IMMUNE)
+
+/// Called when a frozen atom is about to move. Being dragged along by someone who is immune to time stop doesn't unfreeze it, anything else does.
+/datum/proximity_monitor/advanced/timestop/proc/frozen_atom_pre_move(atom/movable/A)
+	SIGNAL_HANDLER
+	if(A.pulledby && can_pull_frozen(A.pulledby))
+		return
+	unfreeze_atom(A)
+
+/// Called when a frozen atom gains immunity to time stop (a wizard shapeshifting inside their own field, for instance).
+/datum/proximity_monitor/advanced/timestop/proc/frozen_atom_gained_immunity(atom/movable/A)
+	SIGNAL_HANDLER
+	unfreeze_atom(A)
+	freeze_atom(A) // it is immune now, so this only registers it as such
+
+/// Called when we end: whatever other timestop fields we overlapped with and which are still around takes over freezing what is in them.
+/datum/proximity_monitor/advanced/timestop/proc/pass_on_overlapped()
+	for(var/datum/proximity_monitor/advanced/timestop/other as anything in active_fields)
+		for(var/atom/movable/A as anything in other.overlapped)
+			if(global_frozen_atoms[A])
+				continue
+			other.overlapped -= A
+			if(QDELETED(A) || !(get_turf(A) in other.field_turfs) && !(get_turf(A) in other.edge_turfs))
+				continue
+			other.freeze_atom(A)
 
 /datum/proximity_monitor/advanced/timestop/proc/freeze_mecha(obj/vehicle/sealed/mecha/M)
 	M.completely_disabled = TRUE

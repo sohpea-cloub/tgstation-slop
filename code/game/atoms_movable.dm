@@ -618,7 +618,7 @@
 /atom/movable/proc/Move_Pulled(atom/moving_atom)
 	if(!pulling)
 		return FALSE
-	if(pulling.anchored || pulling.move_resist > move_force || !pulling.Adjacent(src, src, pulling))
+	if(pulling.anchored || pulling.get_pull_resistance(src) > move_force || !pulling.Adjacent(src, src, pulling))
 		stop_pulling()
 		return FALSE
 	if(isliving(pulling))
@@ -654,7 +654,7 @@
 		else if(pulling && !isturf(pulling.loc) && pulling.loc != loc) //to be removed once all code that changes an object's loc uses forceMove().
 			log_game("DEBUG:[src]'s pull on [pulling] wasn't broken despite [pulling] being in [pulling.loc]. Pull stopped manually.")
 			stop_pulling()
-		else if(pulling.anchored || pulling.move_resist > move_force)
+		else if(pulling.anchored || pulling.get_pull_resistance(src) > move_force)
 			stop_pulling()
 	if(!only_pulling && pulledby && moving_diagonally != FIRST_DIAG_STEP && (get_dist(src, pulledby) > 1 || (z != pulledby.z && !z_allowed))) //separated from our puller and not in the middle of a diagonal move.
 		pulledby.stop_pulling()
@@ -1736,9 +1736,17 @@
 		return FALSE
 	if(anchored || throwing)
 		return FALSE
-	if(force < (move_resist * MOVE_FORCE_PULL_RATIO))
+	if(force < (get_pull_resistance(user) * MOVE_FORCE_PULL_RATIO))
 		return FALSE
 	return TRUE
+
+/// How much force it takes for the puller to pull us. Things frozen by a time stop can still be pulled by those immune to it.
+/atom/movable/proc/get_pull_resistance(atom/movable/puller)
+	if(move_resist == INFINITY)
+		var/datum/proximity_monitor/advanced/timestop/frozen_by = /datum/proximity_monitor/advanced/timestop::global_frozen_atoms[src]
+		if(frozen_by?.can_pull_frozen(puller))
+			return frozen_by.frozen_things[src]
+	return move_resist
 
 /**
  * Updates the grab state of the movable
