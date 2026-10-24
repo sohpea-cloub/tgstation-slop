@@ -452,17 +452,23 @@ SUBSYSTEM_DEF(dynamic)
 /datum/controller/subsystem/dynamic/proc/on_latejoin(mob/living/carbon/human/latejoiner)
 	// First check queued rulesets - queued rulesets by pass cooldowns and probability checks,
 	// because they're generally forced by events or admins (and thus have higher priority)
+	var/queued_failed = FALSE
 	for(var/datum/dynamic_ruleset/latejoin/queued in queued_rulesets)
 		// NOTE: !! THIS CAN SLEEP !!
 		if(!queued.prepare_execution(get_active_player_count(afk_check = TRUE), list(latejoiner)))
 			message_admins("Latejoin (forced): Queued ruleset [queued.config_tag] failed to prepare! It remains queued for next latejoin. (<a href='byond://?src=[REF(src)];admin_dequeue=[REF(queued)]'>REMOVE FROM QUEUE</a>)")
 			log_dynamic("Latejoin (forced): Queued ruleset [queued.config_tag] failed to prepare! It remains queued for next latejoin.")
+			queued_failed = TRUE
 			continue
 		message_admins("Latejoin (forced): [ADMIN_LOOKUPFLW(latejoiner)] has been selected for [queued.config_tag].")
 		log_dynamic("Latejoin (forced): [key_name(latejoiner)] has been selected for [queued.config_tag].")
 		unqueue_ruleset(queued)
 		executed_rulesets += queued
 		queued.execute()
+		return
+
+	// A forced ruleset is still waiting for a valid latejoiner: don't hand this player a different, random antagonist instead
+	if(queued_failed)
 		return
 
 	if(COOLDOWN_FINISHED(src, latejoin_ruleset_start) && COOLDOWN_FINISHED(src, latejoin_cooldown))
