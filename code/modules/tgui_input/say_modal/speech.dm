@@ -129,6 +129,9 @@
 	if(length(payload["entry"]) > max_length)
 		CRASH("[usr] has entered more characters than allowed into a TGUI-Say")
 	if(type == "entry")
+		// The window is on its way to closing (the client sends "close" right after), so the entry is submitted:
+		// anything this entry does (an emote that knocks us out, say) must not force-say the box we just emptied
+		window_open = FALSE
 		delegate_speech(payload["entry"], payload["channel"])
 		return TRUE
 	if(type == "force")
