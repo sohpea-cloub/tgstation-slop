@@ -3380,6 +3380,7 @@
 "aAt" = (
 /obj/machinery/vending/coffee,
 /obj/structure/sign/poster/official/random/directional/west,
+/obj/effect/baseturf_helper/reinforced_plating/ceiling,
 /turf/open/floor/glass/reinforced,
 /area/station/ai/satellite/teleporter)
 "aAC" = (
@@ -6350,6 +6351,7 @@
 /obj/item/paper_bin,
 /obj/item/pen,
 /obj/machinery/status_display/evac/directional/north,
+/obj/effect/baseturf_helper/reinforced_plating/ceiling,
 /turf/open/floor/circuit,
 /area/station/ai/satellite/equipment)
 "aXu" = (
@@ -30466,6 +30468,7 @@
 /obj/effect/turf_decal/trimline/dark/corner{
 	dir = 1
 	},
+/obj/effect/baseturf_helper/reinforced_plating/ceiling,
 /turf/open/floor/iron/dark/textured_corner{
 	dir = 1
 	},
@@ -41467,7 +41470,7 @@
 	name = "Zen Garden";
 	id = "AIgarden"
 	},
-/turf/open/floor/plating,
+/turf/open/floor/plating/reinforced,
 /area/station/ai/satellite/exterior)
 "gfH" = (
 /obj/effect/turf_decal/trimline/red/filled/line,
@@ -71628,6 +71631,7 @@
 /area/station/hallway/secondary/service)
 "kzJ" = (
 /obj/effect/decal/cleanable/dirt,
+/obj/effect/baseturf_helper/reinforced_plating/ceiling,
 /turf/open/floor/plating,
 /area/station/ai/satellite/maintenance)
 "kzM" = (
@@ -125590,6 +125594,7 @@
 /obj/structure/chair/office/light{
 	dir = 8
 	},
+/obj/effect/baseturf_helper/reinforced_plating/ceiling,
 /turf/open/floor/carpet/neon/simple/lime,
 /area/station/ai/satellite/chamber)
 "sCy" = (
@@ -126335,6 +126340,7 @@
 	pixel_y = 2
 	},
 /obj/machinery/airalarm/directional/west,
+/obj/effect/baseturf_helper/reinforced_plating/ceiling,
 /turf/open/floor/iron/dark/textured_large,
 /area/station/ai/satellite/interior)
 "sHT" = (
@@ -135700,6 +135706,7 @@
 /obj/effect/turf_decal/trimline/dark/corner{
 	dir = 1
 	},
+/obj/effect/baseturf_helper/reinforced_plating/ceiling,
 /turf/open/floor/iron/dark/textured_corner{
 	dir = 1
 	},
@@ -152125,6 +152132,7 @@
 /obj/effect/turf_decal/trimline/dark/corner{
 	dir = 4
 	},
+/obj/effect/baseturf_helper/reinforced_plating/ceiling,
 /turf/open/floor/iron/dark/textured_corner{
 	dir = 4
 	},
