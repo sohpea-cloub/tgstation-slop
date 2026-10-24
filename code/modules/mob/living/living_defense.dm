@@ -827,6 +827,8 @@
 		human_target.w_uniform?.add_fingerprint(src)
 
 	SEND_SIGNAL(target, COMSIG_LIVING_DISARM_HIT, src, zone_selected, weapon)
+	// Log the shove before the target is moved: the move can kill them (supermatter, ...), which would log the shove after their death and without their key
+	log_combat(src, target, "shoved", addition = weapon ? "with [weapon]" : null)
 	var/shove_dir = get_dir(loc, target.loc)
 	var/turf/target_shove_turf = get_step(target.loc, shove_dir)
 	var/turf/target_old_turf = target.loc
@@ -865,7 +867,8 @@
 			target.visible_message(span_danger("[name] shoves [target.name][knocked_down ? ", knocking [target.p_them()] down" : ""]!"),
 				span_userdanger("You[knocked_down ? "'re knocked down" : " resist falling down"] from a shove by [name]!"), span_hear("You hear aggressive shuffling [knocked_down ? "followed by a loud thud!" : ""]"), COMBAT_MESSAGE_RANGE, src)
 			to_chat(src, span_danger("You shove [target.name][knocked_down ? ", knocking [target.p_them()] down" : ""]!"))
-			log_combat(src, target, "shoved", "[knocked_down ? "knocking them down[weapon ? " with [weapon]" : ""]" : ""]")
+			if(knocked_down && target.stat != DEAD) // the move into the solid thing may have killed them
+				log_combat(src, target, "knocked down", addition = "with a shove")
 			if(ishuman(target))
 				var/mob/living/carbon/human/human_target = target
 				human_target.force_say()
@@ -885,18 +888,19 @@
 
 	//Take their lunch money
 	var/target_held_item = target.get_active_held_item()
-	var/append_message = weapon ? " with [weapon]" : ""
+	var/dropped_item
 	// If it's in our typecache, they're staggered and it exists, disarm. If they're knocked down, disarm too.
 	if(target_held_item && target.get_timed_status_effect_duration(/datum/status_effect/staggered) && is_type_in_typecache(target_held_item, GLOB.shove_disarming_types) || target_held_item && target.body_position == LYING_DOWN)
 		target.dropItemToGround(target_held_item)
-		append_message = "causing [target.p_them()] to drop [target_held_item]"
+		dropped_item = target_held_item
 		target.visible_message(span_danger("[target.name] drops \the [target_held_item]!"),
 			span_warning("You drop \the [target_held_item]!"), null, COMBAT_MESSAGE_RANGE)
 
 	if(shove_flags & SHOVE_CAN_STAGGER)
 		target.adjust_staggered_up_to(STAGGERED_SLOWDOWN_LENGTH, 10 SECONDS)
 
-	log_combat(src, target, "shoved", append_message)
+	if(dropped_item)
+		log_combat(src, target, "disarmed", dropped_item, "with a shove")
 
 ///Check if the universal conditions for disarming/shoving are met.
 /mob/living/proc/can_disarm(mob/living/target)
