@@ -484,13 +484,15 @@
 	var/blood_added = adjust_blood_volume(round(reac_volume, CHEMICAL_VOLUME_ROUNDING))
 	reagents.remove_reagent(chem.type, blood_added)
 
-	if(chem.data?[BLOOD_DATA_SYNTH_CONTENT] && !IS_BLOOD_ALWAYS_SYNTHETIC(src))
+	if((chem.data?[BLOOD_DATA_SYNTH_CONTENT] || chem.data?[BLOOD_DATA_UNUSABLE_CONTENT]) && !IS_BLOOD_ALWAYS_SYNTHETIC(src) && !HAS_TRAIT(src, TRAIT_BLOOD_WORM_HOST))
 		var/added_synth_volume = blood_added * chem.data[BLOOD_DATA_SYNTH_CONTENT]
 		var/existing_synth_volume = cached_blood_volume * get_blood_synth_content()
+		var/added_unusable_volume = blood_added * chem.data[BLOOD_DATA_UNUSABLE_CONTENT]
+		var/existing_unusable_volume = cached_blood_volume * get_blood_unusable_content()
 
-		if (added_synth_volume != 0 || existing_synth_volume != 0)
+		if (added_synth_volume != 0 || existing_synth_volume != 0 || added_unusable_volume != 0 || existing_unusable_volume != 0)
 			// A simple weighted average that simplifies down to "total synth volume / total blood volume" i.e. "how much of our blood is synthetic"
-			AddComponent(/datum/component/synth_blood, (added_synth_volume + existing_synth_volume) / (blood_added + cached_blood_volume))
+			AddComponent(/datum/component/synth_blood, (added_synth_volume + existing_synth_volume) / (blood_added + cached_blood_volume), (added_unusable_volume + existing_unusable_volume) / (blood_added + cached_blood_volume))
 
 	if(chem.data?[BLOOD_DATA_TYPE])
 		var/datum/blood_type/donor_type = chem.data[BLOOD_DATA_TYPE]

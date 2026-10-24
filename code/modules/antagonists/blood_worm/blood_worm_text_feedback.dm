@@ -25,10 +25,16 @@
 	if (!isnum(synth_content))
 		synth_content = 0 // Otherwise the switch statement breaks.
 
+	var/unusable_content = blood_data?[BLOOD_DATA_UNUSABLE_CONTENT]
+	if (!isnum(unusable_content))
+		unusable_content = 0
+
+	var/usable_volume = cached_blood_volume * (1 - unusable_content)
+
 	var/normal_content = 1 - synth_content
 
-	var/normal_blood_after = consumed_normal_blood + cached_blood_volume * normal_content
-	var/synth_blood_after = min(consumed_synth_blood + cached_blood_volume * synth_content * synth_blood_efficiency, maximum_synth_blood)
+	var/normal_blood_after = consumed_normal_blood + usable_volume * normal_content
+	var/synth_blood_after = min(consumed_synth_blood + usable_volume * synth_content * synth_blood_efficiency, maximum_synth_blood)
 
 	var/total_blood_now = get_consumed_blood()
 	var/total_blood_after = normal_blood_after + synth_blood_after

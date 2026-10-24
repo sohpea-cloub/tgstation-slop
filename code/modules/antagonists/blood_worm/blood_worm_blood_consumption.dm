@@ -1,17 +1,21 @@
 // Any procs that work with blood consumption go here.
 // There are quite a few of them, and some of them are lengthy.
 
-/mob/living/basic/blood_worm/proc/consume_blood(blood_amount, synth_content = 0, should_heal = TRUE)
+/mob/living/basic/blood_worm/proc/consume_blood(blood_amount, synth_content = 0, should_heal = TRUE, unusable_content = 0)
 	if (blood_amount <= 0)
 		return
 
 	synth_content = clamp(synth_content, 0, 1)
+	unusable_content = clamp(unusable_content, 0, 1)
 
 	var/was_synth_capped = consumed_synth_blood >= maximum_synth_blood
 	var/was_ready_to_mature = get_consumed_blood() >= cocoon_action?.total_blood_required
 
-	var/added_normal_blood = blood_amount * (1 - synth_content)
-	var/added_synth_blood = blood_amount * synth_content * synth_blood_efficiency
+	// Unusable blood (i.e. extracted from a blood worm host) doesn't contribute to growth at all, but it still heals.
+	var/usable_blood_amount = blood_amount * (1 - unusable_content)
+
+	var/added_normal_blood = usable_blood_amount * (1 - synth_content)
+	var/added_synth_blood = usable_blood_amount * synth_content * synth_blood_efficiency
 	var/added_total_blood = added_normal_blood + added_synth_blood
 
 	consumed_synth_blood = min(consumed_synth_blood + added_synth_blood, maximum_synth_blood)

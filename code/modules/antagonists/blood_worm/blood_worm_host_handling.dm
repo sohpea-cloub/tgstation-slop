@@ -57,7 +57,7 @@
 
 	if (gain_progress)
 		// Apply the host's blood volume to our growth.
-		consume_blood(cached_blood_volume, host.get_blood_synth_content(), should_heal = FALSE)
+		consume_blood(cached_blood_volume, host.get_blood_synth_content(), should_heal = FALSE, unusable_content = host.get_blood_unusable_content(ignore_worm_host = TRUE))
 
 	// Combine our health with the blood of our host.
 	host.set_blood_volume(cached_blood_volume + health * BLOOD_WORM_HEALTH_TO_BLOOD)

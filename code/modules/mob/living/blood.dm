@@ -415,13 +415,15 @@
 	amount = target.adjust_blood_volume(amount, maximum = BLOOD_VOLUME_MAX_LETHAL)
 
 	// Synthetic blood handling, used for capping blood worm growth from monkeys, blood bags and basic mobs. This forces blood worms to kill people to reach adulthood.
-	if (!IS_BLOOD_ALWAYS_SYNTHETIC(target))
+	if (!IS_BLOOD_ALWAYS_SYNTHETIC(target) && !HAS_TRAIT(target, TRAIT_BLOOD_WORM_HOST))
 		var/added_synth_volume = amount * get_blood_synth_content()
 		var/existing_synth_volume = cached_target_blood_volume * target.get_blood_synth_content()
+		var/added_unusable_volume = amount * get_blood_unusable_content()
+		var/existing_unusable_volume = cached_target_blood_volume * target.get_blood_unusable_content()
 
-		if (added_synth_volume != 0 || existing_synth_volume != 0)
+		if (added_synth_volume != 0 || existing_synth_volume != 0 || added_unusable_volume != 0 || existing_unusable_volume != 0)
 			// A simple weighted average that simplifies down to "total synth volume / total blood volume" i.e. "how much of their blood is synthetic"
-			target.AddComponent(/datum/component/synth_blood, (added_synth_volume + existing_synth_volume) / (amount + cached_target_blood_volume))
+			target.AddComponent(/datum/component/synth_blood, (added_synth_volume + existing_synth_volume) / (amount + cached_target_blood_volume), (added_unusable_volume + existing_unusable_volume) / (amount + cached_target_blood_volume))
 
 	adjust_blood_volume(-amount)
 	return amount
@@ -458,6 +460,10 @@
 	var/synth_content = get_blood_synth_content()
 	if (synth_content > 0)
 		blood_data[BLOOD_DATA_SYNTH_CONTENT] = synth_content
+
+	var/unusable_content = get_blood_unusable_content()
+	if (unusable_content > 0)
+		blood_data[BLOOD_DATA_UNUSABLE_CONTENT] = unusable_content
 
 	// DNA, mind, facitons, etc don't get stored in stuff like oil
 	if (!(blood_type.blood_flags & BLOOD_ADD_DNA))
@@ -828,6 +834,14 @@
 	// Handles accounting for synthetic blood injected into mobs that don't normally have it.
 	var/datum/component/synth_blood/synth_comp = GetComponent(/datum/component/synth_blood)
 	return synth_comp?.synth_content
+
+/// Returns on a 0-1 scale how much of this mobs blood is unusable for blood worm growth. Prevents blood worms from growing off of the blood of their own host.
+/mob/living/proc/get_blood_unusable_content(ignore_worm_host = FALSE)
+	if (!ignore_worm_host && HAS_TRAIT(src, TRAIT_BLOOD_WORM_HOST))
+		return 1 // A blood worm host's blood is, in part, the worm's own.
+
+	var/datum/component/synth_blood/synth_comp = GetComponent(/datum/component/synth_blood)
+	return synth_comp?.unusable_content
 
 #undef BLOOD_DRIP_RATE_MOD
 #undef DRUNK_POWER_TO_BLOOD_ALCOHOL

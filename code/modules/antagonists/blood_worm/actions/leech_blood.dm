@@ -125,7 +125,7 @@
 	leech.next_move = 0
 
 	while (do_after(leech, 1 SECONDS, target, timed_action_flags = IGNORE_USER_LOC_CHANGE | IGNORE_TARGET_LOC_CHANGE | DO_AFTER_CHECK_NEXT_MOVE, extra_checks = CALLBACK(src, PROC_REF(leech_living_active_check), leech, target)))
-		leech.consume_blood(-target.adjust_blood_volume(-leech_rate), target.get_blood_synth_content())
+		leech.consume_blood(-target.adjust_blood_volume(-leech_rate), target.get_blood_synth_content(), unusable_content = target.get_blood_unusable_content())
 
 		if (target.stat != DEAD)
 			target.adjust_oxy_loss(oxyloss_rate) // It's really weird if they just stand there until they literally drop dead from going below BLOOD_VOLUME_SURVIVE.
@@ -209,7 +209,7 @@
 			var/synth_content = reagent.data?[BLOOD_DATA_SYNTH_CONTENT]
 			var/amount_consumed = target.reagents.remove_reagent(reagent.type, leech_rate * (reagent.volume / total_volume))
 
-			leech.consume_blood(amount_consumed, synth_content)
+			leech.consume_blood(amount_consumed, synth_content, unusable_content = reagent.data?[BLOOD_DATA_UNUSABLE_CONTENT])
 
 		playsound(target, 'sound/effects/wounds/splatter.ogg', vol = 80, vary = TRUE, ignore_walls = FALSE)
 
@@ -220,14 +220,21 @@
 
 	var/total_volume = 0
 	var/synth_content = 0
+	var/unusable_content = 0
 
 	for (var/datum/reagent/reagent as anything in blood)
 		total_volume += reagent.volume
 		synth_content += reagent.data?[BLOOD_DATA_SYNTH_CONTENT] * reagent.volume
+		unusable_content += reagent.data?[BLOOD_DATA_UNUSABLE_CONTENT] * reagent.volume
 
 	synth_content /= total_volume
+	unusable_content /= total_volume
 
-	if (synth_content >= 1)
+	if (unusable_content >= 1)
+		target.balloon_alert(leech, "unusable for growth")
+	else if (unusable_content > 0)
+		target.balloon_alert(leech, "[ceil(unusable_content * 100)]% unusable for growth")
+	else if (synth_content >= 1)
 		target.balloon_alert(leech, "fully synthetic")
 	else if (synth_content > 0)
 		target.balloon_alert(leech, "[ceil(synth_content * 100)]% synthetic")

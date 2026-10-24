@@ -183,6 +183,16 @@
 		// A simple weighted average that simplifies down to "total synth volume / total blood volume" i.e. "how much of the blood is synthetic"
 		source.data[BLOOD_DATA_SYNTH_CONTENT] = (added_synth_volume + existing_synth_volume) / (amount + source.volume)
 
+	// Proportionally mix unusable contents (blood extracted from blood worm hosts)
+	if (source.data?[BLOOD_DATA_UNUSABLE_CONTENT] || mix_data?[BLOOD_DATA_UNUSABLE_CONTENT])
+		var/added_unusable_volume = amount * mix_data?[BLOOD_DATA_UNUSABLE_CONTENT]
+		var/existing_unusable_volume = source.volume * source.data?[BLOOD_DATA_UNUSABLE_CONTENT]
+
+		if (!source.data)
+			source.data = list()
+
+		source.data[BLOOD_DATA_UNUSABLE_CONTENT] = (added_unusable_volume + existing_unusable_volume) / (amount + source.volume)
+
 	// Presumably artificially generated blood
 	if (!source.data || !mix_data)
 		return

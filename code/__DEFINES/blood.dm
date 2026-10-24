@@ -28,6 +28,8 @@
 // Keys for indexing blood data lists. HIGHLY INCOMPLETE.
 /// Indexing a blood reagent data list with this returns how synthetic the blood is, used for blood worms to nerf common blood sources like monkeys.
 #define BLOOD_DATA_SYNTH_CONTENT "synth_content"
+/// Indexing a blood reagent data list with this returns how much of the blood is unusable for blood worm growth, i.e. blood that has been extracted from a blood worm host.
+#define BLOOD_DATA_UNUSABLE_CONTENT "unusable_content"
 /// Specifically for Ethereal blood, indicating that it's non-zappy
 #define BLOOD_DATA_ENRICHED_ETHEREAL "enriched"
 /// The blood type of the blood, self evident
