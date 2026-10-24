@@ -43,6 +43,7 @@
 /obj/machinery/door/airlock/external/glass/ruin{
 	id_tag = "pirateportexternal"
 	},
+/obj/effect/mapping_helpers/airlock/access/all/syndicate/general,
 /turf/open/floor/mineral/plastitanium/pod/light,
 /area/shuttle/pirate)
 "dI" = (
@@ -259,6 +260,7 @@
 /obj/machinery/door/airlock/external/glass/ruin{
 	id_tag = "pirateportexternal"
 	},
+/obj/effect/mapping_helpers/airlock/access/all/syndicate/general,
 /turf/open/floor/mineral/plastitanium/pod/light,
 /area/shuttle/pirate)
 "pk" = (
@@ -419,6 +421,7 @@
 /obj/machinery/door/airlock/external/glass/ruin{
 	id_tag = "piratestarboardexternal"
 	},
+/obj/effect/mapping_helpers/airlock/access/all/syndicate/general,
 /turf/open/floor/mineral/plastitanium/pod/light,
 /area/shuttle/pirate)
 "Ae" = (
@@ -479,6 +482,7 @@
 /obj/machinery/door/airlock/external/glass/ruin{
 	id_tag = "piratestarboardexternal"
 	},
+/obj/effect/mapping_helpers/airlock/access/all/syndicate/general,
 /turf/open/floor/mineral/plastitanium/pod/light,
 /area/shuttle/pirate)
 "Ch" = (

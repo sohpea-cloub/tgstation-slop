@@ -103,6 +103,7 @@
 /obj/machinery/door/airlock/external/glass/ruin{
 	id_tag = "pirateportexternal2"
 	},
+/obj/effect/mapping_helpers/airlock/access/all/syndicate/general,
 /obj/effect/mapping_helpers/airlock/locked,
 /obj/effect/mapping_helpers/airlock/cutaiwire,
 /turf/open/floor/plating,
@@ -373,6 +374,7 @@
 /obj/machinery/door/airlock/external/glass/ruin{
 	id_tag = "pirateportexternal1"
 	},
+/obj/effect/mapping_helpers/airlock/access/all/syndicate/general,
 /obj/effect/mapping_helpers/airlock/locked,
 /obj/effect/mapping_helpers/airlock/cutaiwire,
 /turf/open/floor/plating,
@@ -525,6 +527,7 @@
 /obj/machinery/door/airlock/external/glass/ruin{
 	id_tag = "pirateportexternal1"
 	},
+/obj/effect/mapping_helpers/airlock/access/all/syndicate/general,
 /obj/effect/mapping_helpers/airlock/locked,
 /obj/structure/fans/tiny,
 /obj/effect/mapping_helpers/airlock/cutaiwire,
@@ -613,6 +616,7 @@
 /obj/machinery/door/airlock/external/glass/ruin{
 	id_tag = "pirateportexternal2"
 	},
+/obj/effect/mapping_helpers/airlock/access/all/syndicate/general,
 /obj/effect/mapping_helpers/airlock/locked,
 /obj/structure/fans/tiny,
 /obj/effect/mapping_helpers/airlock/cutaiwire,

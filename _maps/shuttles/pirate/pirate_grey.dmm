@@ -335,6 +335,7 @@
 /obj/machinery/door/airlock/external/glass/ruin{
 	id_tag = "pirateportexternal"
 	},
+/obj/effect/mapping_helpers/airlock/access/all/syndicate/general,
 /obj/effect/mapping_helpers/airlock/cyclelink_helper{
 	dir = 4
 	},
@@ -842,6 +843,7 @@
 /obj/machinery/door/airlock/external/glass/ruin{
 	id_tag = "piratestarboardexternal"
 	},
+/obj/effect/mapping_helpers/airlock/access/all/syndicate/general,
 /obj/docking_port/stationary{
 	dir = 4;
 	dwidth = 13;
