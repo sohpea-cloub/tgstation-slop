@@ -385,10 +385,17 @@
 		layer = ABOVE_OPEN_TURF_LAYER
 	else
 		layer = initial(layer)
-	layer += get_pipe_layer_offset()
+	layer += get_device_layer_offset()
 
 /obj/machinery/atmospherics/components/proc/get_pipe_layer_offset()
 	return (piping_layer - PIPING_LAYER_DEFAULT) * PIPING_LAYER_LCHANGE + (GLOB.pipe_colors_ordered[pipe_color] * 0.001)
+
+/**
+ * Layer offset of the device itself: small enough that devices always draw above every pipe
+ * (pipes use PIPING_LAYER_LCHANGE steps), but still orders devices of different piping layers and colors
+ */
+/obj/machinery/atmospherics/components/proc/get_device_layer_offset()
+	return (piping_layer - PIPING_LAYER_DEFAULT) * 0.001 + (GLOB.pipe_colors_ordered[pipe_color] * 0.0001)
 
 /**
  * Handles air relocation to the pipenet/environment

@@ -213,10 +213,12 @@
 #define GAS_PIPE_HIDDEN_LAYER 2.35 //layer = initial(layer) + piping_layer / 1000 in atmospherics/update_icon() to determine order of pipe overlap
 #define WIRE_BRIDGE_LAYER 2.44
 #define WIRE_TERMINAL_LAYER 2.45
-#define GAS_SCRUBBER_LAYER 2.46
 #define GAS_PIPE_VISIBLE_LAYER 2.47 //layer = initial(layer) + piping_layer / 1000 in atmospherics/update_icon() to determine order of pipe overlap
-#define GAS_FILTER_LAYER 2.48
-#define GAS_PUMP_LAYER 2.49
+// Atmos devices (components) must always draw above every pipe, whatever their piping layer or color:
+// pipes top out at GAS_PIPE_VISIBLE_LAYER + 0.0105, devices (see get_device_layer_offset()) move by at most 0.0026 around theirs
+#define GAS_SCRUBBER_LAYER 2.484
+#define GAS_FILTER_LAYER 2.488
+#define GAS_PUMP_LAYER 2.492
 #define PLUMBING_PIPE_VISIBILE_LAYER 2.495//layer = initial(layer) + ducting_layer / 3333 in atmospherics/handle_layer() to determine order of duct overlap
 #define BOT_PATH_LAYER 2.497
 #define LOW_OBJ_LAYER 2.5
