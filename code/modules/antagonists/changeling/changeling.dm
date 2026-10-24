@@ -784,6 +784,12 @@
 
 	chosen_dna.copy_dna(user.dna, COPY_DNA_SE|COPY_DNA_SPECIES)
 
+	// domutcheck() only revisits the genes of the new sequence, so a mutation we had activated
+	// that isn't in it any more (the old identity's gigantism, say) would never be removed.
+	for(var/datum/mutation/old_mutation as anything in user.dna.mutations?.Copy())
+		if((MUTATION_SOURCE_ACTIVATED in old_mutation.sources) && !user.dna.mutation_in_sequence(old_mutation))
+			user.dna.remove_mutation(old_mutation, MUTATION_SOURCE_ACTIVATED)
+
 	for(var/obj/item/bodypart/limb as anything in user.get_bodyparts())
 		limb.update_limb(is_creating = TRUE)
 
