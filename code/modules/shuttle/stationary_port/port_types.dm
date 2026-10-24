@@ -19,6 +19,31 @@
 	if (HAS_TRAIT(SSstation, STATION_TRAIT_BIGGER_PODS))
 		roundstart_template = /datum/map_template/shuttle/escape_pod/luxury
 
+/obj/docking_port/stationary/escape_pod/load_roundstart()
+	var/obj/docking_port/mobile/pod = ..()
+	if(!istype(pod))
+		return pod
+	// Every pod is loaded from the same template, so they would all share the area name "Escape Pod One".
+	// Number them in load order, and say which part of the station they dock next to.
+	var/static/pods_named = 0
+	pods_named++
+	var/area/nearest_area
+	var/nearest_distance = INFINITY
+	for(var/turf/nearby as anything in RANGE_TURFS(10, src))
+		var/area/nearby_area = get_area(nearby)
+		if(!istype(nearby_area, /area/station) || istype(nearby_area, /area/station/hallway/secondary/exit/escape_pod))
+			continue
+		var/distance = get_dist(src, nearby)
+		if(distance < nearest_distance)
+			nearest_distance = distance
+			nearest_area = nearby_area
+	var/new_name = "Escape Pod [pods_named]"
+	if(nearest_area)
+		new_name += " ([nearest_area.name])"
+	for(var/area/pod_area as anything in pod.shuttle_areas)
+		pod_area.name = new_name
+	return pod
+
 // should fit the syndicate infiltrator, and smaller ships like the battlecruiser corvettes and fighters
 /obj/docking_port/stationary/syndicate
 	name = "near the station"

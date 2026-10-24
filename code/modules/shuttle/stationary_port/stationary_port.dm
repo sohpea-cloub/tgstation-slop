@@ -100,7 +100,7 @@
 			CRASH("Invalid path ([sid]/[shuttle_template_id]) passed to docking port.")
 
 	if(shuttle_template_id)
-		SSshuttle.action_load(shuttle_template_id, src)
+		return SSshuttle.action_load(shuttle_template_id, src)
 
 //returns first-found touching shuttleport
 /obj/docking_port/stationary/get_docked()
