@@ -188,6 +188,9 @@
 #define COMSIG_ITEM_STRIPPABLE_ALT_ACTION "item_strippable_alt_action"
 	#define COMPONENT_ALT_ACTION_DONE (1<<0)
 
+///from /obj/item/change_material_strength(): (force_change, throwforce_change), the multipliers just applied to force and throwforce
+#define COMSIG_ITEM_MATERIAL_STRENGTH_CHANGED "item_material_strength_changed"
+
 ///from base of obj/item/apply_fantasy_bonuses(): (bonus)
 #define COMSIG_ITEM_APPLY_FANTASY_BONUSES "item_apply_fantasy_bonuses"
 ///from base of obj/item/remove_fantasy_bonuses(): (bonus)

@@ -158,10 +158,7 @@
 	RegisterSignal(parent, COMSIG_ITEM_SHARPEN_ACT, PROC_REF(on_sharpen))
 	RegisterSignal(parent, COMSIG_ITEM_APPLY_FANTASY_BONUSES, PROC_REF(apply_fantasy_bonuses))
 	RegisterSignal(parent, COMSIG_ITEM_REMOVE_FANTASY_BONUSES, PROC_REF(remove_fantasy_bonuses))
-	RegisterSignal(parent, COMSIG_ATOM_FINALIZE_MATERIAL_EFFECTS, PROC_REF(on_materials_updated))
-	RegisterSignal(parent, COMSIG_ATOM_FINALIZE_REMOVE_MATERIAL_EFFECTS, PROC_REF(on_materials_updated))
-	RegisterSignal(parent, COMSIG_ATOM_SINGLE_MATERIAL_EFFECT_APPLY, PROC_REF(on_material_apply))
-	RegisterSignal(parent, COMSIG_ATOM_SINGLE_MATERIAL_EFFECT_REMOVE, PROC_REF(on_material_remove))
+	RegisterSignal(parent, COMSIG_ITEM_MATERIAL_STRENGTH_CHANGED, PROC_REF(on_material_strength_changed))
 
 // Remove all siginals registered to the parent item
 /datum/component/two_handed/UnregisterFromParent()
@@ -175,8 +172,7 @@
 		COMSIG_ITEM_SHARPEN_ACT,
 		COMSIG_ITEM_APPLY_FANTASY_BONUSES,
 		COMSIG_ITEM_REMOVE_FANTASY_BONUSES,
-		COMSIG_ATOM_FINALIZE_MATERIAL_EFFECTS,
-		COMSIG_ATOM_FINALIZE_REMOVE_MATERIAL_EFFECTS,
+		COMSIG_ITEM_MATERIAL_STRENGTH_CHANGED,
 	))
 
 /// Triggered on equip of the item containing the component
@@ -442,29 +438,11 @@
 		unwield(source.loc)
 	force_multiplier = source.reset_fantasy_variable("force_multiplier", force_multiplier)
 
-/datum/component/two_handed/proc/on_materials_updated(obj/item/source, list/materials, datum/material/main_material)
+/// Material effects change the item's current force directly (including through material slots), so both of our forces need the same change
+/datum/component/two_handed/proc/on_material_strength_changed(obj/item/source, force_change, throwforce_change)
 	SIGNAL_HANDLER
-	// With materials assigned we need to update our forces.
-	if (wielded)
-		force_wielded = source.force
-	else
-		force_unwielded = source.force
-
-/datum/component/two_handed/proc/on_material_apply(obj/item/source, datum/material/material, amount, multiplier)
-	SIGNAL_HANDLER
-	// Opposite state's force needs to be calculated for each material's effect
-	if (wielded)
-		force_unwielded *= GET_MATERIAL_MODIFIER(source.get_material_force_modifier(material, source.sharpness), multiplier)
-	else
-		force_wielded *= GET_MATERIAL_MODIFIER(source.get_material_force_modifier(material, source.sharpness), multiplier)
-
-/datum/component/two_handed/proc/on_material_remove(obj/item/source, datum/material/material, amount, multiplier)
-	SIGNAL_HANDLER
-	// Same as appliation but inversed
-	if (wielded)
-		force_unwielded /= GET_MATERIAL_MODIFIER(source.get_material_force_modifier(material, source.sharpness), multiplier)
-	else
-		force_wielded /= GET_MATERIAL_MODIFIER(source.get_material_force_modifier(material, source.sharpness), multiplier)
+	force_wielded *= force_change
+	force_unwielded *= force_change
 
 /**
  * The offhand dummy item for two handed items

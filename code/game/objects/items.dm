@@ -2065,12 +2065,15 @@ GAME_VERB_SRC(/obj/item, verb_pickup, oview(1), "Pick up", null)
 	var/force_mod = get_material_force_modifier(material)
 	var/throwforce_mod = get_material_throwforce_modifier(material)
 
-	if (!remove)
-		force *= GET_MATERIAL_MODIFIER(force_mod, multiplier)
-		throwforce *= GET_MATERIAL_MODIFIER(throwforce_mod, multiplier)
-	else
-		force /= GET_MATERIAL_MODIFIER(force_mod, multiplier)
-		throwforce /= GET_MATERIAL_MODIFIER(throwforce_mod, multiplier)
+	var/force_change = GET_MATERIAL_MODIFIER(force_mod, multiplier)
+	var/throwforce_change = GET_MATERIAL_MODIFIER(throwforce_mod, multiplier)
+	if (remove)
+		force_change = 1 / force_change
+		throwforce_change = 1 / throwforce_change
+
+	force *= force_change
+	throwforce *= throwforce_change
+	SEND_SIGNAL(src, COMSIG_ITEM_MATERIAL_STRENGTH_CHANGED, force_change, throwforce_change)
 
 /// Returns a force multiplier from a material for a given sharpness
 /obj/item/proc/get_material_force_modifier(datum/material/material, item_sharpness = get_sharpness())
