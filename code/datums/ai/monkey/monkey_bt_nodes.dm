@@ -188,7 +188,8 @@
 	var/list/enemies = controller.blackboard[enemies_key]
 
 	if(HAS_TRAIT(living_pawn, TRAIT_PACIFISM) || (!length(enemies) && !controller.blackboard[BB_MONKEY_AGGRESSIVE]))
-		living_pawn.set_combat_mode(FALSE)
+		if(!living_pawn.client) // a player under temporary AI control (feral instincts) keeps their own combat mode
+			living_pawn.set_combat_mode(FALSE)
 		return AI_BEHAVIOR_INSTANT | AI_BEHAVIOR_FAILED
 
 	var/list/valids = list()
@@ -205,7 +206,8 @@
 		valids[possible_enemy] = CEILING(100 / (get_dist(living_pawn, possible_enemy) || 1), 1)
 
 	if(!length(valids))
-		living_pawn.set_combat_mode(FALSE)
+		if(!living_pawn.client) // a player under temporary AI control (feral instincts) keeps their own combat mode
+			living_pawn.set_combat_mode(FALSE)
 		return AI_BEHAVIOR_INSTANT | AI_BEHAVIOR_FAILED
 
 	var/mob/living/target = pick_weight(valids)
