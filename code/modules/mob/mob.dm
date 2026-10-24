@@ -1218,11 +1218,14 @@ GAME_VERB_NATIVE(/mob, DisDblClick, ".dblclick", null, argu = null as anything, 
 		//update our pda and id if we have them on our person
 		replace_identification_name(oldname,newname)
 
-		for(var/datum/mind/T in SSticker.minds)
-			for(var/datum/objective/obj in T.get_all_objectives())
-				// Only update if this player is a target
-				if(obj.target && obj.target.current && obj.target.current.real_name == name)
-					obj.update_explanation_text()
+		// Silicon names and the Cyborg/AI "job" are not what an objective's owner knows their target by (e.g. a target who got borged),
+		// so keep the objective text as it was written.
+		if(!issilicon(src))
+			for(var/datum/mind/T in SSticker.minds)
+				for(var/datum/objective/obj in T.get_all_objectives())
+					// Only update if this player is a target
+					if(obj.target && obj.target.current && obj.target.current.real_name == name)
+						obj.update_explanation_text()
 
 	else if(log_new_name)
 		log_message("[src] name set to [newname]", LOG_OWNERSHIP)
