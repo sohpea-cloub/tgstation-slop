@@ -13,27 +13,41 @@
 	. = ..()
 	if(!.)
 		return FALSE
-	if(target.mind)
-		if((SEND_SIGNAL(target.mind, COMSIG_PRE_MINDSHIELD_IMPLANT, user) & COMPONENT_MINDSHIELD_RESISTED))
-			if(!silent)
-				target.visible_message(span_warning("[target] seems to resist the implant!"), span_warning("You feel something interfering with your mental conditioning, but you resist it!"))
-			removed(target, TRUE)
-			qdel(src)
-			return TRUE
-		if(SEND_SIGNAL(target.mind, COMSIG_MINDSHIELD_IMPLANTED, user) & COMPONENT_MINDSHIELD_DECONVERTED)
-			if(prob(1) || check_holidays(APRIL_FOOLS))
-				target.say("I'm out! I quit! Whose kidneys are these?", forced = "They're out! They quit! Whose kidneys do they have?")
+	if(target.mind && !check_mind(target, user, silent))
+		return TRUE
 
+	RegisterSignal(target, COMSIG_MOB_MIND_TRANSFERRED_INTO, PROC_REF(on_mind_transferred_into))
 	target.add_traits(list(TRAIT_MINDSHIELD, TRAIT_UNCONVERTABLE), IMPLANT_TRAIT)
 	target.sec_hud_set_implants()
 	if(!silent)
 		to_chat(target, span_notice("You feel a sense of peace and security. You are now protected from brainwashing."))
 	return TRUE
 
+/// Checks whether the mind of the target accepts the implant. Returns FALSE (and removes the implant) if it resisted.
+/obj/item/implant/mindshield/proc/check_mind(mob/living/target, mob/user, silent = FALSE)
+	if((SEND_SIGNAL(target.mind, COMSIG_PRE_MINDSHIELD_IMPLANT, user) & COMPONENT_MINDSHIELD_RESISTED))
+		if(!silent)
+			target.visible_message(span_warning("[target] seems to resist the implant!"), span_warning("You feel something interfering with your mental conditioning, but you resist it!"))
+		removed(target, TRUE)
+		qdel(src)
+		return FALSE
+	if(SEND_SIGNAL(target.mind, COMSIG_MINDSHIELD_IMPLANTED, user) & COMPONENT_MINDSHIELD_DECONVERTED)
+		if(prob(1) || check_holidays(APRIL_FOOLS))
+			target.say("I'm out! I quit! Whose kidneys are these?", forced = "They're out! They quit! Whose kidneys do they have?")
+	return TRUE
+
+/// A mind moved into an already implanted body (e.g. the implant was put into a mindless body): it gets the same checks as if it had been implanted.
+/obj/item/implant/mindshield/proc/on_mind_transferred_into(mob/living/source, mob/living/old_body, datum/mind/new_mind)
+	SIGNAL_HANDLER
+	if(source != imp_in || QDELETED(src))
+		return
+	check_mind(source, null, TRUE)
+
 /obj/item/implant/mindshield/removed(mob/target, silent = FALSE, special = FALSE)
 	. = ..()
 	if(!.)
 		return FALSE
+	UnregisterSignal(target, COMSIG_MOB_MIND_TRANSFERRED_INTO)
 	if(isliving(target))
 		var/mob/living/L = target
 		target.remove_traits(list(TRAIT_MINDSHIELD, TRAIT_UNCONVERTABLE), IMPLANT_TRAIT)
