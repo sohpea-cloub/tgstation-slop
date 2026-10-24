@@ -69,7 +69,7 @@
 	if (!isobserver(user))
 		return
 	var/mob/living/our_mob = parent
-	if (our_mob.stat == DEAD || our_mob.key || awaiting_ghosts)
+	if (our_mob.stat == DEAD || our_mob.key || awaiting_ghosts || SSpolling.is_target_being_polled(our_mob))
 		return
 	examine_text += span_boldnotice("You could take control of this mob by clicking on it.")
 
@@ -105,7 +105,8 @@
 	if (!(GLOB.ghost_role_flags & GHOSTROLE_SPAWNER))
 		to_chat(hopeful_ghost, span_warning("Ghost roles have been temporarily disabled!"))
 		return
-	if (awaiting_ghosts)
+	// another (replaced) instance of this component may have started the poll still running for our parent
+	if (awaiting_ghosts || SSpolling.is_target_being_polled(our_mob))
 		to_chat(hopeful_ghost, span_warning("Ghost candidate selection currently in progress!"))
 		return COMPONENT_CANCEL_ATTACK_CHAIN
 	if (!SSticker.HasRoundStarted())

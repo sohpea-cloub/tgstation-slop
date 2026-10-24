@@ -7,6 +7,8 @@ SUBSYSTEM_DEF(polling)
 	var/list/datum/candidate_poll/currently_polling
 	/// Number of polls performed since the start
 	var/total_polls = 0
+	/// Targets which currently have a ghost poll running for them, see poll_ghosts_for_target()
+	var/list/atom/movable/currently_polling_targets = list()
 
 /datum/controller/subsystem/polling/fire()
 	if(!currently_polling) // if polls_active is TRUE then this shouldn't happen, but still..
@@ -250,7 +252,6 @@ SUBSYSTEM_DEF(polling)
 	chat_text_border_icon,
 	announce_chosen = TRUE,
 )
-	var/static/list/atom/movable/currently_polling_targets = list()
 	if(currently_polling_targets.Find(checked_target))
 		return
 	currently_polling_targets += checked_target
@@ -259,6 +260,10 @@ SUBSYSTEM_DEF(polling)
 	if(!checked_target || QDELETED(checked_target) || !checked_target.loc)
 		return null
 	return chosen_one
+
+/// Returns TRUE if a poll started by poll_ghosts_for_target() is still running for this target
+/datum/controller/subsystem/polling/proc/is_target_being_polled(atom/movable/checked_target)
+	return (checked_target in currently_polling_targets)
 
 /datum/controller/subsystem/polling/proc/poll_ghosts_for_targets(
 	question,
