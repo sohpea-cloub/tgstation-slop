@@ -149,3 +149,21 @@
 	var/max_height_index = length(dna_heights)
 	var/mob_height_index = deconstruct_block(get_block(dna_hash), max_height_index, block_length)
 	target.set_mob_height(dna_heights[mob_height_index] || HUMAN_HEIGHT_MEDIUM, update_dna = FALSE)
+
+/// The TTS voice, stored as an index into the available TTS speakers
+/datum/dna_block/identity/voice
+
+/datum/dna_block/identity/voice/create_unique_block(mob/living/carbon/human/target)
+	var/list/voices = SStts.available_speakers
+	if(!length(voices))
+		// TTS is off (or not initialized yet), there is no voice to store
+		return random_string(block_length, GLOB.hex_characters)
+	// Mobs without a (valid) voice get a random one, rather than all being stored as the first speaker
+	var/voice_index = voices.Find(target.voice) || rand(1, length(voices))
+	return construct_block(voice_index, length(voices))
+
+/datum/dna_block/identity/voice/apply_to_mob(mob/living/carbon/human/target, dna_hash)
+	var/list/voices = SStts.available_speakers
+	if(!SStts.tts_enabled || !length(voices))
+		return
+	target.voice = voices[deconstruct_block(get_block(dna_hash), length(voices))]

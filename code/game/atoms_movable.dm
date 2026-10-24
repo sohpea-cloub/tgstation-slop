@@ -1850,6 +1850,9 @@
 		if(!chosen_voice)
 			return
 		voice = chosen_voice
+		if(ishuman(src))
+			var/mob/living/carbon/human/human_src = src
+			human_src.dna?.update_ui_block(/datum/dna_block/identity/voice)
 		log_admin("[key_name(usr)] has set [src]'s voice as [chosen_voice].")
 		message_admins(span_notice("[key_name(usr)] has set [src]'s voice as [chosen_voice]."))
 

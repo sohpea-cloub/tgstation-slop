@@ -5,6 +5,7 @@
 
 	if(SStts.tts_enabled && !voice)
 		voice = SStts.random_tts_voice(gender)
+		dna?.update_ui_block(/datum/dna_block/identity/voice)
 
 	if(!LAZYLEN(afk_thefts))
 		return
