@@ -69624,7 +69624,7 @@
 /obj/effect/mapping_helpers/airlock/access/all/engineering/external,
 /obj/effect/mapping_helpers/broken_floor,
 /turf/open/floor/plating,
-/area/space/nearstation)
+/area/station/maintenance/disposal)
 "vTA" = (
 /obj/effect/turf_decal/stripes/corner{
 	dir = 4
