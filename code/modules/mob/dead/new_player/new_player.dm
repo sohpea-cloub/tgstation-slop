@@ -83,6 +83,12 @@
 		ready = PLAYER_NOT_READY
 		return FALSE
 
+	// The alert above sleeps: if the round started setting up while it was open, a ready player already has (or is about
+	// to get) a character, and observing now would leave that body behind without anyone in it.
+	if(new_character || (SSticker.current_state == GAME_STATE_SETTING_UP && is_ready_to_play()))
+		to_chat(src, span_warning("The round is starting and you are about to be spawned. You can no longer observe."))
+		return FALSE
+
 	var/mob/dead/observer/observer = new()
 	spawning = TRUE
 
