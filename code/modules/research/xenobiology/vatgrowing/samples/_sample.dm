@@ -34,6 +34,9 @@
 /datum/biological_sample/proc/handle_growth(obj/machinery/vatgrower/vat)
 	for(var/datum/micro_organism/cell_line/organism in micro_organisms) //Types because we don't grow viruses.
 		organism.handle_growth(vat)
+		//A cell line that finished growing may have consumed this sample (no resampler): the remaining lines have nothing left to grow in.
+		if(QDELETED(src) || vat.biological_sample != src)
+			break
 
 ///resets the progress of all cell ines
 /datum/biological_sample/proc/reset_sample()
