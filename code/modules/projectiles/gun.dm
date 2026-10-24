@@ -287,7 +287,15 @@
 				ignored_mobs = pbtarget,
 				visible_message_flags = ALWAYS_SHOW_SELF_MESSAGE,
 			)
-			to_chat(pbtarget, span_userdanger("[user] fires [src] point blank at you!"))
+			if(ismob(pbtarget))
+				var/mob/pb_mob = pbtarget
+				// Blind (or critted, etc) targets don't get to see who is shooting them
+				pb_mob.show_message(
+					span_userdanger("[user] fires [src] point blank at you!"),
+					MSG_VISUAL,
+					span_hear("You hear a gunshot!"),
+					MSG_AUDIBLE,
+				)
 		if(pb_knockback > 0 && ismob(pbtarget))
 			var/mob/PBT = pbtarget
 			var/atom/throw_target = get_edge_target_turf(PBT, user.dir)
