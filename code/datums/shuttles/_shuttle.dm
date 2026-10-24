@@ -8,6 +8,8 @@
 	 * you should set shuttle_id to be the same as port_id if you want them to be replacable.
 	 */
 	var/port_id
+	/// shuttle_id of the mobile docking port in the map, when it isn't port_id (the shuttle manipulator uses it to find the shuttle this template replaces).
+	var/mobile_port_id
 	/// ID of the shuttle, make sure it matches port_id if necessary.
 	var/shuttle_id
 	/// Information to display on communication console about the shuttle

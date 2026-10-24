@@ -931,13 +931,23 @@ SUBSYSTEM_DEF(shuttle)
 	var/timer = 0
 	var/mode = SHUTTLE_IDLE
 	var/obj/docking_port/stationary/dest_dock
+	// Where the replaced shuttle was headed and where it came from, so the replacement carries on the same trip
+	var/obj/docking_port/stationary/old_destination
+	var/obj/docking_port/stationary/old_previous
 
 	if(istype(destination_port))
 		dest_dock = destination_port
 	else if(existing_shuttle && replace)
 		timer = existing_shuttle.timer
 		mode = existing_shuttle.mode
+		old_destination = existing_shuttle.destination
+		old_previous = existing_shuttle.previous
 		dest_dock = existing_shuttle.get_docked()
+		// A transit dock belongs to the shuttle that owns it and is deleted along with it, so the replacement
+		// can't dock there: it would be left in space with no transit, no timer target and no parallax.
+		// Give it a transit dock of its own (made below) before the old shuttle goes away.
+		if(istype(dest_dock, /obj/docking_port/stationary/transit))
+			dest_dock = null
 
 	if(!dest_dock)
 		dest_dock = generate_transit_dock(preview_shuttle)
@@ -968,6 +978,10 @@ SUBSYSTEM_DEF(shuttle)
 	// plugging the existing shuttles old values in works fine.
 	preview_shuttle.timer = timer
 	preview_shuttle.mode = mode
+	if(!QDELETED(old_destination))
+		preview_shuttle.destination = old_destination
+	if(!QDELETED(old_previous))
+		preview_shuttle.previous = old_previous
 
 	preview_shuttle.postregister(replace)
 
@@ -1128,7 +1142,7 @@ SUBSYSTEM_DEF(shuttle)
 	switch(action)
 		if("select_template")
 			if(S)
-				existing_shuttle = getShuttle(S.port_id)
+				existing_shuttle = getShuttle(S.mobile_port_id || S.port_id)
 				selected = S
 				. = TRUE
 		if("jump_to")

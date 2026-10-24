@@ -1,5 +1,6 @@
 /datum/map_template/shuttle/infiltrator
 	port_id = "infiltrator"
+	mobile_port_id = "syndicate"
 	prefix = "_maps/shuttles/infiltrator/"
 	who_can_purchase = null
 
