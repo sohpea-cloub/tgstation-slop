@@ -98,6 +98,12 @@
 	if(!current_backseat.client) //Make sure we never switch to a logged off mob.
 		return
 
+	// The antagonist buttons and effects granted to the body belong to the owner's mind, not to whoever happens to be controlling it.
+	// Take them off while the other personality is in charge, and put them back when the owner returns.
+	var/owner_leaving = (current_controller == OWNER && !reset_to_owner)
+	if(owner_leaving)
+		set_owner_antag_effects(owner.mind, FALSE)
+
 	current_backseat.log_message("assumed control of [key_name(owner)] due to [src]. (Original owner: [current_controller == OWNER ? owner.key : current_backseat.key])", LOG_GAME)
 	to_chat(owner, span_userdanger("You feel your control being taken away... your other personality is in charge now!"))
 	to_chat(current_backseat, span_userdanger("You manage to take control of your body!"))
@@ -142,6 +148,23 @@
 		owner.lastKnownIP = s2h_ip
 
 	current_controller = !current_controller
+
+	if(!owner_leaving)
+		set_owner_antag_effects(owner.mind, TRUE)
+
+/// Removes or reapplies the body-bound parts (innate effects like abilities, the info button, the moodlet) of a mind's antagonist datums.
+/// Only used on the owner's mind: its antag status stays with it, so the other personality doesn't get to use it.
+/datum/brain_trauma/severe/split_personality/proc/set_owner_antag_effects(datum/mind/owner_mind, apply)
+	for(var/datum/antagonist/antag as anything in owner_mind?.antag_datums)
+		var/datum/action/antag_info/info_button = antag.info_button_ref?.resolve()
+		if(apply)
+			antag.apply_innate_effects(owner)
+			info_button?.Grant(owner)
+			antag.give_antag_moodies(owner)
+		else
+			antag.remove_innate_effects(owner)
+			info_button?.Remove(owner)
+			antag.clear_antag_moodies(owner)
 
 
 /mob/living/split_personality
