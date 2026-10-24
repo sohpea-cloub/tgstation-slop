@@ -89,6 +89,21 @@
 
 	return TRUE
 
+/// Returns the cheapest discounted version of the given uplink item that we can still buy (in stock), or the item itself.
+/// Used so that buying a discounted item from its regular place in the market still gets the discount.
+/datum/uplink_handler/proc/get_best_offer(datum/uplink_item/to_purchase)
+	if(to_purchase.discounted || (to_purchase in extra_purchasable))
+		return to_purchase
+	var/datum/uplink_item/best = to_purchase
+	for(var/datum/uplink_item/offer as anything in extra_purchasable)
+		if(!offer.discounted || offer.type != to_purchase.type || offer.cost >= best.cost)
+			continue
+		var/current_stock = item_stock[offer.stock_key]
+		if(!isnull(current_stock) && current_stock <= 0)
+			continue
+		best = offer
+	return best
+
 /datum/uplink_handler/proc/purchase_item(mob/user, datum/uplink_item/to_purchase, atom/movable/source)
 	if(!can_purchase_item(user, to_purchase))
 		return

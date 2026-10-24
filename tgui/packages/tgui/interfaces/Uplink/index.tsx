@@ -173,7 +173,20 @@ export class Uplink extends Component<any, UplinkState> {
       }
     }
     for (let i = 0; i < itemsToAdd.length; i++) {
-      const item = itemsToAdd[i];
+      let item = itemsToAdd[i];
+      if (!item.ref) {
+        // A regular entry of an item that is on sale: show (and buy) the cheapest sale that is still in stock
+        for (const sale of extra_purchasable) {
+          const saleStock = extra_purchasable_stock[sale.ref as string];
+          if (
+            sale.id === item.id &&
+            sale.cost < item.cost &&
+            (saleStock === undefined || saleStock === null || saleStock > 0)
+          ) {
+            item = { ...item, cost: sale.cost, ref: sale.ref };
+          }
+        }
+      }
       const hasEnoughPop =
         !joined_population || joined_population >= item.population_minimum;
 

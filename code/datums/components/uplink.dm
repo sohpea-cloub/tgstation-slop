@@ -247,6 +247,8 @@
 				if(!ispath(item_path, /datum/uplink_item))
 					return
 				item = SStraitor.uplink_items_by_type[item_path]
+				if(item)
+					item = uplink_handler.get_best_offer(item)
 			uplink_handler.purchase_item(ui.user, item, parent)
 		if("buy_raw_tc")
 			if (uplink_handler.telecrystals <= 0)
