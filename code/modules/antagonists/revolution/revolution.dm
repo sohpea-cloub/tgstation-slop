@@ -550,7 +550,8 @@
 			head_text += "<li>"
 			if(target)
 				head_text += span_redtext("Target")
-			head_text += "[printplayer(head, 1)]</li>"
+			// Heads who won by quelling the revolution did not flee by leaving on the shuttle
+			head_text += "[printplayer(head, GLOB.revolution_handler.result != STATION_VICTORY)]</li>"
 		head_text += "</ul><br>"
 		result += head_text
 
