@@ -556,6 +556,11 @@ Possible to do for anyone motivated enough:
 		hologram.icon = work_off.icon
 		hologram.icon_state = work_off.icon_state
 		hologram.copy_overlays(work_off, TRUE)
+		// Reflect the caller's size (growth serum, gigantism...), but not whether they're lying down
+		if(!AI && isliving(user))
+			var/mob/living/living_user = user
+			if(living_user.current_size != RESIZE_DEFAULT_SIZE)
+				hologram.transform = matrix().Scale(living_user.current_size).Translate(0, living_user.get_transform_translation_size(living_user.current_size))
 		hologram.makeHologram(color_override = AI?.ai_holocolor)
 
 		if(AI)
@@ -805,6 +810,7 @@ For the other part of the code, check silicon say.dm. Particularly robot talk.*/
 	hologram.icon = work_off.icon
 	hologram.icon_state = work_off.icon_state
 	hologram.copy_overlays(work_off, TRUE)
+	hologram.transform = work_off.transform
 	hologram.makeHologram()
 
 	var/datum/language_holder/holder = hologram.get_language_holder()
