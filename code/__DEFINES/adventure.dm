@@ -8,6 +8,8 @@
 #define FAIL_NODE "FAIL"
 /// Failure node - No loot and drone blown up.
 #define FAIL_DEATH_NODE "FAIL_DEATH"
+/// Leave node - No loot, no damage, the drone just leaves the adventure.
+#define LEAVE_NODE "LEAVE"
 /// Return node - navigates to previous adventure node.
 #define GO_BACK_NODE "GO BACK"
 
@@ -15,6 +17,7 @@
 #define ADVENTURE_RESULT_SUCCESS "success"
 #define ADVENTURE_RESULT_DAMAGE "damage"
 #define ADVENTURE_RESULT_DEATH "death"
+#define ADVENTURE_RESULT_LEAVE "leave"
 
 // Exploration drone states
 

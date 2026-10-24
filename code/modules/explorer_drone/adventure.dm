@@ -233,6 +233,9 @@ GLOBAL_LIST_EMPTY(explorer_drone_adventure_db_entries)
 		if(FAIL_DEATH_NODE)
 			end_adventure(ADVENTURE_RESULT_DEATH)
 			return TRUE
+		if(LEAVE_NODE)
+			end_adventure(ADVENTURE_RESULT_LEAVE)
+			return TRUE
 		if(WIN_NODE)
 			end_adventure(ADVENTURE_RESULT_SUCCESS)
 			return TRUE

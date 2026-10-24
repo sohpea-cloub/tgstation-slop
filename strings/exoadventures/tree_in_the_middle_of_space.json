@@ -6,7 +6,7 @@
 		"Confusion": 0
 	},
 	"required_site_traits": ["in space"],
-	"loot_categories": ["research"],
+	"loot_categories": ["trade_contract"],
 	"scan_band_mods": {
 		"Exotic Radiation": 10
 	},
@@ -32,7 +32,7 @@
 				{
 					"key": "choice 0",
 					"name": "Ignore site.",
-					"exit_node": "FAIL",
+					"exit_node": "LEAVE",
 					"delay": 10,
 					"delay_message": "Leave this for the botanists to figure out."
 				},
@@ -102,7 +102,7 @@
 				{
 					"key": "choice 40",
 					"name": "Leave.",
-					"exit_node": "FAIL",
+					"exit_node": "LEAVE",
 					"delay": 0
 				}
 			],

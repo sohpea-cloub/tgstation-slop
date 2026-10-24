@@ -21,7 +21,7 @@
 				{
 					"key": "choice 0",
 					"name": "Leave.",
-					"exit_node": "FAIL",
+					"exit_node": "LEAVE",
 					"delay": 10,
 					"delay_message": "There are better ways to die than drinking alien soda."
 				},

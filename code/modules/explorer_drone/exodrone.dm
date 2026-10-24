@@ -74,7 +74,7 @@ GLOBAL_LIST_EMPTY(exodrone_launchers)
 		name = name
 	GLOB.exodrones += src
 	// Cargo storage
-	create_storage(max_slots = EXODRONE_CARGO_SLOTS, canthold = GLOB.blacklisted_cargo_types)
+	create_storage(max_slots = EXODRONE_CARGO_SLOTS, max_total_storage = EXODRONE_CARGO_SLOTS * WEIGHT_CLASS_NORMAL, canthold = GLOB.blacklisted_cargo_types)
 
 /obj/item/exodrone/handle_deconstruct(disassembled)
 	. = ..()
@@ -264,6 +264,11 @@ GLOBAL_LIST_EMPTY(exodrone_launchers)
 			current_adventure = null
 			set_status(EXODRONE_EXPLORATION)
 			return
+		if(ADVENTURE_RESULT_LEAVE)
+			UnregisterSignal(current_adventure,list(COMSIG_ADVENTURE_FINISHED,COMSIG_ADVENTURE_QUALITY_INIT,COMSIG_ADVENTURE_DELAY_START,COMSIG_ADVENTURE_DELAY_END))
+			current_adventure = null
+			set_status(EXODRONE_EXPLORATION)
+			return
 		if(ADVENTURE_RESULT_DAMAGE)
 			damage(max_integrity*0.5) //Half health lost
 			if(!QDELETED(src)) // Don't bother if we just blown up from the damage
@@ -341,8 +346,8 @@ GLOBAL_LIST_EMPTY(exodrone_launchers)
 	drone_log("Sustained [amount] damage.")
 
 /obj/item/exodrone/proc/drone_log(message)
-	if(length(drone_log) > EXODRONE_LOG_SIZE)
-		drone_log.Remove()
+	if(length(drone_log) >= EXODRONE_LOG_SIZE)
+		drone_log.Cut(EXODRONE_LOG_SIZE) // Drop the oldest entries, new ones are inserted at the front
 	drone_log.Insert(1,message)
 
 /obj/item/exodrone/proc/has_tool(tool_type)

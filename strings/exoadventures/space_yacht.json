@@ -19,7 +19,7 @@
 				{
 					"key": "choice 0",
 					"name": "Ignore it, its not worth investigating.",
-					"exit_node": "FAIL",
+					"exit_node": "LEAVE",
 					"delay": 10,
 					"delay_message": "You fly on by..."
 				},
@@ -55,7 +55,7 @@
 				{
 					"key": "choice 5",
 					"name": "Fly away, no chance in hell of getting in there..",
-					"exit_node": "FAIL",
+					"exit_node": "LEAVE",
 					"delay": 5,
 					"delay_message": "Moving.."
 				},

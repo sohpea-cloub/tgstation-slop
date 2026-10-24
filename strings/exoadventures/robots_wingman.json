@@ -51,7 +51,7 @@
 				{
 					"key": "choice 1",
 					"name": "Ignore other Drone",
-					"exit_node": "FAIL",
+					"exit_node": "LEAVE",
 					"delay": 0
 				}
 			],

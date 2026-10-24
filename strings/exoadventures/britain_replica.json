@@ -8,7 +8,7 @@
 		"UFOs Shot Down": 0
 	},
 	"required_site_traits": ["in space"],
-	"loot_categories": ["research"],
+	"loot_categories": ["trade_contract"],
 	"scan_band_mods": {},
 	"deep_scan_description": "",
 	"triggers": [],
@@ -20,7 +20,7 @@
 				{
 					"key": "choice 0",
 					"name": "Ignore the planet.",
-					"exit_node": "FAIL",
+					"exit_node": "LEAVE",
 					"delay": 0,
 					"delay_message": "Whatever, there's a lot of planets in space. Must be a hunch!"
 				},
