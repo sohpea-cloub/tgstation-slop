@@ -110,11 +110,20 @@
 /datum/looping_sound/rain/start
 	mid_sounds = 'sound/ambience/weather/rain/rain_start.ogg'
 	mid_length = 12.5 SECONDS
+	// The weather picks the phase; the parent's intro/outro sounds would play on top of this phase's own sound
+	start_sound = null
+	end_sound = null
 
 /datum/looping_sound/rain/middle
 	mid_sounds = 'sound/ambience/weather/rain/rain_mid.ogg'
 	mid_length = 15 SECONDS
+	// The weather picks the phase; the parent's intro/outro sounds would play on top of this phase's own sound
+	start_sound = null
+	end_sound = null
 
 /datum/looping_sound/rain/end
 	mid_sounds = 'sound/ambience/weather/rain/rain_end.ogg'
 	mid_length = 17 SECONDS
+	// The weather picks the phase; the parent's intro/outro sounds would play on top of this phase's own sound
+	start_sound = null
+	end_sound = null
