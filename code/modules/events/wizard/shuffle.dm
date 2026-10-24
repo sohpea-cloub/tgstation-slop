@@ -85,6 +85,8 @@
 	for(var/mob/living/carbon/human/alive_human in GLOB.alive_mob_list)
 		if(IS_UNCONSCIOUS_OR_CRIT(alive_human) || isnull(alive_human.mind) || IS_WIZARD(alive_human) || HAS_TRAIT(alive_human, TRAIT_NO_MINDSWAP))
 			continue //the wizard(s) are spared on this one
+		if(!is_station_level(alive_human.z))
+			continue //only people on the station, not miners, ghost roles and so on off elsewhere
 		mobs_to_swap += alive_human
 
 	if(!length(mobs_to_swap))
