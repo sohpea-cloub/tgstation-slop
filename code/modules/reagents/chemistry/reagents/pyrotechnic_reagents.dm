@@ -272,8 +272,8 @@
 /datum/reagent/phlogiston/expose_mob(mob/living/exposed_mob, methods=TOUCH, reac_volume, show_message = TRUE, touch_protection = 0)
 	. = ..()
 	exposed_mob.adjust_fire_stacks(1)
-	var/burndmg = max(0.3 * exposed_mob.fire_stacks * (1 - touch_protection), 0.3)
-	if(burndmg)
+	var/burndmg = max(0.3 * exposed_mob.fire_stacks, 0.3) * (1 - touch_protection)
+	if(burndmg > 0)
 		exposed_mob.adjust_fire_loss(burndmg, 0)
 	exposed_mob.ignite_mob()
 
