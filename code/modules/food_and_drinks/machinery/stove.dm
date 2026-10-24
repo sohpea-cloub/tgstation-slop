@@ -81,10 +81,11 @@
 	if(LAZYLEN(added_ingredients) || reagents.total_volume > 0)
 		var/list/ingredient_amounts = list()
 		for(var/obj/item/ingredient as anything in added_ingredients)
-			ingredient_amounts[ingredient.type] += 1
+			// Use the actual name, as some ingredients (mob holders, renamed or fried items) don't have a meaningful initial name
+			ingredient_amounts[ingredient.name] += 1
 
-		for(var/obj/item/ingredient_type as anything in ingredient_amounts)
-			examine_list += "&bull; [ingredient_amounts[ingredient_type]] [initial(ingredient_type.name)]\s"
+		for(var/ingredient_name in ingredient_amounts)
+			examine_list += "&bull; [ingredient_amounts[ingredient_name]] [ingredient_name]\s"
 
 		var/unknown_volume = 0
 		for(var/datum/reagent/current_reagent as anything in reagents.reagent_list)
