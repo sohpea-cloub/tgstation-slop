@@ -61,8 +61,10 @@
 
 ///This proc adds the food to viscontents and makes sure it can deregister if this changes.
 /obj/item/plate/proc/AddToPlate(obj/item/item_to_plate)
-	vis_contents += item_to_plate
+	// Items in our vis_contents would otherwise inherit our color (recolored trays/plates tint the food)
+	item_to_plate.appearance_flags |= RESET_COLOR
 	item_to_plate.vis_flags |= VIS_INHERIT_PLANE
+	vis_contents += item_to_plate
 	RegisterSignal(item_to_plate, COMSIG_MOVABLE_MOVED, PROC_REF(ItemMoved))
 	RegisterSignal(item_to_plate, COMSIG_QDELETING, PROC_REF(ItemMoved))
 	// We gotta offset ourselves via pixel_w/z, so we don't end up z fighting with the plane
@@ -78,6 +80,7 @@
 ///This proc cleans up any signals on the item when it is removed from a plate, and ensures it has the correct state again.
 /obj/item/plate/proc/ItemRemovedFromPlate(obj/item/removed_item)
 	removed_item.vis_flags &= ~VIS_INHERIT_PLANE
+	removed_item.appearance_flags &= ~RESET_COLOR
 	vis_contents -= removed_item
 	UnregisterSignal(removed_item, list(COMSIG_MOVABLE_MOVED, COMSIG_QDELETING))
 	// Reset item offsets
