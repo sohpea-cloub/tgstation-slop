@@ -81,7 +81,11 @@
 
 	//comes after healing so new limbs comically drop to the floor
 	if(starting_turf)
-		if(!check_teleport_valid(parent, starting_turf))
+		// Temporary spaces (hilbert's hotel rooms, shuttle transit...) go away once their reservation is released;
+		// the turf is then just unused space on a reserved z-level that you can't leave
+		if(is_reserved_level(starting_turf.z) && !SSmapping.get_reservation_from_turf(starting_turf))
+			to_chat(parent, span_warning("You try to remember where you were, but the place no longer seems to exist..."))
+		else if(!check_teleport_valid(parent, starting_turf))
 			to_chat(parent, span_warning("For some reason, your head aches and fills with mental fog when you try to think of where you were... It feels like you're now going against some dull, unstoppable universal force."))
 		else
 			var/atom/movable/master = parent
