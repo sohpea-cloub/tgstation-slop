@@ -153,7 +153,7 @@
 /obj/item/antag_spawner/nuke_ops/spawn_antag(client/our_client, turf/T, kind, datum/mind/user)
 	var/mob/living/carbon/human/nukie = new()
 	our_client.prefs.safe_transfer_prefs_to(nukie, is_antag = TRUE)
-	nukie.ckey = our_client.key
+	nukie.PossessByPlayer(our_client.key)
 	var/datum/mind/op_mind = nukie.mind
 	if(length(GLOB.newplayer_start)) // needed as hud code doesn't render huds if the atom (in this case the nukie) is in nullspace, so just move the nukie somewhere safe
 		nukie.forceMove(pick(GLOB.newplayer_start))
@@ -371,7 +371,7 @@
 	var/mob/living/spawned_mob = new spawn_type()
 	var/obj/structure/closet/supplypod/pod = setup_pod()
 	our_client.prefs.safe_transfer_prefs_to(spawned_mob, is_antag = TRUE)
-	spawned_mob.ckey = our_client.key
+	spawned_mob.PossessByPlayer(our_client.key)
 	var/datum/mind/op_mind = spawned_mob.mind
 	if(length(GLOB.newplayer_start)) // needed as hud code doesn't render huds if the atom (in this case the spawned_mob) is in nullspace, so just move the spawned_mob somewhere safe
 		spawned_mob.forceMove(pick(GLOB.newplayer_start))

@@ -157,7 +157,7 @@
 			old_mind = new_member_mind, \
 		)
 
-	player_mob.ckey = new_team_member.ckey
+	player_mob.PossessByPlayer(new_team_member.ckey)
 	if(isnull(ctf_player_component))
 		var/datum/component/ctf_player/player_component = player_mob.mind.AddComponent(/datum/component/ctf_player, team, ctf_game, ammo_type)
 		ctf_game.add_player(team, player_mob.ckey, player_component)

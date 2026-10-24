@@ -118,7 +118,15 @@
 	if(!istext(ckey))
 		CRASH("Tried to assign a mob a non-text ckey, wtf?!")
 
-	src.ckey = ckey(ckey)
+	ckey = ckey(ckey)
+	// Assigning only the ckey leaves mob.key as the ckey (no hyphens, lowercase), which then shows in logs
+	// via key_name(); use the connected client's real key when there is one.
+	var/client/target_client = GLOB.directory[ckey]
+	if(target_client)
+		src.key = target_client.key
+		return
+
+	src.ckey = ckey
 
 /mob/serialize_list(list/options, list/semvers)
 	. = ..()

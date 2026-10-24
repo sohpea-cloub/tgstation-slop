@@ -165,7 +165,7 @@
 		if(owner && originalmind)
 			originalmind.transfer_to(owner)
 			if(originalmind.key)
-				owner.ckey = originalmind.key
+				owner.PossessByPlayer(originalmind.key)
 	if(clone)
 		clone.unequip_everything()
 		QDEL_NULL(clone)
@@ -1050,7 +1050,7 @@
 		familiar.copy_languages(owner, LANGUAGE_MASTER)
 		if(linked.saved_mind)
 			linked.saved_mind.transfer_to(familiar)
-			familiar.ckey = linked.saved_mind.key
+			familiar.PossessByPlayer(linked.saved_mind.key)
 	else
 		if(familiar.mind)
 			linked.saved_mind = familiar.mind

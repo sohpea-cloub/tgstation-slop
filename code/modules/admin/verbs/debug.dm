@@ -203,7 +203,7 @@ ADMIN_VERB(cmd_give_direct_control, R_ADMIN, "Give Direct Control", "Give direct
 		return
 	if(M.ckey)
 		M.ghostize(FALSE)
-	M.ckey = newkey.key
+	M.PossessByPlayer(newkey.key)
 	M.client?.init_verbs()
 	if(delmob)
 		qdel(oldmob)

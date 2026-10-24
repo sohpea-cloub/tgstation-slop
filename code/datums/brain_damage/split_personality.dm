@@ -109,7 +109,7 @@
 	owner.computer_id = null
 	owner.lastKnownIP = null
 
-	new_backseat.ckey = owner.ckey
+	new_backseat.PossessByPlayer(owner.ckey)
 
 	new_backseat.name = owner.name
 
@@ -132,7 +132,7 @@
 	current_backseat.computer_id = null
 	current_backseat.lastKnownIP = null
 
-	owner.ckey = current_backseat.ckey
+	owner.PossessByPlayer(current_backseat.ckey)
 	owner.mind = current_backseat.mind
 
 	if(!owner.computer_id)

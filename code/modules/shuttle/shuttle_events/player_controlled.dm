@@ -26,7 +26,7 @@
 		return
 	new_mob.forceMove(get_turf(get_spawn_turf()))
 	REMOVE_TRAIT(new_mob, TRAIT_STASIS, type)
-	new_mob.ckey = chosen_one?.ckey
+	new_mob.PossessByPlayer(chosen_one?.ckey)
 
 ///BACK FOR REVENGE!!!
 /datum/shuttle_event/simple_spawner/player_controlled/alien_queen
