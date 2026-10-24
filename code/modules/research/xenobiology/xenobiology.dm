@@ -983,6 +983,8 @@ GLOBAL_LIST_INIT(slime_extract_auto_activate_reactions, init_slime_auto_activate
 	if(isitem(interacting_with))
 		var/obj/item/apply_to = interacting_with
 		apply_to.slowdown = 0
+	else if(interacting_with.drag_slowdown <= 0)
+		return NONE // nothing to speed up (a table, say): let the potion be placed on it as usual
 
 	to_chat(user, span_notice("You slather the red gunk over the [interacting_with], making it faster."))
 	interacting_with.remove_atom_colour(WASHABLE_COLOUR_PRIORITY)
