@@ -76,6 +76,13 @@
 
 /datum/component/shell/proc/on_load(datum/source, obj/item/integrated_circuit/circuit, list/components)
 	SIGNAL_HANDLER
+	// Get rid of the circuit the shell started with (e.g. the default circuit of a BCI), otherwise it keeps
+	// the shell registered and leaves behind its stale actions.
+	if(attached_circuit && attached_circuit != circuit)
+		var/obj/item/integrated_circuit/old_circuit = attached_circuit
+		remove_circuit()
+		qdel(old_circuit)
+
 	var/list/components_in_list = list()
 	for(var/obj/item/circuit_component/component as anything in components)
 		components_in_list += component.type
