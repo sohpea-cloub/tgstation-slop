@@ -771,7 +771,7 @@ SUBSYSTEM_DEF(job)
 		for (var/list/zlevel_turfs as anything in arrivals_area.get_zlevel_turf_lists())
 			for (var/turf/arrivals_turf as anything in zlevel_turfs)
 				var/obj/structure/chair/shuttle_chair = locate() in arrivals_turf
-				if(!isnull(shuttle_chair))
+				if(!isnull(shuttle_chair) && shuttle_chair.anchored)
 					return shuttle_chair
 				if(arrivals_turf.is_blocked_turf(TRUE))
 					continue

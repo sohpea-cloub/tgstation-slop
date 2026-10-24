@@ -38,6 +38,9 @@
 		for (var/list/zlevel_turfs as anything in arrival_area.get_zlevel_turf_lists())
 			for(var/turf/arrival_turf as anything in zlevel_turfs)
 				for(var/obj/structure/chair/shuttle_chair in arrival_turf)
+					// Unanchored chairs (like the office chair on some shuttles) can be rolled off the shuttle, taking latejoiners with them.
+					if(!shuttle_chair.anchored)
+						continue
 					new_latejoin += shuttle_chair
 				if(isnull(console))
 					console = locate() in arrival_turf
