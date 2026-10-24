@@ -84,7 +84,7 @@ GLOBAL_LIST_INIT(vine_mutations_list, init_vine_mutation_list())
 	if(parent)
 		vine.mutations |= parent.mutations
 
-		var/parentcolor = parent.atom_colours[FIXED_COLOUR_PRIORITY]
+		var/parentcolor = parent.atom_colours[FIXED_COLOUR_PRIORITY][ATOM_COLOR_VALUE_INDEX]
 		vine.add_atom_colour(parentcolor, FIXED_COLOUR_PRIORITY)
 		if(prob(mutativeness))
 			var/datum/spacevine_mutation/random_mutate = pick_weight(GLOB.vine_mutations_list - vine.mutations)
