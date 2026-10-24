@@ -204,6 +204,11 @@
 /datum/jukebox/proc/start_music()
 	for(var/mob/nearby in hearers(sound_range, parent))
 		register_listener(nearby)
+	// hearers() doesn't see mobs inside other movables (soulscythes, MMIs, pAI cards...), but players inside them can still hear
+	for(var/mob/contained as anything in get_hearers_in_range(max(x_cutoff, z_cutoff), parent, RECURSIVE_CONTENTS_CLIENT_MOBS))
+		if(contained in listeners)
+			continue
+		register_listener(contained)
 
 /// Helper to get all mobs currently, ACTIVELY listening to the jukebox.
 /datum/jukebox/proc/get_active_listeners()
@@ -378,11 +383,13 @@
 
 	if(isnull(active_song_sound))
 		return
-	if(!ismob(entered))
-		return
-	if(entered in listeners)
-		return
-	register_listener(entered)
+	if(ismob(entered) && !(entered in listeners))
+		register_listener(entered)
+	// Players inside whatever just entered (a soulscythe, a held item, a person's contents...) can hear it too
+	for(var/mob/contained as anything in entered.important_recursive_contents?[RECURSIVE_CONTENTS_CLIENT_MOBS])
+		if(contained in listeners)
+			continue
+		register_listener(contained)
 
 /**
  * Subtype which only plays the music to the mob you pass in via start_music().
