@@ -55,22 +55,33 @@
 
 		qdel(mindbound_shift)
 
+/// The shape a caster is currently shapeshifted into, or null if they aren't.
+/// (The caster's original mob is stored in nullspace, not inside the shape; the spell moves to the shape.)
+/proc/shapeshift_shape_of(datum/action/cooldown/spell/shapeshift/shift, mob/living/caster)
+	if(shift.owner == caster)
+		return null
+	return shift.owner
+
 /datum/unit_test/shapeshift_spell/proc/test_spell(mob/living/carbon/human/dummy, datum/action/cooldown/spell/shapeshift/shift, forced_shape)
 	if(forced_shape)
 		shift.shapeshift_type = forced_shape
 
 	TRIGGER_RESET_COOLDOWN(shift)
 	var/mob/expected_shape = shift.shapeshift_type
-	if(!istype(dummy.loc, expected_shape))
+	var/mob/living/shape = shapeshift_shape_of(shift, dummy)
+	if(!istype(shape, expected_shape))
 		return TEST_FAIL("Shapeshift spell: [shift.name] failed to transform the dummy into the shape [initial(expected_shape.name)]. \
-			([dummy] was located within [dummy.loc], which is a [dummy.loc?.type || "null"]).")
+			(the spell's owner is [shift.owner], which is a [shift.owner?.type || "null"]).")
 
-	var/mob/living/shape = dummy.loc
+	// The original mob is stored in nullspace, so shapes which eject or consume their contents can't duplicate or delete it
+	if(!isnull(dummy.loc))
+		return TEST_FAIL("Shapeshift spell: [shift.name] left the dummy in [dummy.loc] instead of nullspace.")
+
 	if(!(shift in shape.actions) && shift.owner_has_control)
 		return TEST_FAIL("Shapeshift spell: [shift.name] failed to grant the spell to the dummy's shape.")
 
 	TRIGGER_RESET_COOLDOWN(shift)
-	if(istype(dummy.loc, shift.shapeshift_type))
+	if(istype(shapeshift_shape_of(shift, dummy), shift.shapeshift_type) || isnull(dummy.loc))
 		return TEST_FAIL("Shapeshift spell: [shift.name] failed to transform the dummy back into a human.")
 
 
@@ -95,12 +106,12 @@
 
 	// Dummy casts shapeshift. The stand's summoner should become the shape the dummy is within.
 	shift.Trigger()
-	TEST_ASSERT(istype(dummy.loc, shift.shapeshift_type), "Shapeshift spell failed to transform the dummy into the shape [initial(shift.shapeshift_type.name)].")
-	TEST_ASSERT_EQUAL(test_stand.summoner, dummy.loc, "Shapeshift spell failed to transfer the holoparasite to the dummy's shape.")
+	TEST_ASSERT(istype(shapeshift_shape_of(shift, dummy), shift.shapeshift_type), "Shapeshift spell failed to transform the dummy into the shape [initial(shift.shapeshift_type.name)].")
+	TEST_ASSERT_EQUAL(test_stand.summoner, shapeshift_shape_of(shift, dummy), "Shapeshift spell failed to transfer the holoparasite to the dummy's shape.")
 
 	// Dummy casts shapeshfit back, the stand's summoner should become the dummy again.
 	TRIGGER_RESET_COOLDOWN(shift)
-	TEST_ASSERT(!istype(dummy.loc, shift.shapeshift_type), "Shapeshift spell failed to transform the dummy back into human form.")
+	TEST_ASSERT(!istype(shapeshift_shape_of(shift, dummy), shift.shapeshift_type) && !isnull(dummy.loc), "Shapeshift spell failed to transform the dummy back into human form.")
 	TEST_ASSERT_EQUAL(test_stand.summoner, dummy, "Shapeshift spell failed to transfer the holoparasite back to the dummy's human form.")
 
 	qdel(shift)
@@ -123,26 +134,26 @@
 
 		if (shift_spell.convert_damage)
 			shift_spell.Trigger()
-			TEST_ASSERT(istype(dummy.loc, shift_spell.shapeshift_type), "Failed to transform into [shift_spell.shapeshift_type]using [shift_spell.name].")
-			var/mob/living/shifted_mob = dummy.loc
+			TEST_ASSERT(istype(shapeshift_shape_of(shift_spell, dummy), shift_spell.shapeshift_type), "Failed to transform into [shift_spell.shapeshift_type]using [shift_spell.name].")
+			var/mob/living/shifted_mob = shapeshift_shape_of(shift_spell, dummy)
 			shifted_mob.apply_damage(shifted_mob.maxHealth * EXPECTED_HEALTH_RATIO, BRUTE, forced = TRUE)
 			TRIGGER_RESET_COOLDOWN(shift_spell)
-			TEST_ASSERT(!istype(dummy.loc, shift_spell.shapeshift_type), "Failed to unfransform from [shift_spell.shapeshift_type] using [shift_spell.name].")
+			TEST_ASSERT(!istype(shapeshift_shape_of(shift_spell, dummy), shift_spell.shapeshift_type), "Failed to unfransform from [shift_spell.shapeshift_type] using [shift_spell.name].")
 			TEST_ASSERT_EQUAL(dummy.get_total_damage(), dummy.maxHealth * EXPECTED_HEALTH_RATIO, "Failed to transfer damage from [shift_spell.shapeshift_type] to original form using [shift_spell.name].")
 			TRIGGER_RESET_COOLDOWN(shift_spell)
-			TEST_ASSERT(istype(dummy.loc, shift_spell.shapeshift_type), "Failed to transform into [shift_spell.shapeshift_type] after taking damage using [shift_spell.name].")
-			shifted_mob = dummy.loc
+			TEST_ASSERT(istype(shapeshift_shape_of(shift_spell, dummy), shift_spell.shapeshift_type), "Failed to transform into [shift_spell.shapeshift_type] after taking damage using [shift_spell.name].")
+			shifted_mob = shapeshift_shape_of(shift_spell, dummy)
 			TEST_ASSERT_EQUAL(shifted_mob.get_total_damage(), shifted_mob.maxHealth * EXPECTED_HEALTH_RATIO, "Failed to transfer damage from original form to [shift_spell.shapeshift_type] using [shift_spell.name].")
 			TRIGGER_RESET_COOLDOWN(shift_spell)
 
 		if (shift_spell.die_with_shapeshifted_form)
 			TRIGGER_RESET_COOLDOWN(shift_spell)
-			TEST_ASSERT(istype(dummy.loc, shift_spell.shapeshift_type), "Failed to transform into [shift_spell.shapeshift_type]")
-			var/mob/living/shifted_mob = dummy.loc
+			TEST_ASSERT(istype(shapeshift_shape_of(shift_spell, dummy), shift_spell.shapeshift_type), "Failed to transform into [shift_spell.shapeshift_type]")
+			var/mob/living/shifted_mob = shapeshift_shape_of(shift_spell, dummy)
 			shifted_mob.health = 0 // Fucking megafauna
 			shifted_mob.death()
 			if (shift_spell.revert_on_death)
-				TEST_ASSERT(!istype(dummy.loc, shift_spell.shapeshift_type), "Failed to untransform after death using [shift_spell.name].")
+				TEST_ASSERT(!istype(shapeshift_shape_of(shift_spell, dummy), shift_spell.shapeshift_type), "Failed to untransform after death using [shift_spell.name].")
 			TEST_ASSERT_EQUAL(dummy.stat, DEAD, "Failed to kill original mob when transformed mob died using [shift_spell.name].")
 
 		qdel(shift_spell)

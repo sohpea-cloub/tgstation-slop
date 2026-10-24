@@ -36,7 +36,9 @@
 
 /datum/status_effect/shapechange_mob/on_apply()
 	caster_mob.mind?.transfer_to(owner)
-	caster_mob.forceMove(owner)
+	// Stored in nullspace rather than in our contents: shapes that eject or consume their contents
+	// (mimic crates, bileworms...) would otherwise spit out a copy of the caster while they're still inside the shape
+	caster_mob.moveToNullspace()
 	ADD_TRAIT(caster_mob, TRAIT_NO_TRANSFORM, TRAIT_STATUS_EFFECT(id))
 	caster_mob.apply_status_effect(/datum/status_effect/grouped/stasis, STASIS_SHAPECHANGE_EFFECT)
 
@@ -50,10 +52,12 @@
 	return TRUE
 
 /datum/status_effect/shapechange_mob/on_remove()
-	// If the owner was straight up deleted we shouldn't restore anyone
-	// (the caster's stored in the owner's contents so if it's qdel'd so is the caster)
+	// If the owner was straight up deleted we shouldn't restore anyone, and the caster
+	// (stored in nullspace, so it won't go away with the owner) goes with them
 	if(!QDELETED(owner))
 		restore_caster()
+	else if(!already_restored && !QDELETED(caster_mob))
+		qdel(caster_mob)
 
 	// Either restore_caster() or other signals should have handled this reference by now,
 	// but juuust in case make sure nothing sticks around.
