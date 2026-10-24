@@ -174,7 +174,7 @@
 			else if(is_audible && is_visual)
 				viewer.show_message(
 					span_emote("<b>[user]</b> [msg]"), MSG_AUDIBLE,
-					span_emote("You see how <b>[user]</b> [msg]"), MSG_VISUAL,
+					span_emote("[viewer == user ? "" : "You see how "]<b>[user]</b> [msg]"), MSG_VISUAL,
 				)
 			else if(is_audible)
 				viewer.show_message(span_emote("<b>[user]</b> [msg]"), MSG_AUDIBLE)
