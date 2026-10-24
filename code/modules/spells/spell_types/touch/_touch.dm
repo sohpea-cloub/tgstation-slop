@@ -165,6 +165,10 @@
 	SIGNAL_HANDLER
 	SHOULD_NOT_OVERRIDE(TRUE) // DEFINITELY don't put effects here, put them in cast_on_hand_hit
 
+	// our hand may be a valid tool for an operation on a prepared patient (shock touch for revival surgery), let surgery take priority
+	if(isliving(target) && !caster.combat_mode && HAS_TRAIT(target, TRAIT_READY_TO_OPERATE) && length(caster.get_available_operations(target, source, caster.zone_selected)))
+		return NONE
+
 	if(!can_hit_with_hand(target, caster))
 		return NONE
 
