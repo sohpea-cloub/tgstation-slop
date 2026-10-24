@@ -95,7 +95,7 @@
 		frequency_number = 1-(thrown_item.w_class-3)/8 //At normal weight, the frequency is at 1. For tiny, it is 1.25. For huge, it is 0.75.
 		if(thrown_item.throw_verb)
 			verb_text = thrown_item.throw_verb
-	do_attack_animation(target, no_effect = 1)
+	do_attack_animation(target, no_effect = 1, fov_effect = FALSE) // the fov effect is played where the throw ends, see throw_landed_fov_effect()
 	var/sound/throwsound = 'sound/items/weapons/throw.ogg'
 	var/power_throw_text = "."
 	if(power_throw > 0) //If we have anything that boosts our throw power like hulk, we use the rougher heavier variant.
@@ -117,7 +117,15 @@
 		drift_force *= WEIGHT_TO_NEWTONS(thrown_item.w_class)
 
 	newtonian_move(get_angle(target, src), drift_force = drift_force)
-	thrown_thing.safe_throw_at(target, thrown_thing.throw_range + extra_throw_range, max(1,thrown_thing.throw_speed + power_throw), src, null, null, null, move_force)
+	thrown_thing.safe_throw_at(target, thrown_thing.throw_range + extra_throw_range, max(1,thrown_thing.throw_speed + power_throw), src, null, null, CALLBACK(src, PROC_REF(throw_landed_fov_effect), thrown_thing), move_force)
+
+/// Plays the "attack" fov effect (for blind or out of fov mobs) where a thrown thing ended up, not where the thrower clicked.
+/mob/proc/throw_landed_fov_effect(atom/movable/thrown_thing)
+	if(QDELETED(thrown_thing))
+		return
+	var/turf/landed_turf = get_turf(thrown_thing)
+	if(landed_turf)
+		play_fov_effect(landed_turf, 5, "attack")
 
 // Giving stuff
 /**

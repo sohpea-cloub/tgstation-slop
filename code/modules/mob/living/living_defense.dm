@@ -756,10 +756,10 @@
 	return
 
 
-/mob/living/do_attack_animation(atom/A, visual_effect_icon, obj/item/used_item, no_effect)
+/mob/living/do_attack_animation(atom/A, visual_effect_icon, obj/item/used_item, no_effect, fov_effect = TRUE, item_animation_override = null)
 	if(!used_item)
 		used_item = get_active_held_item()
-	..()
+	return ..(A, visual_effect_icon, used_item, no_effect, fov_effect, item_animation_override)
 
 /**
  * Does a slap animation on an atom
