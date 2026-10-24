@@ -193,7 +193,12 @@
 		N.nukeop_outfit = null
 		add_antag_datum(N,converter.nuke_team)
 
+	var/mob/living/old_creator = enslaved_to?.resolve()
+	if(old_creator?.mind)
+		UnregisterSignal(old_creator.mind, COMSIG_ANTAGONIST_REMOVED)
 	enslaved_to = WEAKREF(creator)
+	if(creator.mind)
+		RegisterSignal(creator.mind, COMSIG_ANTAGONIST_REMOVED, PROC_REF(on_creator_antag_removed))
 
 	SEND_SIGNAL(current, COMSIG_MOB_ENSLAVED_TO, creator)
 
@@ -206,6 +211,29 @@
 	if(creator.is_antag())
 		message_admins("[ADMIN_LOOKUPFLW(current)] has been created by [ADMIN_LOOKUPFLW(creator)], an antagonist.")
 		to_chat(current, span_userdanger("Despite your creator's current allegiances, your true master remains [creator.real_name]. If their loyalties change, so do yours. This will never change unless your creator's body is destroyed."))
+
+/// Our creator lost an antag datum: if it is a team we joined through enslave_mind_to_creator, we leave that team too ("if their loyalties change, so do yours").
+/datum/mind/proc/on_creator_antag_removed(datum/mind/creator_mind, datum/antagonist/removed)
+	SIGNAL_HANDLER
+	var/mob/living/creator = enslaved_to?.resolve()
+	if(isnull(creator) || creator.mind != creator_mind)
+		UnregisterSignal(creator_mind, COMSIG_ANTAGONIST_REMOVED)
+		return
+	var/following_type
+	if(istype(removed, /datum/antagonist/cult))
+		following_type = /datum/antagonist/cult
+	else if(istype(removed, /datum/antagonist/rev))
+		following_type = /datum/antagonist/rev
+	else if(istype(removed, /datum/antagonist/nukeop))
+		following_type = /datum/antagonist/nukeop
+	else
+		return
+	// the creator may still belong to a matching team through another datum
+	if(creator_mind.has_antag_datum(following_type))
+		return
+	if(!has_antag_datum(following_type))
+		return
+	INVOKE_ASYNC(src, PROC_REF(remove_antag_datum), following_type)
 
 /datum/mind/proc/get_all_objectives()
 	var/list/all_objectives = list()
