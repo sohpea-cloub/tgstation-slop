@@ -233,13 +233,19 @@
 	balloon_alert(soul, "you start charging...")
 	if(!do_after(soul, 2 SECONDS, target = src, timed_action_flags = IGNORE_TARGET_LOC_CHANGE))
 		balloon_alert(soul, "interrupted!")
+		charging = FALSE
+		reset_spin()
 		return
 	visible_message(span_danger("[src] charges at [attacked_atom]!"), span_notice("You charge at [attacked_atom]!"))
 	new /obj/effect/temp_visual/mook_dust(get_turf(src))
 	playsound(src, 'sound/items/weapons/thudswoosh.ogg', 50, TRUE)
 	SpinAnimation(1)
 	throwforce *= 2
-	throw_at(attacked_atom, 10, 3, soul, FALSE)
+	if(!throw_at(attacked_atom, 10, 3, soul, FALSE))
+		// the throw never started, so throw_impact() won't undo the charge for us
+		charging = FALSE
+		throwforce *= 0.5
+		reset_spin()
 
 /obj/item/soulscythe/proc/reset_spin()
 	animate(src)
