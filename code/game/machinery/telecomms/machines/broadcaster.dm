@@ -29,11 +29,13 @@ GLOBAL_VAR_INIT(message_delay, FALSE)
 		return
 
 	var/signal_message = "[signal.frequency]:[signal.data["message"]]:[signal.data["name"]]"
+	// Prevents massive radio spam
+	// Mark the signal as handled even when it is dropped as a duplicate, otherwise the sending radio's
+	// backup_transmission() sees it as never processed and rebroadcasts it as a mundane radio message
+	signal.mark_done()
 	if(signal_message in GLOB.recent_messages)
 		return
 
-	// Prevents massive radio spam
-	signal.mark_done()
 	var/datum/signal/subspace/original = signal.original
 	if(original && ("compression" in signal.data))
 		original.data["compression"] = signal.data["compression"]

@@ -114,6 +114,10 @@
 	var/message = copytext_char(data["message"], 1, MAX_BROADCAST_LEN)
 	if(!message)
 		return
+	// The virtualspeaker is shared by every copy of this signal and is deleted shortly after the first broadcast,
+	// a laggy path (or a second broadcaster) may arrive after that, composing a message with it would runtime
+	if(QDELETED(virt))
+		return
 	var/compression = data["compression"]
 	if(compression > 0)
 		message = Gibberish(message, compression >= COMPRESSION_REPLACE_CHARACTER_THRESHOLD)
