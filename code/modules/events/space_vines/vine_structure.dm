@@ -167,6 +167,9 @@
 
 	if(is_space_or_openspace(stepturf) || !stepturf.Enter(src))
 		return
+	// Border objects (directional windows etc.) on our own tile can block us from leaving it
+	if(!loc.Exit(src, direction))
+		return
 	if(ischasm(stepturf) && !HAS_TRAIT(stepturf, TRAIT_CHASM_STOPPED))
 		return
 	if(islava(stepturf) && !HAS_TRAIT(stepturf, TRAIT_LAVA_STOPPED))
