@@ -31,6 +31,13 @@
 	/// Percentage chance of receiving a bonus worm
 	var/worm_chance = 30
 
+/turf/open/misc/asteroid/singularity_act()
+	. = ..()
+	// Sand has nothing beneath it to scrape down to (its baseturf is itself), so ScrapeAway did nothing.
+	// On the station the singularity should leave bare space instead of untouched sand.
+	if(baseturfs == type && !QDELETED(src) && is_station_level(z))
+		ChangeTurf(/turf/open/space/basic, flags = CHANGETURF_INHERIT_AIR)
+
 // This is a visual depression, not an already-dug /asteroid/dug turf.
 /turf/open/misc/asteroid/crater
 	icon_state = "asteroid_dug"
