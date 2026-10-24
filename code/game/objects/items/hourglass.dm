@@ -7,6 +7,7 @@
 	var/time = 1 MINUTES
 	var/finish_time //So countdown doesn't need to fiddle with timers
 	var/timing_id //if present we're timing
+	var/step_timer_id //looping timer that advances the sand sprite while timing
 	var/hand_activated = TRUE
 	icon = 'icons/obj/toys/hourglass.dmi'
 	icon_state = "hourglass_idle"
@@ -30,28 +31,32 @@
 		stop()
 
 /obj/item/hourglass/update_icon_state()
-	icon_state = "hourglass_[timing_id ? "active" : "idle"]"
+	if(!timing_id)
+		icon_state = "hourglass_idle"
+		return ..()
+	// Derive the sand level from the time left instead of animate(): an animation is lost whenever the
+	// item leaves and re-enters a client's view (picked up and dropped, or seen late), leaving the final frame.
+	var/step_time = time / HOURGLASS_STATES
+	var/step = clamp(HOURGLASS_STATES - ceil((finish_time - world.time) / step_time) + 1, 1, HOURGLASS_STATES)
+	icon_state = "hourglass_[step]"
 	return ..()
 
 /obj/item/hourglass/proc/start()
 	finish_time = world.time + time
 	timing_id = addtimer(CALLBACK(src, PROC_REF(finish)), time, TIMER_STOPPABLE)
 	countdown.start()
-	timing_animation()
-
-/obj/item/hourglass/proc/timing_animation()
-	var/step_time = time / HOURGLASS_STATES
-	animate(src, time = step_time, icon_state = "hourglass_1")
-	for(var/i in 2 to HOURGLASS_STATES)
-		animate(time = step_time, icon_state = "hourglass_[i]")
+	step_timer_id = addtimer(CALLBACK(src, TYPE_PROC_REF(/atom, update_appearance)), time / HOURGLASS_STATES, TIMER_STOPPABLE | TIMER_LOOP)
+	update_appearance()
 
 /obj/item/hourglass/proc/stop()
 	if(timing_id)
 		deltimer(timing_id)
 		timing_id = null
+	if(step_timer_id)
+		deltimer(step_timer_id)
+		step_timer_id = null
 	countdown.stop()
 	finish_time = null
-	animate(src)
 	update_appearance()
 
 /obj/item/hourglass/proc/finish()
@@ -59,6 +64,9 @@
 	stop()
 
 /obj/item/hourglass/Destroy()
+	if(step_timer_id)
+		deltimer(step_timer_id)
+		step_timer_id = null
 	QDEL_NULL(countdown)
 	. = ..()
 
