@@ -221,7 +221,7 @@ GLOBAL_LIST_INIT(heavyfootstep, list(
 	|| (SSlag_switch.measures[DISABLE_FOOTSTEPS] && !HAS_TRAIT(source, TRAIT_BYPASS_MEASURES)) \
 	|| CHECK_MOVE_LOOP_FLAGS(source, MOVEMENT_LOOP_OUTSIDE_CONTROL) \
 	|| source.moving_diagonally == SECOND_DIAG_STEP \
-	|| (source.movement_type & (VENTCRAWLING | FLYING)) \
+	|| (source.movement_type & (VENTCRAWLING | FLYING | FLOATING)) \
 	|| source.throwing \
 )
 
