@@ -917,6 +917,12 @@
 			return
 
 		show_individual_logging_panel(M, href_list["log_src"], href_list["log_type"])
+
+	else if(href_list["individuallogckey"])
+		if(!check_rights(R_ADMIN))
+			return
+
+		show_individual_logging_panel(null, LOGSRC_CKEY, href_list["log_type"], href_list["individuallogckey"])
 	else if(href_list["languagemenu"])
 		if(!check_rights(R_ADMIN))
 			return
