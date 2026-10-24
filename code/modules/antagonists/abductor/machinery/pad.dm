@@ -26,10 +26,16 @@
 		to_chat(target, span_warning("The instability of the warp leaves you disoriented!"))
 		target.Stun(60)
 
+/// Pulls the target to the pad. Returns FALSE if the target is somewhere teleportation is blocked.
 /obj/machinery/abductor/pad/proc/Retrieve(mob/living/target)
+	var/area/origin_area = get_area(target)
+	if(((origin_area.area_flags & NOTELEPORT) && !istype(origin_area, /area/centcom/abductor_ship)) || HAS_TRAIT(target, TRAIT_NO_TELEPORT))
+		to_chat(target, span_warning("The area's shielding blocks the warp!"))
+		return FALSE
 	flick("alien-pad", src)
 	new /obj/effect/temp_visual/dir_setting/ninja(get_turf(target), target.dir)
 	Warp(target)
+	return TRUE
 
 /obj/machinery/abductor/pad/proc/doMobToLoc(place, atom/movable/target)
 	flick("alien-pad", src)
