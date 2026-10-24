@@ -227,15 +227,21 @@
 	icon_state = "[base_icon_state][(!tank_one && !tank_two && !attached_device) ? "_1" : null]"
 	return ..()
 
+/// Returns the overlay for an attached tank. Our icon file only has sprites for some tanks, so tanks without one (the funny and pure anesthetic tanks, running jetpacks, ...) are drawn from their own icon instead of showing up as an ERROR sprite.
+/obj/item/transfer_valve/proc/tank_overlay(obj/item/tank/attached_tank)
+	if(icon_exists(icon, attached_tank.icon_state))
+		return mutable_appearance(icon, attached_tank.icon_state)
+	return mutable_appearance(attached_tank.icon, attached_tank.icon_state)
+
 /obj/item/transfer_valve/update_overlays()
 	. = ..()
 	if(tank_one)
-		. += "[tank_one.icon_state]"
+		. += tank_overlay(tank_one)
 
 	if(!tank_two)
 		underlays = null
 	else
-		var/mutable_appearance/J = mutable_appearance(icon, icon_state = "[tank_two.icon_state]")
+		var/mutable_appearance/J = tank_overlay(tank_two)
 		var/matrix/T = matrix()
 		T.Translate(-13, 0)
 		J.transform = T
