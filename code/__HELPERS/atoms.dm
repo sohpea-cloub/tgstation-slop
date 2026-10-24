@@ -66,17 +66,33 @@
 	if(current == target_turf)
 		return TRUE
 	var/steps = 1
-	if(current == target_turf)//they are on the same turf, source can see the target
-		return TRUE
+	var/turf/previous = current
 	current = get_step_towards(current, target_turf)
+	// a diagonal step between two opaque turfs is a closed corner, even though the diagonal turf itself isn't opaque
+	if(is_diagonal_corner_blocked(previous, current))
+		return FALSE
 	while(current != target_turf)
 		if(steps > length)
 			return FALSE
 		if(IS_OPAQUE_TURF(current))
 			return FALSE
+		previous = current
 		current = get_step_towards(current, target_turf)
+		if(is_diagonal_corner_blocked(previous, current))
+			return FALSE
 		steps++
 	return TRUE
+
+/// Whether moving from one turf to the adjacent next one is a diagonal step squeezed between two opaque turfs
+/proc/is_diagonal_corner_blocked(turf/from_turf, turf/to_turf)
+	if(!from_turf || !to_turf)
+		return FALSE
+	var/step_dir = get_dir(from_turf, to_turf)
+	if(!ISDIAGONALDIR(step_dir))
+		return FALSE
+	var/turf/vertical = get_step(from_turf, step_dir & (NORTH|SOUTH))
+	var/turf/horizontal = get_step(from_turf, step_dir & (EAST|WEST))
+	return vertical && horizontal && IS_OPAQUE_TURF(vertical) && IS_OPAQUE_TURF(horizontal)
 
 ///Get the cardinal direction between two atoms
 /proc/get_cardinal_dir(atom/start, atom/end)
