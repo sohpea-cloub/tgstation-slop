@@ -175,6 +175,14 @@
 		to_chat(user, span_warning("[src] is too integrated into your chassis and can't be ground up!"))
 	return FALSE
 
+/// The base materials-based grind results cover the whole stack, but grind_atom() scales per-unit results by the amount ground
+/obj/item/stack/grind_results()
+	. = ..()
+	if(!length(.) || amount <= 1)
+		return
+	for(var/reagent in .)
+		.[reagent] /= amount
+
 /obj/item/stack/grind_atom(datum/reagents/target_holder, mob/user)
 	var/current_amount = get_amount()
 	if(current_amount <= 0 || QDELETED(src)) //just to get rid of this 0 amount/deleted stack we return success
@@ -186,13 +194,13 @@
 		reagents.trans_to(target_holder, reagents.total_volume, transferred_by = user)
 	var/available_volume = target_holder.maximum_volume - target_holder.total_volume
 
-	//compute total volume of reagents that will be occupied by grind_results
-	var/total_volume = 0
+	//compute volume of reagents that one piece(or sheet) will occupy
+	var/unit_volume = 0
 	for(var/reagent in grind_reagents)
-		total_volume += grind_reagents[reagent]
+		unit_volume += grind_reagents[reagent]
 
 	//compute number of pieces(or sheets) from available_volume
-	var/available_amount = ceil(current_amount * min(1, available_volume / total_volume))
+	var/available_amount = unit_volume > 0 ? min(current_amount, ceil(available_volume / unit_volume)) : current_amount
 	if(available_amount <= 0)
 		return FALSE
 

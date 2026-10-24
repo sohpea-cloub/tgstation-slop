@@ -84,12 +84,6 @@
 	QDEL_NULL(fly)
 	return ..()
 
-///You only get the juice if your wings are worth a damn
-/obj/item/organ/wings/grind_results()
-	if(flight_level <= WINGS_FLIGHTLESS)
-		return null
-	return list(/datum/reagent/flightpotion = 5)
-
 /obj/item/organ/wings/on_mob_insert(mob/living/carbon/receiver, special, movement_flags)
 	. = ..()
 	update_flight(receiver)
