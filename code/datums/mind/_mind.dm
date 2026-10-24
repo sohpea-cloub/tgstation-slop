@@ -51,6 +51,9 @@
 
 	/// List of antag datums on this mind
 	var/list/antag_datums
+	/// Quirk datums (with no holder) that left a body whose mind went into a mob that can't hold quirks (a headslug, a cyborg...),
+	/// waiting for the mind to enter a mob that can. See carry_quirks().
+	var/list/datum/quirk/stashed_quirks
 	/// this mind's ANTAG_HUD should have this icon_state
 	var/antag_hud_icon_state = null
 	///this mind's antag HUD
@@ -121,6 +124,7 @@
 	QDEL_LIST_ASSOC_VAL(memories)
 	QDEL_NULL(memory_panel)
 	QDEL_LIST(antag_datums)
+	QDEL_LIST(stashed_quirks)
 	set_current(null)
 	return ..()
 
@@ -187,6 +191,7 @@
 		new_character.mind.set_current(null)
 
 	var/mob/living/old_current = current
+	var/client/old_client = old_current?.client
 	if(old_current)
 		//transfer anyone observing the old character to the new one
 		old_current.transfer_observers_to(new_character)
@@ -219,10 +224,46 @@
 		LAZYCLEARLIST(new_character.client.recent_examines)
 		new_character.client.init_verbs() // re-initialize character specific verbs
 
+	carry_quirks(old_current, new_character, new_character.client || old_client)
+
 	SEND_SIGNAL(src, COMSIG_MIND_TRANSFERRED, old_current)
 	SEND_SIGNAL(current, COMSIG_MOB_MIND_TRANSFERRED_INTO, old_current, src)
 	if(!isnull(old_current))
 		SEND_SIGNAL(old_current, COMSIG_MOB_MIND_TRANSFERRED_OUT_OF, current, src)
+
+/**
+ * Quirks are part of who you are, not of what body you are in: they follow the mind between bodies.
+ * Called from transfer_to() once the mind is in new_body.
+ * If the new body can't hold quirks (a headslug, a cyborg, an animal), the quirks of the old body that can be transferred
+ * move to the mind, and wait there until it enters a body that can.
+ * A human body with no quirks of its own gets the quirks of the old body and the ones waiting on the mind.
+ * A human with quirks is left alone, so swapping minds with a quirky body, or a body that was given its quirks by a cloner
+ * or a quirk transfer, doesn't pile them up.
+ */
+/datum/mind/proc/carry_quirks(mob/old_body, mob/new_body, client/client_source)
+	if(!isliving(new_body) || old_body == new_body)
+		return
+	var/mob/living/carbon/human/new_living = new_body
+	var/new_can_hold = ishuman(new_living)
+	if(new_can_hold && LAZYLEN(new_living.quirks))
+		return
+	if(isliving(old_body))
+		var/mob/living/old_living = old_body
+		for(var/datum/quirk/quirk as anything in old_living.quirks?.Copy())
+			if(quirk.quirk_flags & QUIRK_NO_TRANSFER)
+				continue
+			quirk.remove_from_current_holder(quirk_transfer = TRUE)
+			LAZYADD(stashed_quirks, quirk)
+	if(!new_can_hold || !length(stashed_quirks))
+		return // wait for a body that can hold them
+	var/list/to_apply = stashed_quirks
+	stashed_quirks = null
+	var/datum/species/new_species = new_living.dna?.species
+	for(var/datum/quirk/quirk as anything in to_apply)
+		if(new_species && !quirk.is_species_appropriate(new_species.type))
+			qdel(quirk)
+			continue
+		quirk.add_to_holder(new_living, quirk_transfer = TRUE, client_source = client_source)
 
 //I cannot trust you fucks to do this properly
 /datum/mind/proc/set_original_character(new_original_character)
