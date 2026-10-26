@@ -93,7 +93,7 @@
 	if(!on)
 		return PROCESS_KILL
 
-	if((!cell || cell.charge <= 0) && !anchored)
+	if(anchored ? !powered(ignore_use_power = TRUE) : (!cell || cell.charge <= 0))
 		on = FALSE
 		update_appearance(UPDATE_ICON)
 		return PROCESS_KILL
@@ -127,7 +127,7 @@
 	if(anchored)
 		use_energy(power_to_use)
 	else
-		cell.use(power_to_use)
+		cell.use(power_to_use, force = TRUE)
 
 /obj/machinery/electrolyzer/proc/call_reactions(datum/gas_mixture/env)
 	env.electrolyze(working_power = working_power)

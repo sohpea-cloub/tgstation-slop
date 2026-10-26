@@ -110,7 +110,7 @@
 			continue
 		if(internal.moles[gas_type] >= selected_recipe.requirements[gas_type] * 2)
 			continue
-		internal.merge(contents.remove_specific(gas_type, contents.moles[gas_type] * gas_input))
+		internal.merge(contents.remove_specific(gas_type, gas_input))
 
 ///Checks if the gases required are all inside
 /obj/machinery/atmospherics/components/binary/crystallizer/proc/internal_check()
@@ -194,7 +194,7 @@
 			quality_loss = min(quality_loss + 10, 100)
 		internal.remove_specific(gas_type, amount_consumed)
 
-	var/total_quality = clamp(50 - quality_loss, 0, 100)
+	var/total_quality = clamp(floor(50 - quality_loss), 0, 100)
 	var/quality_control
 	switch(total_quality)
 		if(100)
