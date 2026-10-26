@@ -33,10 +33,10 @@
 	return CLICK_ACTION_BLOCKING
 
 /obj/machinery/atmospherics/components/binary/pressure_valve/click_alt(mob/user)
-	if(target_pressure == MAX_OUTPUT_PRESSURE)
+	if(target_pressure == ONE_ATMOSPHERE*100)
 		return CLICK_ACTION_BLOCKING
 
-	target_pressure = MAX_OUTPUT_PRESSURE
+	target_pressure = ONE_ATMOSPHERE*100
 	investigate_log("was set to [target_pressure] kPa by [key_name(user)]", INVESTIGATE_ATMOS)
 	balloon_alert(user, "target pressure set to [target_pressure] kPa")
 	update_appearance(UPDATE_ICON)
@@ -65,12 +65,11 @@
 	var/datum/gas_mixture/output_air = airs[2]
 	var/datum/gas_mixture/output_pipenet_air = parents[2].air
 
+	is_gas_flowing = FALSE
 	if(input_air.return_pressure() > target_pressure)
 		if(input_air.release_gas_to(output_air, input_air.return_pressure(), output_pipenet_air = output_pipenet_air))
 			update_parents()
 			is_gas_flowing = TRUE
-	else
-		is_gas_flowing = FALSE
 	update_icon_nopipes()
 
 /obj/machinery/atmospherics/components/binary/pressure_valve/relaymove(mob/living/user, direction)

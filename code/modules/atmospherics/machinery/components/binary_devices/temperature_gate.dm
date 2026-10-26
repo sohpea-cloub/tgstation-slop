@@ -77,20 +77,17 @@
 	var/datum/gas_mixture/output_air = airs[2]
 	var/datum/gas_mixture/output_pipenet_air = parents[2].air
 
+	is_gas_flowing = FALSE
 	if(!inverted)
 		if(input_air.temperature < target_temperature)
 			if(input_air.release_gas_to(output_air, input_air.return_pressure(), output_pipenet_air = output_pipenet_air))
 				update_parents()
 				is_gas_flowing = TRUE
-		else
-			is_gas_flowing = FALSE
 	else
 		if(input_air.temperature > target_temperature)
 			if(input_air.release_gas_to(output_air, input_air.return_pressure(), output_pipenet_air = output_pipenet_air))
 				update_parents()
 				is_gas_flowing = TRUE
-		else
-			is_gas_flowing = FALSE
 	update_icon_nopipes()
 
 /obj/machinery/atmospherics/components/binary/temperature_gate/relaymove(mob/living/user, direction)

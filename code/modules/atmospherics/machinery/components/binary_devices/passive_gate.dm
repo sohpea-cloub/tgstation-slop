@@ -41,10 +41,10 @@ Passive gate is similar to the regular pump except:
 	return CLICK_ACTION_BLOCKING
 
 /obj/machinery/atmospherics/components/binary/passive_gate/click_alt(mob/user)
-	if(target_pressure == MAX_OUTPUT_PRESSURE)
+	if(target_pressure == ONE_ATMOSPHERE*100)
 		return CLICK_ACTION_BLOCKING
 
-	target_pressure = MAX_OUTPUT_PRESSURE
+	target_pressure = ONE_ATMOSPHERE*100
 	investigate_log("was set to [target_pressure] kPa by [key_name(user)]", INVESTIGATE_ATMOS)
 	balloon_alert(user, "pressure output set to [target_pressure] kPa")
 	update_appearance(UPDATE_ICON)
@@ -83,7 +83,7 @@ Passive gate is similar to the regular pump except:
 	var/data = list()
 	data["on"] = on
 	data["pressure"] = round(target_pressure)
-	data["max_pressure"] = round(MAX_OUTPUT_PRESSURE)
+	data["max_pressure"] = round(ONE_ATMOSPHERE*100)
 	return data
 
 /obj/machinery/atmospherics/components/binary/passive_gate/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
@@ -98,7 +98,7 @@ Passive gate is similar to the regular pump except:
 		if("pressure")
 			var/pressure = params["pressure"]
 			if(pressure == "max")
-				pressure = MAX_OUTPUT_PRESSURE
+				pressure = ONE_ATMOSPHERE*100
 				. = TRUE
 			else if(text2num(pressure) != null)
 				pressure = text2num(pressure)
