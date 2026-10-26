@@ -89,6 +89,7 @@
 		return
 	for (var/datum/spatial_grid_cell/grid_cell as anything in SSspatial_grid.get_cells_in_range(luminosity_turf, lumcount_range))
 		GRID_CELL_REMOVE(grid_cell.dynamic_light_sources, src)
+	luminosity_turf = null
 
 /// Populates the affected_turfs lazylist, adding to its contents the effects of being near the light.
 /datum/component/overlay_lighting/proc/register_new_cells()
@@ -151,8 +152,12 @@
 /datum/component/overlay_lighting/proc/set_range(atom/source, old_range)
 	SIGNAL_HANDLER
 	light.set_range(source.light_range)
-	lumcount_range = ceil(light.range)
-	update_luminosity_cells()
+	var/new_lumcount_range = ceil(light.range)
+	if(new_lumcount_range == lumcount_range)
+		return
+	clean_old_cells()
+	lumcount_range = new_lumcount_range
+	register_new_cells()
 
 /// Changes the intensity/brightness of the light by altering the visual object's alpha.
 /datum/component/overlay_lighting/proc/set_power(atom/source, old_power)
@@ -215,7 +220,7 @@
 		return
 
 	remove_dynamic_lumi(light.current_holder)
-	update_luminosity_cells()
+	clean_old_cells()
 
 /// Handles putting the source for overlay lights into the light eater queue since we aren't tracked by [/atom/var/light_sources]
 /datum/component/overlay_lighting/proc/on_light_eater(datum/source, list/light_queue, datum/light_eater)
