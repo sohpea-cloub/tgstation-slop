@@ -54,7 +54,7 @@
 		/datum/effect_system/trail_follow/ion, \
 	)
 
-	if (!isnull(user) && user.get_item_by_slot(slot_flags) == src)
+	if (!isnull(user) && (user.get_slot_by_item(src) & slot_flags))
 		if (!stabilize)
 			ADD_TRAIT(user, TRAIT_NOGRAV_ALWAYS_DRIFT, JETPACK_TRAIT)
 		else

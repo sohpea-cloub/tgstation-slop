@@ -133,6 +133,9 @@
 	return
 
 /obj/item/tank/Destroy()
+	// External tanks aren't dropped when deleted, so close their breather's internals here
+	if(!QDELETED(breathing_mob))
+		breathing_mob.cutoff_internals()
 	STOP_PROCESSING(SSobj, src)
 	air_contents = null
 	QDEL_NULL(tank_assembly)
@@ -378,7 +381,7 @@
 	leaking = TRUE
 	START_PROCESSING(SSobj, src)
 
-	if(atom_integrity < 0) // So we don't play the alerts while we are exploding or rupturing.
+	if(atom_integrity <= 0) // So we don't play the alerts while we are exploding or rupturing.
 		return
 	visible_message(span_warning("[src] springs a leak!"))
 	playsound(src, 'sound/effects/spray.ogg', 10, TRUE, -3)

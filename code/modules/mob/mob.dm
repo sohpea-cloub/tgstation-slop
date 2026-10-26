@@ -442,6 +442,10 @@ GAME_VERB_PROC(/mob, Cell, "Cell", "Admin")
 		return FALSE
 	return TRUE
 
+/// Gas given to a mob, such as from a tank it carries, goes to wherever the mob is
+/mob/assume_air(datum/gas_mixture/giver)
+	return loc?.assume_air(giver)
+
 ///Get the item on the mob in the storage slot identified by the id passed in
 /mob/proc/get_item_by_slot(slot_id) as /obj/item
 	return null
