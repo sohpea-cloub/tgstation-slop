@@ -377,6 +377,7 @@
 		return
 
 	scrubber.filter_types = valid_filters
+	scrubber.atmos_conditions_changed()
 
 /obj/item/circuit_component/air_alarm_scrubbers/proc/toggle_scrubber(datum/port/input/port)
 	CIRCUIT_TRIGGER
@@ -392,6 +393,7 @@
 		return
 
 	scrubber.on = (port == enable)
+	scrubber.atmos_conditions_changed()
 	scrubber.update_appearance(UPDATE_ICON)
 
 /obj/item/circuit_component/air_alarm_scrubbers/proc/toggle_range(datum/port/input/port)
@@ -422,6 +424,7 @@
 		return
 
 	scrubber.scrubbing = (port != enable_siphon)
+	scrubber.atmos_conditions_changed()
 	scrubber.update_appearance(UPDATE_ICON)
 
 /obj/item/circuit_component/air_alarm_scrubbers/proc/update_data()
@@ -434,7 +437,7 @@
 		return
 
 	enabled.set_value(scrubber.on)
-	is_siphoning.set_value(scrubber.scrubbing == ATMOS_DIRECTION_SCRUBBING)
+	is_siphoning.set_value(scrubber.scrubbing == ATMOS_DIRECTION_SIPHONING)
 
 	var/list/filtered = list()
 
@@ -651,7 +654,7 @@
 	if(isnull(vent))
 		return
 
-	vent.internal_pressure_bound = clamp(external_pressure.value, 0, ATMOS_PUMP_MAX_PRESSURE)
+	vent.external_pressure_bound = clamp(external_pressure.value, 0, ATMOS_PUMP_MAX_PRESSURE)
 
 /obj/item/circuit_component/air_alarm_vents/proc/toggle_siphon(datum/port/input/port)
 	CIRCUIT_TRIGGER

@@ -385,6 +385,8 @@ GLOBAL_LIST_EMPTY_TYPED(air_alarms, /obj/machinery/airalarm)
 	switch (action)
 		if ("power")
 			var/obj/machinery/atmospherics/components/powering = vent || scrubber
+			if (isnull(powering))
+				return TRUE
 			powering.on = !!params["val"]
 			powering.atmos_conditions_changed()
 			powering.update_appearance(UPDATE_ICON)
@@ -452,11 +454,11 @@ GLOBAL_LIST_EMPTY_TYPED(air_alarms, /obj/machinery/airalarm)
 			if (isnull(vent))
 				return TRUE
 
-			if (vent.external_pressure_bound == ATMOS_PUMP_MAX_PRESSURE)
+			if (vent.external_pressure_bound == ONE_ATMOSPHERE)
 				return TRUE
 
-			vent.external_pressure_bound = ATMOS_PUMP_MAX_PRESSURE
-			vent.investigate_log("internal pressure was reset by [key_name(user)]", INVESTIGATE_ATMOS)
+			vent.external_pressure_bound = ONE_ATMOSPHERE
+			vent.investigate_log("external pressure was reset by [key_name(user)]", INVESTIGATE_ATMOS)
 			vent.update_appearance(UPDATE_ICON)
 		if ("scrubbing")
 			if (isnull(scrubber))
@@ -483,7 +485,9 @@ GLOBAL_LIST_EMPTY_TYPED(air_alarms, /obj/machinery/airalarm)
 			if(isnull(tlv))
 				return
 			var/threshold_type = params["threshold_type"]
-			var/value = params["value"]
+			var/value = text2num(params["value"])
+			if(isnull(value))
+				return
 			tlv.set_value(threshold_type, value)
 			investigate_log("threshold value for [threshold]:[threshold_type] was set to [value] by [key_name(user)]", INVESTIGATE_ATMOS)
 
@@ -509,7 +513,7 @@ GLOBAL_LIST_EMPTY_TYPED(air_alarms, /obj/machinery/airalarm)
 				danger_level = AIR_ALARM_ALERT_NONE
 
 		if ("disconnect_sensor")
-			if(allow_link_change)
+			if(allow_link_change && connected_sensor)
 				disconnect_sensor()
 
 		if ("lock")
@@ -604,28 +608,20 @@ GLOBAL_LIST_EMPTY_TYPED(air_alarms, /obj/machinery/airalarm)
 
 		if(is_low_pressure && is_low_temp)
 			warning_message = "Danger! Low pressure and temperature detected."
-			return
-		if(is_low_pressure && is_high_temp)
+		else if(is_low_pressure && is_high_temp)
 			warning_message = "Danger! Low pressure and high temperature detected."
-			return
-		if(is_high_pressure && is_high_temp)
+		else if(is_high_pressure && is_high_temp)
 			warning_message = "Danger! High pressure and temperature detected."
-			return
-		if(is_high_pressure && is_low_temp)
+		else if(is_high_pressure && is_low_temp)
 			warning_message = "Danger! High pressure and low temperature detected."
-			return
-		if(is_low_pressure)
+		else if(is_low_pressure)
 			warning_message = "Danger! Low pressure detected."
-			return
-		if(is_high_pressure)
+		else if(is_high_pressure)
 			warning_message = "Danger! High pressure detected."
-			return
-		if(is_low_temp)
+		else if(is_low_temp)
 			warning_message = "Danger! Low temperature detected."
-			return
-		if(is_high_temp)
+		else if(is_high_temp)
 			warning_message = "Danger! High temperature detected."
-			return
 		else
 			warning_message = null
 
