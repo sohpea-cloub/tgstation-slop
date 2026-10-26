@@ -1944,6 +1944,7 @@
 	if(locked)
 		unbolt()
 		say("Link broken, unbolting.")
+	UnregisterSignal(cycle_pump, COMSIG_QDELETING)
 	cycle_pump = null
 
 // Station Airlocks Regular

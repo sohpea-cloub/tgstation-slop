@@ -585,9 +585,10 @@
 /obj/machinery/atmospherics/components/unary/airlock_pump/proc/break_all_links()
 	for(var/obj/machinery/door/airlock/airlock as anything in (internal_airlocks + external_airlocks))
 		UnregisterSignal(airlock, COMSIG_QDELETING)
-		airlock.unbolt()
+		airlock.unset_cycle_pump()
 
 	deltimer(emergency_stop_timer)
+	set_on(FALSE)
 	external_airlocks = list()
 	internal_airlocks = list()
 	cycling_set_up = FALSE
