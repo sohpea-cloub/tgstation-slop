@@ -470,9 +470,10 @@ GLOBAL_LIST_INIT(meta_gas_info, meta_gas_list()) //see ATMOSPHERICS/gas_types.dm
 /datum/gas_mixture/proc/compare(datum/gas_mixture/sample, cmp_archive)
 	var/list/cached_moles = (cmp_archive) ? moles_archive : moles
 	var/list/sample_cached_moles = (cmp_archive) ? sample.moles_archive : sample.moles  //accessing datum vars is slower than proc vars
-	var/total_delta = abs(values_sum(moles) - values_sum(sample.moles))
+	var/total_moles = values_sum(cached_moles)
+	var/total_delta = abs(total_moles - values_sum(sample_cached_moles))
 
-	if(total_delta > MINIMUM_MOLES_DELTA_TO_MOVE) //difference in total moles no need for further iterration
+	if((total_delta > MINIMUM_MOLES_DELTA_TO_MOVE) && (total_delta > total_moles * MINIMUM_AIR_RATIO_TO_MOVE)) //difference in total moles no need for further iterration
 		return "total_moles"
 
 	for(var/gas_id in cached_moles | sample_cached_moles) // compare gases from either mixture
@@ -482,7 +483,7 @@ GLOBAL_LIST_INIT(meta_gas_info, meta_gas_list()) //see ATMOSPHERICS/gas_types.dm
 		if((abs_delta > MINIMUM_MOLES_DELTA_TO_MOVE) && (abs_delta > gas_moles * MINIMUM_AIR_RATIO_TO_MOVE))
 			return gas_id
 
-	if(values_sum(cached_moles) > MINIMUM_MOLES_DELTA_TO_MOVE) //Don't consider temp if there's not enough mols
+	if(total_moles > MINIMUM_MOLES_DELTA_TO_MOVE) //Don't consider temp if there's not enough mols
 		if(cmp_archive)
 			if(abs(temperature_archived - sample.temperature_archived) > MINIMUM_TEMPERATURE_DELTA_TO_SUSPEND)
 				return "temp"
