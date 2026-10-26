@@ -625,7 +625,7 @@ Then we space some of our heat, and think about if we should stop conducting.
 				continue
 			var/turf/neighbor = get_step(src, direction)
 
-			if(!neighbor.thermal_conductivity)
+			if(!neighbor?.thermal_conductivity) //null past the edge of the map
 				continue
 
 			if(neighbor.archived_cycle < SSair.times_fired)
