@@ -118,6 +118,7 @@
 #include "bake_a_cake.dm"
 #include "barsigns.dm"
 #include "baseturfs.dm"
+#include "basic_mob_drops_dead_target.dm"
 #include "baton.dm"
 #include "bee.dm"
 #include "bespoke_id.dm"
