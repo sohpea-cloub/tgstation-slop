@@ -290,7 +290,7 @@
 		unsafe_release = TRUE
 
 	var/deconstruct = FALSE
-	if(!(default_pry_open(tool) & ITEM_INTERACT_SUCCESS))
+	if(!(default_pry_open(user, tool) & ITEM_INTERACT_SUCCESS))
 		deconstruct = can_crowbar_deconstruct()
 
 	if(unsafe_release)
@@ -512,7 +512,7 @@
 	if(state_open && !panel_open)
 		flick("pod-close-anim", src)
 		. = ..()
-		if(!QDELETED(occupant)) //auto on if an occupant is inside
+		if(!QDELETED(occupant) && is_operational) //auto on if an occupant is inside
 			set_on(TRUE)
 
 /obj/machinery/cryo_cell/container_resist_act(mob/living/user)
@@ -650,7 +650,7 @@
 		var/mob/living/living_mob = target
 		if(living_mob.incapacitated)
 			close_machine(target)
-		return
+			return
 
 	user.visible_message(span_notice("[user] starts shoving [target] inside [src]."), span_notice("You start shoving [target] inside [src]."))
 	if (do_after(user, 2.5 SECONDS, target=target))
