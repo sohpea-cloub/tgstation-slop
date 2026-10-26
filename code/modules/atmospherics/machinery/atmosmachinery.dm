@@ -321,6 +321,10 @@
 	if(!istype(target, /obj/machinery/atmospherics/pipe/multiz) && !((initialize_directions & get_dir(src, target)) && (target.initialize_directions & get_dir(target, src))))
 		return FALSE
 
+	//only multiz adapters connect across decks, to each other
+	if(z != target.z && !istype(src, /obj/machinery/atmospherics/pipe/multiz))
+		return FALSE
+
 	//both target & src can't be connected either way
 	if(!is_connectable(target, given_layer) || !target.is_connectable(src, given_layer))
 		return FALSE

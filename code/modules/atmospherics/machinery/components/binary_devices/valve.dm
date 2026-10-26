@@ -23,6 +23,11 @@ It's like a regular ol' straight pipe, but you can turn it on and off.
 	///Bool to stop interactions while the opening/closing animation is going
 	var/switching = FALSE
 
+/obj/machinery/atmospherics/components/binary/valve/Initialize(mapload)
+	. = ..()
+	if(!on)
+		vent_movement &= ~VENTCRAWL_ALLOWED
+
 /obj/machinery/atmospherics/components/binary/valve/update_icon_nopipes(animation = FALSE)
 	normalize_cardinal_directions()
 	if(animation)
