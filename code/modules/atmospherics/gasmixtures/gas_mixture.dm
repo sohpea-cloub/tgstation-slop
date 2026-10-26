@@ -426,8 +426,11 @@ GLOBAL_LIST_INIT(meta_gas_info, meta_gas_list()) //see ATMOSPHERICS/gas_types.dm
 		//thermal energy of the system (self and sharer) is unchanged
 
 			if(abs(old_sharer_heat_capacity) > MINIMUM_HEAT_CAPACITY)
-				if(abs(new_sharer_heat_capacity/old_sharer_heat_capacity - 1) < 0.1) // <10% change in sharer heat capacity
-					temperature_share(sharer, OPEN_HEAT_TRANSFER_COEFFICIENT)
+				if(abs(new_sharer_heat_capacity/old_sharer_heat_capacity - 1) < 0.1 && new_self_heat_capacity > MINIMUM_HEAT_CAPACITY) // <10% change in sharer heat capacity
+					//conduction between the mixtures as they are after the transfer, so the heat it carried isn't lost
+					var/heat = CALCULATE_CONDUCTION_ENERGY(OPEN_HEAT_TRANSFER_COEFFICIENT * temperature_delta, new_sharer_heat_capacity, new_self_heat_capacity)
+					temperature = max(temperature - heat/new_self_heat_capacity, TCMB)
+					sharer.temperature = max(sharer.temperature + heat/new_sharer_heat_capacity, TCMB)
 
 	if(length(only_in_sharer + only_in_cached)) //if all gases were present in both mixtures, we know that no gases are 0
 		garbage_collect(only_in_cached) //any gases the sharer had, we are guaranteed to have. gases that it didn't have we are not.
