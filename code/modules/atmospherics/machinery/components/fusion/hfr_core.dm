@@ -177,7 +177,7 @@
 	AddElement(/datum/element/give_turf_traits, turf_traits)
 
 /obj/machinery/atmospherics/components/unary/hypertorus/core/Destroy()
-	unregister_signals(TRUE)
+	unregister_signals()
 	if(internal_fusion)
 		internal_fusion = null
 	if(moderator_internal)

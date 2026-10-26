@@ -77,6 +77,15 @@
 	if(!linked_interface || !linked_input || !linked_moderator || !linked_output || corners.len != 4)
 		. = FALSE
 
+	//don't hold on to the parts if they can't be linked, deactivate() cleans up after an active machine
+	if(!. && !active)
+		linked_interface = null
+		linked_input = null
+		linked_output = null
+		linked_moderator = null
+		corners = list()
+		machine_parts = list()
+
 /**
  * Called by multitool_act() in hfr_parts.dm
  * It sets the pieces to active, allowing the player to start the main reaction
@@ -92,31 +101,28 @@
 	update_appearance(UPDATE_ICON)
 	linked_interface.active = TRUE
 	linked_interface.update_appearance(UPDATE_ICON)
-	RegisterSignal(linked_interface, COMSIG_QDELETING, PROC_REF(unregister_signals))
+	RegisterSignal(linked_interface, COMSIG_QDELETING, PROC_REF(deactivate))
 	linked_input.active = TRUE
 	linked_input.update_appearance(UPDATE_ICON)
-	RegisterSignal(linked_input, COMSIG_QDELETING, PROC_REF(unregister_signals))
+	RegisterSignal(linked_input, COMSIG_QDELETING, PROC_REF(deactivate))
 	linked_output.active = TRUE
 	linked_output.update_appearance(UPDATE_ICON)
-	RegisterSignal(linked_output, COMSIG_QDELETING, PROC_REF(unregister_signals))
+	RegisterSignal(linked_output, COMSIG_QDELETING, PROC_REF(deactivate))
 	linked_moderator.active = TRUE
 	linked_moderator.update_appearance(UPDATE_ICON)
-	RegisterSignal(linked_moderator, COMSIG_QDELETING, PROC_REF(unregister_signals))
+	RegisterSignal(linked_moderator, COMSIG_QDELETING, PROC_REF(deactivate))
 	for(var/obj/machinery/hypertorus/corner/corner in corners)
 		corner.active = TRUE
 		corner.update_appearance(UPDATE_ICON)
-		RegisterSignal(corner, COMSIG_QDELETING, PROC_REF(unregister_signals))
+		RegisterSignal(corner, COMSIG_QDELETING, PROC_REF(deactivate))
 	soundloop = new(src, TRUE)
 	soundloop.volume = 5
 
 /**
- * Called when a part gets deleted around the hfr, called on Destroy() of the hfr core in hfr_core.dm
- * Unregister the signals attached to the core from the various machines, if only_signals is false it will also call deactivate()
- * Arguments:
- * * only_signals: default FALSE, if true the proc will not call the deactivate() proc
+ * Called by deactivate() in this file and on Destroy() of the hfr core in hfr_core.dm
+ * Unregister the signals attached to the core from the various machines
  */
-/obj/machinery/atmospherics/components/unary/hypertorus/core/proc/unregister_signals(only_signals = FALSE)
-	SIGNAL_HANDLER
+/obj/machinery/atmospherics/components/unary/hypertorus/core/proc/unregister_signals()
 	if(linked_interface)
 		UnregisterSignal(linked_interface, COMSIG_QDELETING)
 	if(linked_input)
@@ -127,21 +133,23 @@
 		UnregisterSignal(linked_moderator, COMSIG_QDELETING)
 	for(var/obj/machinery/hypertorus/corner/corner in corners)
 		UnregisterSignal(corner, COMSIG_QDELETING)
-	if(!only_signals)
-		deactivate()
 
 /**
- * Called by unregister_signals() in this file, called when the main fusion processes check_part_connectivity() returns false
+ * Called when a linked part gets deleted, called when the main fusion processes check_part_connectivity() returns false
  * Deactivate the various machines by setting the active var to false, updates the machines icon and set the linked machine vars to null
  */
 /obj/machinery/atmospherics/components/unary/hypertorus/core/proc/deactivate()
+	SIGNAL_HANDLER
 	if(!active)
 		return
+	unregister_signals()
 	active = FALSE
 	update_appearance(UPDATE_ICON)
 	if(linked_interface)
 		linked_interface.active = FALSE
 		linked_interface.update_appearance(UPDATE_ICON)
+		linked_interface.connected_core = null
+		SStgui.close_uis(linked_interface)
 		linked_interface = null
 	if(linked_input)
 		linked_input.active = FALSE
@@ -160,6 +168,7 @@
 			corner.active = FALSE
 			corner.update_appearance(UPDATE_ICON)
 		corners = list()
+	machine_parts = list()
 	QDEL_NULL(soundloop)
 
 /obj/machinery/atmospherics/components/unary/hypertorus/core/proc/assert_gases()

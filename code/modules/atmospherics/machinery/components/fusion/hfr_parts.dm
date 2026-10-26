@@ -175,7 +175,7 @@
 			ui.open()
 	else
 		to_chat(user, span_notice("Activate the machine first by using a multitool on the interface."))
-		ui.close()
+		ui?.close()
 
 /obj/machinery/hypertorus/interface/proc/gas_list_to_gasid_list(list/gas_list)
 	var/list/gasid_list = list()
@@ -303,7 +303,7 @@
 
 /obj/machinery/hypertorus/interface/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
 	. = ..()
-	if(.)
+	if(. || !active)
 		return
 	switch(action)
 		if("start_power")
