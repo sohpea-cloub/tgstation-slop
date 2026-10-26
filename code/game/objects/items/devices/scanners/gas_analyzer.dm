@@ -50,11 +50,11 @@
 
 /obj/item/analyzer/equipped(mob/user, slot, initial)
 	. = ..()
-	ADD_TRAIT(user, TRAIT_DETECT_STORM, CLOTHING_TRAIT)
+	ADD_TRAIT(user, TRAIT_DETECT_STORM, REF(src))
 
 /obj/item/analyzer/dropped(mob/user, silent)
 	. = ..()
-	REMOVE_TRAIT(user, TRAIT_DETECT_STORM, CLOTHING_TRAIT)
+	REMOVE_TRAIT(user, TRAIT_DETECT_STORM, REF(src))
 
 /obj/item/analyzer/examine(mob/user)
 	. = ..()

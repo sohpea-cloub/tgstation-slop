@@ -228,7 +228,9 @@
 	CIRCUIT_TRIGGER
 	if(!connected_meter)
 		return
-	var/datum/gas_mixture/environment = connected_meter.target.return_air()
+	var/datum/gas_mixture/environment = connected_meter.target?.return_air()
+	if(!environment)
+		return
 	pressure.set_output(environment.return_pressure())
 	temperature.set_output(environment.temperature)
 

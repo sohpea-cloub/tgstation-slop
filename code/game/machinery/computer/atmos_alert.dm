@@ -57,7 +57,8 @@
 	if (!.)
 		return FALSE
 
-	var/alarm_count = priority_alarms.len + minor_alarms.len
+	var/had_priority_alarms = !!priority_alarms.len
+	var/had_minor_alarms = !!minor_alarms.len
 
 	priority_alarms.Cut()
 	minor_alarms.Cut()
@@ -88,8 +89,8 @@
 			if (AIR_ALARM_ALERT_HAZARD)
 				priority_alarms += get_area_name(air_alarm, format_text = TRUE)
 
-	// Either we got new alarms, or we have no alarms anymore
-	if ((alarm_count == 0) != (minor_alarms.len + priority_alarms.len == 0))
+	// The screen shows whether there are priority alarms, minor alarms or none
+	if (had_priority_alarms != !!priority_alarms.len || had_minor_alarms != !!minor_alarms.len)
 		update_appearance(UPDATE_ICON)
 
 	return TRUE

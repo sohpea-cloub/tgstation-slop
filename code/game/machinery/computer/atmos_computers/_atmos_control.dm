@@ -151,6 +151,8 @@
 	. = ..()
 	if(. || !(control || reconnecting))
 		return
+	if(!control && action != "reconnect")
+		return
 
 	var/chamber = params["chamber"]
 	switch(action)

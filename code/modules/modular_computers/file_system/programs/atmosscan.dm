@@ -18,6 +18,11 @@
 	/// Saved [GasmixParser][/proc/gas_mixture_parser] data of the last thing we scanned.
 	var/list/last_gasmix_data
 
+/datum/computer_file/program/atmosscan/kill_program(mob/user)
+	atmozphere_mode = ATMOZPHERE_SCAN_ENV
+	UnregisterSignal(computer, COMSIG_ITEM_ATTACK_SELF_SECONDARY)
+	return ..()
+
 /// Secondary attack self.
 /datum/computer_file/program/atmosscan/proc/turf_analyze(datum/source, mob/user)
 	SIGNAL_HANDLER
