@@ -407,6 +407,7 @@
 	if(target_turf)
 		x_coord -= target_turf.x
 		y_coord -= target_turf.y
+		z_coord -= target_turf.z
 	if(!length(spot_list))
 		qdel(src)
 		return
@@ -440,6 +441,7 @@
 	saving_group.spot_list += sacrificial_group.spot_list
 	saving_group.x_coord += sacrificial_group.x_coord
 	saving_group.y_coord += sacrificial_group.y_coord
+	saving_group.z_coord += sacrificial_group.z_coord
 	qdel(sacrificial_group)
 	if(COOLDOWN_FINISHED(src, update_sound_center) && length(spot_list) > MIN_SIZE_SOUND)//arbitrary size to start playing the sound
 		update_sound()
@@ -456,7 +458,8 @@
 		sound.falloff_distance = drop_off_dist
 		sound.extra_range = drop_off_dist
 		if(sound_turf != current_sound_loc)
-			sound.parent = sound_turf
+			sound.set_parent(sound_turf)
+			current_sound_loc = sound_turf
 		return
 	sound = new(sound_turf, TRUE)
 	sound.falloff_distance = drop_off_dist
