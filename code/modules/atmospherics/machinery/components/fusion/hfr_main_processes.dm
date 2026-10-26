@@ -431,7 +431,7 @@
 
 	// If coolant is sufficiently cold, heal up
 	if(internal_fusion.total_moles() > 0 && (airs[1].total_moles() && coolant_temperature < HYPERTORUS_COLD_COOLANT_THRESHOLD) && power_level <= 4)
-		var/cold_coolant_heal_restore = log(10, max(coolant_temperature, 1) * HYPERTORUS_COLD_COOLANT_SCALE) - (HYPERTORUS_COLD_COOLANT_MAX_RESTORE * 2)
+		var/cold_coolant_heal_restore = log(10, max(coolant_temperature, 1)) * HYPERTORUS_COLD_COOLANT_SCALE - HYPERTORUS_COLD_COOLANT_MAX_RESTORE
 		critical_threshold_proximity = max(critical_threshold_proximity + min(cold_coolant_heal_restore * seconds_per_tick, 0), 0)
 
 	critical_threshold_proximity += max(iron_content - HYPERTORUS_MAX_SAFE_IRON, 0) * seconds_per_tick

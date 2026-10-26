@@ -307,10 +307,14 @@
 		return
 	switch(action)
 		if("start_power")
+			if(connected_core.power_level)
+				return
 			connected_core.start_power = !connected_core.start_power
 			connected_core.update_use_power(connected_core.start_power ? ACTIVE_POWER_USE : IDLE_POWER_USE)
 			. = TRUE
 		if("start_cooling")
+			if(connected_core.start_cooling && connected_core.power_level)
+				return
 			connected_core.start_cooling = !connected_core.start_cooling
 			. = TRUE
 		if("start_fuel")
@@ -356,6 +360,8 @@
 				connected_core.moderator_filtering_rate = clamp(mod_filtering_rate, 5, 200)
 				. = TRUE
 		if("fuel")
+			if(connected_core.power_level)
+				return
 			connected_core.selected_fuel = null
 			var/fuel_mix = "nothing"
 			var/datum/hfr_fuel/fuel = null

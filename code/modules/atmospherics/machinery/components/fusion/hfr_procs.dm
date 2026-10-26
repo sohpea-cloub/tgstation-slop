@@ -410,7 +410,7 @@
 		return
 	final_countdown = TRUE
 
-	var/critical = selected_fuel.meltdown_flags & HYPERTORUS_FLAG_CRITICAL_MELTDOWN
+	var/critical = selected_fuel?.meltdown_flags & HYPERTORUS_FLAG_CRITICAL_MELTDOWN
 	if(critical)
 		priority_announce("WARNING - The explosion will likely cover a big part of the station and the coming EMP will wipe out most of the electronics. \
 				Get as far away as possible from the reactor or find a way to shut it down.", "Alert", 'sound/announcer/notice/notice3.ogg')
@@ -449,35 +449,36 @@
  * Create the explosion + the gas emission before deleting the machine core.
  */
 /obj/machinery/atmospherics/components/unary/hypertorus/core/proc/meltdown()
+	var/meltdown_flags = selected_fuel?.meltdown_flags
 	var/flash_explosion = 0
 	var/light_impact_explosion = 0
 	var/heavy_impact_explosion = 0
 	var/devastating_explosion = 0
-	var/em_pulse = selected_fuel.meltdown_flags & HYPERTORUS_FLAG_EMP
-	var/rad_pulse = selected_fuel.meltdown_flags & HYPERTORUS_FLAG_RADIATION_PULSE
+	var/em_pulse = meltdown_flags & HYPERTORUS_FLAG_EMP
+	var/rad_pulse = meltdown_flags & HYPERTORUS_FLAG_RADIATION_PULSE
 	var/emp_light_size = 0
 	var/emp_heavy_size = 0
 	var/rad_pulse_size = 0
 	var/gas_spread = 0
 	var/gas_pockets = 0
-	var/critical = selected_fuel.meltdown_flags & HYPERTORUS_FLAG_CRITICAL_MELTDOWN
+	var/critical = meltdown_flags & HYPERTORUS_FLAG_CRITICAL_MELTDOWN
 
-	if(selected_fuel.meltdown_flags & HYPERTORUS_FLAG_BASE_EXPLOSION)
+	if(meltdown_flags & HYPERTORUS_FLAG_BASE_EXPLOSION)
 		flash_explosion = power_level * 3
 		light_impact_explosion = power_level * 2
 
-	if(selected_fuel.meltdown_flags & HYPERTORUS_FLAG_MEDIUM_EXPLOSION)
+	if(meltdown_flags & HYPERTORUS_FLAG_MEDIUM_EXPLOSION)
 		flash_explosion = power_level * 6
 		light_impact_explosion = power_level * 5
 		heavy_impact_explosion = power_level * 0.5
 
-	if(selected_fuel.meltdown_flags & HYPERTORUS_FLAG_DEVASTATING_EXPLOSION)
+	if(meltdown_flags & HYPERTORUS_FLAG_DEVASTATING_EXPLOSION)
 		flash_explosion = power_level * 8
 		light_impact_explosion = power_level * 7
 		heavy_impact_explosion = power_level * 2
 		devastating_explosion = power_level
 
-	if(selected_fuel.meltdown_flags & HYPERTORUS_FLAG_MINIMUM_SPREAD)
+	if(meltdown_flags & HYPERTORUS_FLAG_MINIMUM_SPREAD)
 		if(em_pulse)
 			emp_light_size = power_level * 3
 			emp_heavy_size = power_level * 1
@@ -486,7 +487,7 @@
 		gas_pockets = 5
 		gas_spread = power_level * 2
 
-	if(selected_fuel.meltdown_flags & HYPERTORUS_FLAG_MEDIUM_SPREAD)
+	if(meltdown_flags & HYPERTORUS_FLAG_MEDIUM_SPREAD)
 		if(em_pulse)
 			emp_light_size = power_level * 5
 			emp_heavy_size = power_level * 3
@@ -495,7 +496,7 @@
 		gas_pockets = 7
 		gas_spread = power_level * 4
 
-	if(selected_fuel.meltdown_flags & HYPERTORUS_FLAG_BIG_SPREAD)
+	if(meltdown_flags & HYPERTORUS_FLAG_BIG_SPREAD)
 		if(em_pulse)
 			emp_light_size = power_level * 7
 			emp_heavy_size = power_level * 5
@@ -504,7 +505,7 @@
 		gas_pockets = 10
 		gas_spread = power_level * 6
 
-	if(selected_fuel.meltdown_flags & HYPERTORUS_FLAG_MASSIVE_SPREAD)
+	if(meltdown_flags & HYPERTORUS_FLAG_MASSIVE_SPREAD)
 		if(em_pulse)
 			emp_light_size = power_level * 9
 			emp_heavy_size = power_level * 7
@@ -522,8 +523,9 @@
 	if(internal_fusion.total_moles() > 0)
 		remove_fusion = internal_fusion.remove_ratio(0.2)
 		var/datum/gas_mixture/remove
+		//each pocket takes an equal share, so the last one takes what is left
 		for(var/i in 1 to gas_pockets)
-			remove = remove_fusion.remove_ratio(1/gas_pockets)
+			remove = remove_fusion.remove_ratio(1 / (gas_pockets - i + 1))
 			var/turf/local = pick(around_turfs)
 			local.assume_air(remove)
 		loc.assume_air(internal_fusion)
@@ -532,7 +534,7 @@
 		remove_moderator = moderator_internal.remove_ratio(0.2)
 		var/datum/gas_mixture/remove
 		for(var/i in 1 to gas_pockets)
-			remove = remove_moderator.remove_ratio(1/gas_pockets)
+			remove = remove_moderator.remove_ratio(1 / (gas_pockets - i + 1))
 			var/turf/local = pick(around_turfs)
 			local.assume_air(remove)
 		loc.assume_air(moderator_internal)
@@ -559,7 +561,7 @@
 		empulse(
 			epicenter = loc,
 			heavy_range = critical ? emp_heavy_size * 2 : emp_heavy_size,
-			light_range = critical ? emp_light_size * 2 : emp_heavy_size,
+			light_range = critical ? emp_light_size * 2 : emp_light_size,
 			emp_source = src
 			)
 
