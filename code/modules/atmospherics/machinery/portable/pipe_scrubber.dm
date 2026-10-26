@@ -34,16 +34,21 @@
 /obj/machinery/portable_atmospherics/pipe_scrubber/Initialize(mapload)
 	. = ..()
 	internal_tank = new(src)
-	RegisterSignal(internal_tank, COMSIG_ATOM_BREAK, PROC_REF(deconstruct))
+	RegisterSignal(internal_tank, COMSIG_MACHINERY_BROKEN, PROC_REF(deconstruct))
 	RegisterSignal(internal_tank, COMSIG_QDELETING, PROC_REF(deconstruct))
 
-/obj/machinery/portable_atmospherics/pipe_scrubber/atom_deconstruct(disassembled)
+/obj/machinery/portable_atmospherics/pipe_scrubber/on_deconstruction(disassembled)
 	. = ..()
 	var/turf/my_turf = get_turf(src)
 	my_turf.assume_air(air_contents)
+	// A broken tank lets out its own gas and is left behind
+	if(internal_tank.machine_stat & BROKEN)
+		return
 	my_turf.assume_air(internal_tank.air_contents)
+	UnregisterSignal(internal_tank, COMSIG_QDELETING)
 	SSair.stop_processing_machine(internal_tank)
-	qdel(internal_tank)
+	if(!QDELETED(internal_tank))
+		qdel(internal_tank)
 
 /obj/machinery/portable_atmospherics/pipe_scrubber/return_analyzable_air()
 	return list(

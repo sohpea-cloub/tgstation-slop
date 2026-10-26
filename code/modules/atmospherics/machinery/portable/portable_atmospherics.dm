@@ -90,17 +90,6 @@
 	if(suppress_reactions)
 		. += "The hypernoblium crystal inside is glowing with a faint blue colour, indicating reactions inside are currently being suppressed."
 
-/obj/machinery/portable_atmospherics/ex_act(severity, target)
-	if(resistance_flags & INDESTRUCTIBLE)
-		return FALSE //Indestructible cans shouldn't release air
-
-	if(severity == EXPLODE_DEVASTATE || target == src)
-		//This explosion will destroy the can, release its air.
-		var/turf/local_turf = get_turf(src)
-		local_turf.assume_air(air_contents)
-
-	return ..()
-
 /obj/machinery/portable_atmospherics/process_atmos()
 	excited = (!suppress_reactions && (excited || air_contents.react(src)))
 	if(!excited)

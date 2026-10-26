@@ -425,6 +425,7 @@
 	new /obj/item/stack/sheet/iron (drop_location(), 10)
 	if(internal_cell)
 		internal_cell.forceMove(drop_location())
+	return ..()
 
 /obj/machinery/portable_atmospherics/canister/item_interaction(mob/living/user, obj/item/tool, list/modifiers)
 	if(!istype(tool, /obj/item/stock_parts/power_store/cell))
@@ -505,7 +506,7 @@
 
 	if(holding)
 		holding.forceMove(T)
-		holding = null
+		unregister_holding()
 
 	animate(src, 0.5 SECONDS, transform=turn(transform, rand(-179, 180)), easing=BOUNCE_EASING)
 
