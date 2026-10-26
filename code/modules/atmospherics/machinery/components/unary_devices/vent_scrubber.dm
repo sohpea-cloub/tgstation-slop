@@ -99,6 +99,7 @@
 			continue
 
 	atmos_conditions_changed()
+	update_power_usage()
 	return TRUE
 
 // WARNING: This proc takes untrusted user input from toggle_filter in air alarm's ui_act
@@ -116,6 +117,7 @@
 				filter_types |= translated_gas
 
 	atmos_conditions_changed()
+	update_power_usage()
 	return TRUE
 
 /obj/machinery/atmospherics/components/unary/vent_scrubber/update_icon_nopipes()
@@ -144,7 +146,7 @@
 
 /obj/machinery/atmospherics/components/unary/vent_scrubber/proc/update_power_usage()
 	idle_power_usage = initial(idle_power_usage)
-	active_power_usage = initial(idle_power_usage)
+	active_power_usage = initial(active_power_usage)
 
 	var/new_power_usage = 0
 	if(scrubbing == ATMOS_DIRECTION_SCRUBBING)
@@ -276,9 +278,13 @@
 ///we populate a list of turfs with nonatmos-blocked cardinal turfs AND
 /// diagonal turfs that can share atmos with *both* of the cardinal turfs
 /obj/machinery/atmospherics/components/unary/vent_scrubber/proc/check_turfs()
+	var/old_turf_count = length(adjacent_turfs)
 	adjacent_turfs.Cut()
 	var/turf/local_turf = get_turf(src)
 	adjacent_turfs = local_turf.get_atmos_adjacent_turfs(alldir = TRUE)
+	// Widenet power draw depends on how many turfs we scrub
+	if(length(adjacent_turfs) != old_turf_count)
+		update_power_usage()
 
 /obj/machinery/atmospherics/components/unary/vent_scrubber/power_change()
 	. = ..()

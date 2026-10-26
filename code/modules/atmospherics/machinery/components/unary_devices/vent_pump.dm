@@ -251,10 +251,12 @@
 		return
 
 	if(fan_overclocked)
-		take_damage(fan_damage_rate, sound_effect=FALSE)
-		if(get_integrity() == 0)
-			investigate_log("was destroyed as a result of overclocking", INVESTIGATE_ATMOS)
+		// A worn out fan breaks and shuts the vent off, rather than destroying it
+		if(get_integrity() <= fan_damage_rate)
+			set_on(FALSE)
+			toggle_overclock("its fan breaking", from_break = TRUE)
 			return
+		take_damage(fan_damage_rate, sound_effect=FALSE)
 
 	var/percent_integrity = get_integrity_percentage()
 	var/datum/gas_mixture/air_contents = airs[1]
