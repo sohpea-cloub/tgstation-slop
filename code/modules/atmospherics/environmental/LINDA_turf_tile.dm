@@ -356,7 +356,7 @@
 		if(difference > 0)
 			consider_pressure_difference(enemy_tile, difference)
 		else
-			enemy_tile.consider_pressure_difference(src, difference)
+			enemy_tile.consider_pressure_difference(src, -difference)
 
 	var/reacting = our_air.react(src)
 	if(our_excited_group)
@@ -553,6 +553,8 @@
 		display.vis_contents += GLOB.colored_turfs[display_id][offset]
 
 /datum/excited_group/proc/hide_turfs()
+	if(display_id == 0) //Was never shown
+		return
 	for(var/thing in turf_list)
 		var/turf/display = thing
 		var/offset = GET_Z_PLANE_OFFSET(display.z) + 1

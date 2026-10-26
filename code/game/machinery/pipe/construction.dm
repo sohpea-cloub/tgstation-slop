@@ -313,7 +313,7 @@ GAME_VERB_SRC(/obj/item/pipe, flip, view(1), "Invert Pipe", null)
 
 /obj/item/pipe/welder_act(mob/living/user, obj/item/welder)
 	. = ..()
-	if(istype(pipe_type, /obj/machinery/atmospherics/components))
+	if(ispath(pipe_type, /obj/machinery/atmospherics/components))
 		return TRUE
 	if(!welder.tool_start_check(user, amount=2))
 		return TRUE

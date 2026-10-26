@@ -445,7 +445,7 @@
 				internal_pressure = internal_pressure > pressure_delta ? internal_pressure : pressure_delta
 		if(empty_mixes == device_type)
 			empty_pipe = TRUE
-	if(!int_air.total_moles())
+	else if(!int_air.total_moles())
 		empty_pipe = TRUE
 
 	if(!empty_pipe)

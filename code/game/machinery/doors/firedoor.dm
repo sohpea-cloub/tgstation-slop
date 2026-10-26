@@ -964,7 +964,7 @@
 
 /obj/structure/firelock_frame/rcd_act(mob/user, obj/item/construction/rcd/the_rcd, list/rcd_data)
 	switch(rcd_data[RCD_DESIGN_MODE])
-		if(RCD_UPGRADE_SIMPLE_CIRCUITS)
+		if(RCD_WALLFRAME)
 			user.balloon_alert(user, "circuit installed")
 			constructionStep = CONSTRUCTION_PANEL_OPEN
 			update_appearance()
