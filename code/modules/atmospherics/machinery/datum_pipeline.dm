@@ -157,15 +157,23 @@
 		if(reference_pipe.parent)
 			merge(reference_pipe.parent)
 		reference_pipe.replace_pipenet(reference_pipe.parent, src)
+		if(!members.Find(reference_pipe))
+			members += reference_pipe
+			air.volume += reference_pipe.volume
+			if(reference_pipe.air_temporary)
+				air.merge(reference_pipe.air_temporary)
+				reference_pipe.air_temporary = null
 		var/list/adjacent = reference_pipe.pipeline_expansion()
 		for(var/obj/machinery/atmospherics/pipe/adjacent_pipe in adjacent)
 			if(adjacent_pipe.parent == src)
 				continue
 			var/datum/pipeline/parent_pipeline = adjacent_pipe.parent
+			// The adjacent pipe is still waiting on a rebuild, so let that rebuild join both pipelines up
+			if(!parent_pipeline || parent_pipeline.building)
+				qdel(parent_pipeline)
+				qdel(src)
+				return
 			merge(parent_pipeline)
-		if(!members.Find(reference_pipe))
-			members += reference_pipe
-			air.volume += reference_pipe.volume
 
 /datum/pipeline/proc/merge(datum/pipeline/parent_pipeline)
 	if(parent_pipeline == src)
@@ -191,7 +199,8 @@
 	return
 
 /obj/machinery/atmospherics/pipe/add_member(obj/machinery/atmospherics/considered_device)
-	parent.add_member(considered_device, src)
+	// Without a parent we're waiting on a rebuild, which will reach the new device too
+	parent?.add_member(considered_device, src)
 
 /obj/machinery/atmospherics/components/add_member(obj/machinery/atmospherics/considered_device)
 	var/datum/pipeline/device_pipeline = return_pipenet(considered_device)

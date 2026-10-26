@@ -143,7 +143,6 @@
 /obj/machinery/atmospherics/components/nullify_node(i)
 	if(parents[i])
 		nullify_pipenet(parents[i])
-	airs[i] = null
 	return ..()
 
 /obj/machinery/atmospherics/components/on_construction(mob/user)
@@ -224,7 +223,9 @@
 	return parents[nodes.Find(target_component)]
 
 /obj/machinery/atmospherics/components/replace_pipenet(datum/pipeline/Old, datum/pipeline/New)
-	parents[parents.Find(Old)] = New
+	for (var/i in 1 to parents.len)
+		if (parents[i] == Old)
+			parents[i] = New
 
 // Helpers
 
