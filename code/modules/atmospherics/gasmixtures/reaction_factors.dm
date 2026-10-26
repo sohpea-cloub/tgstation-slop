@@ -1,7 +1,7 @@
 /datum/gas_reaction/standard/water_vapor/init_factors()
 	factor = list(
-		/datum/gas/water_vapor = "Condensation will consume [MOLES_GAS_VISIBLE] moles. \
-			Freezing will not consume any. Both requires a minimum of [MOLES_GAS_VISIBLE] moles to occur.",
+		/datum/gas/water_vapor = "Condensation and freezing will both consume [MOLES_GAS_VISIBLE] moles. \
+			Both requires a minimum of [MOLES_GAS_VISIBLE] moles to occur.",
 		"Temperature" = "Freezes a tile at [WATER_VAPOR_DEPOSITION_POINT]K or below, \
 			wets it at [WATER_VAPOR_CONDENSATION_POINT]K or below.",
 		"Location" = "Can only happen on tiles.",
@@ -26,7 +26,7 @@
 		/datum/gas/plasma = "[/datum/gas/plasma::name] is consumed at a rate that scales with the difference between the temperature \
 			and [PLASMA_MINIMUM_BURN_TEMPERATURE]K, with maximum scaling at [PLASMA_UPPER_TEMPERATURE]K.",
 		/datum/gas/tritium = "[/datum/gas/tritium::name] is formed at 1 mole per mole of [/datum/gas/plasma::name] consumed \
-			if there are at least 97 times more [/datum/gas/oxygen::name] than [/datum/gas/plasma::name].",
+			if there is at least [SUPER_SATURATION_THRESHOLD] times as much [/datum/gas/oxygen::name] as [/datum/gas/plasma::name].",
 		/datum/gas/water_vapor = "[/datum/gas/water_vapor::name] is formed at 0.25 moles per mole of [/datum/gas/plasma::name] consumed \
 			if [/datum/gas/tritium::name] isn't being formed.",
 		/datum/gas/carbon_dioxide = "[/datum/gas/carbon_dioxide::name] is formed at 0.75 moles per mole of [/datum/gas/plasma::name] consumed \
@@ -63,14 +63,16 @@
 /datum/gas_reaction/standard/freonfire/init_factors()
 	factor = list(
 		/datum/gas/oxygen = "[/datum/gas/oxygen::name] consumption is determined by the temperature, \
-			ranging from [OXYGEN_BURN_RATIO_BASE] moles per mole of [/datum/gas/freon::name] consumed at [FREON_LOWER_TEMPERATURE]K \
-			to [OXYGEN_BURN_RATIO_BASE - 1] moles per mole of [/datum/gas/freon::name] consumed at [FREON_MAXIMUM_BURN_TEMPERATURE]K. \
+			ranging from [round(OXYGEN_BURN_RATIO_BASE - (FREON_MAXIMUM_BURN_TEMPERATURE - FREON_LOWER_TEMPERATURE) / (FREON_MAXIMUM_BURN_TEMPERATURE - FREON_TERMINAL_TEMPERATURE), 0.01)] moles per mole of [/datum/gas/freon::name] consumed at [FREON_LOWER_TEMPERATURE]K \
+			to [OXYGEN_BURN_RATIO_BASE] moles per mole of [/datum/gas/freon::name] consumed at [FREON_MAXIMUM_BURN_TEMPERATURE]K, \
+			and [OXYGEN_BURN_RATIO_BASE - 0.5] moles per mole of [/datum/gas/freon::name] consumed below [FREON_LOWER_TEMPERATURE]K. \
 			Higher [/datum/gas/oxygen::name] concentration up to [FREON_OXYGEN_FULLBURN] times \
 			the [/datum/gas/freon::name] increases [/datum/gas/freon::name] consumption rate.",
 		/datum/gas/freon = "[/datum/gas/freon::name] is consumed at a rate that scales with the distance of the temperature \
-			from [FREON_MAXIMUM_BURN_TEMPERATURE]K. Its relationship with [/datum/gas/oxygen::name] also determines consumption rate.",
+			from [FREON_MAXIMUM_BURN_TEMPERATURE]K, and at half rate below [FREON_LOWER_TEMPERATURE]K. \
+			Its relationship with [/datum/gas/oxygen::name] also determines consumption rate.",
 		/datum/gas/carbon_dioxide = "[/datum/gas/carbon_dioxide::name] is formed at 1 mole per mole of [/datum/gas/freon::name] consumed.",
-		"Temperature" = "Can only occur between [FREON_LOWER_TEMPERATURE] - [FREON_MAXIMUM_BURN_TEMPERATURE]K.",
+		"Temperature" = "Can only occur between [FREON_TERMINAL_TEMPERATURE] - [FREON_MAXIMUM_BURN_TEMPERATURE]K.",
 		"Energy" = "[FIRE_FREON_ENERGY_CONSUMED] joules of energy is absorbed per mole of [/datum/gas/freon::name] consumed.",
 		"Hot Ice" = "This reaction produces \"hot ice\" when occurring between [HOT_ICE_FORMATION_MINIMUM_TEMPERATURE]-[HOT_ICE_FORMATION_MAXIMUM_TEMPERATURE]K.",
 	)
@@ -188,9 +190,9 @@
 	factor = list(
 		/datum/gas/halon = "[/datum/gas/halon::name] is consumed at a rate that scales with temperature.",
 		/datum/gas/oxygen = "20 moles of [/datum/gas/oxygen::name] is consumed per mole of [/datum/gas/halon::name] combusted.",
-		/datum/gas/carbon_dioxide = "[/datum/gas/carbon_dioxide::name] is produced at 5 moles per mole of [/datum/gas/halon::name] consumed.",
+		/datum/gas/pluoxium = "[/datum/gas/pluoxium::name] is produced at 2.5 moles per mole of [/datum/gas/halon::name] consumed.",
 		"Energy" = "[HALON_COMBUSTION_ENERGY] joules of energy is absorbed per mole of [/datum/gas/halon::name] consumed.",
-		"Temperature" = "Can only occur above [FIRE_MINIMUM_TEMPERATURE_TO_EXIST]K. Higher temperature increases [/datum/gas/halon::name] consumption rate.",
+		"Temperature" = "Can only occur above [HALON_COMBUSTION_MIN_TEMPERATURE]K. Higher temperature increases [/datum/gas/halon::name] consumption rate.",
 	)
 
 /datum/gas_reaction/standard/healium_formation/init_factors()
