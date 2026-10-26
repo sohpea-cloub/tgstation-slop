@@ -64,7 +64,7 @@
 
 /obj/machinery/atmospherics/components/trinary/mixer/process_atmos()
 	..()
-	if(!on || !(nodes[1] && nodes[2] && nodes[3]) && !is_operational)
+	if(!on || !(nodes[1] && nodes[2] && nodes[3]) || !is_operational)
 		return
 
 	//Get those gases, mah boiiii
@@ -181,7 +181,7 @@
 	update_appearance(UPDATE_ICON)
 
 /obj/machinery/atmospherics/components/trinary/mixer/proc/adjust_node1_value(newValue)
-	node1_concentration = newValue / 100
+	node1_concentration = clamp(newValue, 0, 100) / 100
 	node2_concentration = 1 - node1_concentration
 
 /obj/machinery/atmospherics/components/trinary/mixer/can_unwrench(mob/user)
