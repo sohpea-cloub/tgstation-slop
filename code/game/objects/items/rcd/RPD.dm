@@ -315,8 +315,13 @@
 
 	//Unwrench pipe before we build one over/paint it, but only if we're not already running a do_after on it already to prevent a potential runtime.
 	if((mode & DESTROY_MODE) && (upgrade_flags & RPD_UPGRADE_UNWRENCH) && istype(attack_target, /obj/machinery/atmospherics) && !(DOING_INTERACTION_WITH_TARGET(user, attack_target)))
-		attack_target = attack_target.wrench_act(user, src)
-		if(!isatom(attack_target)) //can return null, FALSE if do_after() fails see /obj/machinery/atmospherics/wrench_act()
+		var/turf/target_turf = get_turf(attack_target)
+		attack_target.wrench_act(user, src)
+		if(!QDELETED(attack_target)) //do_after() failed, see /obj/machinery/atmospherics/wrench_act()
+			return ITEM_INTERACT_FAILURE
+		//wrench_act() doesn't return the pipe fitting it dropped, so find it on the floor
+		attack_target = locate(/obj/item/pipe) in target_turf
+		if(!attack_target)
 			return ITEM_INTERACT_FAILURE
 
 	if(istype(attack_target, /obj/machinery/atmospherics) && (mode & BUILD_MODE))
@@ -382,14 +387,8 @@
 			var/newly_permitted_connections = new_init_dir & ~current_init_dir
 			if(newly_permitted_connections)
 				// We're allowed to connect in new directions. Recompute our nodes
-				// Disconnect from everything that is currently connected
+				// Our existing connections stay connected on their side, so we keep our pipeline and only clear our own nodes
 				for(var/i in 1 to target_smart_pipe.device_type)
-					// This is basically pipe.nullifyNode, but using it here would create a pitfall for others attempting to
-					// copy and paste disconnection code for other components. Welcome to the atmospherics subsystem
-					var/obj/machinery/atmospherics/node = target_smart_pipe.nodes[i]
-					if(!node)
-						continue
-					node.disconnect(target_smart_pipe)
 					target_smart_pipe.nodes[i] = null
 				// Get our new connections
 				target_smart_pipe.atmos_init()
