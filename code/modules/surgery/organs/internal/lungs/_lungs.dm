@@ -721,8 +721,8 @@
 
 	// Finally, we'll run the callbacks that aren't in breath_gases, but WERE in our last breath
 	for(var/gas_id, partial_pressure in last_partial_pressures)
-		// If we still have it, go away
-		if(breath_moles[gas_id])
+		// If we still have it, go away. It may be at 0 moles if we breathed all of it in.
+		if(!isnull(breath_moles[gas_id]))
 			continue
 		var/on_loss = breath_lost[gas_id]
 		if(!on_loss)
@@ -795,7 +795,7 @@
 	var/breath_temperature = breath.temperature
 	breath.temperature = breather.bodytemperature // The air you breathe out should match your body temperature
 
-	if((breath_temperature > cold_level_1_threshold) || (breath_temperature < heat_level_1_threshold))
+	if((breath_temperature > cold_level_1_threshold) && (breath_temperature < heat_level_1_threshold))
 		return // safe air that isn't too hot or cold
 
 	if(!HAS_TRAIT(breather, TRAIT_RESISTCOLD)) // COLD DAMAGE
